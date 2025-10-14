@@ -1,9 +1,9 @@
 """
-Market Service - Gestion des données de marché
+Market Service - Gestion des données de marché [TIMEZONE FIXED]
 """
 
 from typing import List, Optional, Dict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from core.models import (
     MarketData, CryptoPrice, TechnicalIndicators,
     Prediction, PredictionType, OpportunityScore
@@ -33,7 +33,7 @@ class MarketService:
         # Cache check
         if not refresh and symbol in self.market_cache:
             cached = self.market_cache[symbol]
-            age = (datetime.now() - cached.current_price.timestamp).total_seconds()
+            age = (datetime.now(timezone.utc) - cached.current_price.timestamp).total_seconds()
             if age < 60:  # Cache de 1 minute
                 return cached
         
@@ -97,8 +97,8 @@ class MarketService:
             self.price_history_cache[symbol] = prices
             return prices
         
-        # Filtrer depuis le cache
-        cutoff = datetime.now() - timedelta(hours=hours)
+        # Filtrer depuis le cache - FIX: utiliser timezone aware
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
         return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
     
     def calculate_price_change(self, symbol: str, minutes: int) -> float:

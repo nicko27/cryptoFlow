@@ -1,0 +1,94 @@
+2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | Intervalle : 300s
+2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | Mode nuit : Activé
+2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 15:56:19 | ERROR    | CryptoBotDaemon | ❌ Connexion Telegram échouée ! Vérifiez votre configuration.
+2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | Intervalle : 300s
+2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | Mode nuit : Activé
+2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 15:59:22 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-14 15:59:22 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-14 15:59:22 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 15:59:22 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-14 15:59:22 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 15:59:24 | INFO     | CryptoBotDaemon | 💰 Prix : 95852.65 € (-3.78% 24h)
+2025-10-14 15:59:24 | INFO     | CryptoBotDaemon | 🔮 Prédiction : HAUSSIER (75%)
+2025-10-14 15:59:24 | ERROR    | CryptoBotDaemon | Erreur vérification BTC : can't compare offset-naive and offset-aware datetimes
+Traceback (most recent call last):
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
+    self._check_crypto(symbol)
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 178, in _check_crypto
+    opportunity = self.market_service.calculate_opportunity_score(
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 332, in calculate_opportunity_score
+    extremes = self.get_extremes(market_data.symbol, hours=168)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 132, in get_extremes
+    prices = self.get_price_history(symbol, hours)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in get_price_history
+    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in <listcomp>
+    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
+TypeError: can't compare offset-naive and offset-aware datetimes
+2025-10-14 15:59:24 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-14 15:59:24 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 15:59:25 | INFO     | CryptoBotDaemon | 💰 Prix : 3413.78 € (-5.12% 24h)
+2025-10-14 15:59:25 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
+2025-10-14 15:59:25 | ERROR    | CryptoBotDaemon | Erreur vérification ETH : can't compare offset-naive and offset-aware datetimes
+Traceback (most recent call last):
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
+    self._check_crypto(symbol)
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 178, in _check_crypto
+    opportunity = self.market_service.calculate_opportunity_score(
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 332, in calculate_opportunity_score
+    extremes = self.get_extremes(market_data.symbol, hours=168)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 132, in get_extremes
+    prices = self.get_price_history(symbol, hours)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in get_price_history
+    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in <listcomp>
+    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
+TypeError: can't compare offset-naive and offset-aware datetimes
+2025-10-14 15:59:25 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-14 15:59:25 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 15:59:26 | INFO     | CryptoBotDaemon | 💰 Prix : 168.34 € (-0.71% 24h)
+2025-10-14 15:59:26 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (65%)
+2025-10-14 15:59:26 | ERROR    | CryptoBotDaemon | Erreur vérification SOL : can't compare offset-naive and offset-aware datetimes
+Traceback (most recent call last):
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
+    self._check_crypto(symbol)
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 178, in _check_crypto
+    opportunity = self.market_service.calculate_opportunity_score(
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 332, in calculate_opportunity_score
+    extremes = self.get_extremes(market_data.symbol, hours=168)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 132, in get_extremes
+    prices = self.get_price_history(symbol, hours)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in get_price_history
+    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in <listcomp>
+    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
+TypeError: can't compare offset-naive and offset-aware datetimes
+2025-10-14 15:59:26 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 3 erreurs, Uptime: 0h0m
+2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | Signal 2 reçu, arrêt du démon...
+2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | Uptime : 0h 0m
+2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | Erreurs : 3
+2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | ============================================================
+

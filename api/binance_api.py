@@ -1,5 +1,5 @@
 """
-API Client pour Binance
+API Client pour Binance [FIXED avec Revolut]
 """
 
 import requests
@@ -14,9 +14,10 @@ class BinanceAPI:
     BASE_URL = "https://api.binance.com"
     FUTURES_URL = "https://fapi.binance.com"
     
-    def __init__(self, timeout: int = 10):
+    def __init__(self, timeout: int = 10, revolut_api=None):
         self.timeout = timeout
         self.session = requests.Session()
+        self.revolut_api = revolut_api
     
     def get_current_price(self, symbol: str) -> Optional[CryptoPrice]:
         """Récupère le prix actuel"""
@@ -29,7 +30,7 @@ class BinanceAPI:
             response.raise_for_status()
             data = response.json()
             
-            # Taux de change USD -> EUR
+            # Taux de change USD -> EUR via Revolut ou fallback
             usd_to_eur = self._get_usd_to_eur()
             
             return CryptoPrice(
@@ -116,12 +117,21 @@ class BinanceAPI:
             return None
     
     def _get_usd_to_eur(self, use_cache: bool = True) -> float:
-        """Récupère le taux de change USD->EUR"""
-        # Cache simple (1h)
+        """Récupère le taux de change USD->EUR via Revolut ou fallback"""
+        # Si Revolut API disponible, l'utiliser
+        if self.revolut_api:
+            try:
+                rate = self.revolut_api.get_exchange_rate("USD", "EUR")
+                if rate:
+                    return rate
+            except Exception as e:
+                print(f"Erreur Revolut API: {e}")
+        
+        # Fallback: cache simple (1h)
         if not hasattr(self, '_usd_eur_cache'):
             self._usd_eur_cache = {"rate": 0.92, "timestamp": 0}
         
-        now = datetime.now().timestamp()
+        now = datetime.now(timezone.utc).timestamp()
         cache_age = now - self._usd_eur_cache["timestamp"]
         
         if use_cache and cache_age < 3600:
@@ -174,16 +184,16 @@ class BinanceAPI:
             return TechnicalIndicators()
         
         closes = [p.price_eur for p in prices]
-        highs = [p.high_24h for p in prices]
-        lows = [p.low_24h for p in prices]
+        highs = [p.high_24h if p.high_24h > 0 else p.price_eur for p in prices]
+        lows = [p.low_24h if p.low_24h > 0 else p.price_eur for p in prices]
         
         return TechnicalIndicators(
             rsi=self._calculate_rsi(closes),
             macd=self._calculate_macd(closes)["macd"],
             macd_signal=self._calculate_macd(closes)["signal"],
             macd_histogram=self._calculate_macd(closes)["histogram"],
-            ma20=sum(closes[-20:]) / min(20, len(closes)),
-            ma50=sum(closes[-50:]) / min(50, len(closes)),
+            ma20=sum(closes[-20:]) / min(20, len(closes)) if len(closes) >= 20 else closes[-1],
+            ma50=sum(closes[-50:]) / min(50, len(closes)) if len(closes) >= 50 else closes[-1],
             ma200=sum(closes[-200:]) / min(200, len(closes)) if len(closes) >= 200 else closes[-1],
             support=self._find_support(lows),
             resistance=self._find_resistance(highs)

@@ -14,11 +14,7 @@ from datetime import datetime
 import threading
 import time
 
-from core.models import (
-    BotConfiguration, MarketData, Prediction, Alert, 
-    AlertLevel, AlertType, OpportunityScore, CryptoPrice,
-    TechnicalIndicators
-)
+from core.models import *
 from core.services.market_service import MarketService
 from core.services.alert_service import AlertService
 from api.binance_api import BinanceAPI
@@ -30,7 +26,7 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
 
-class CryptoBotGUI(ctk.CTk):
+class CryptoBot GUI(ctk.CTk):
     """Application principale avec interface graphique"""
     
     def __init__(self, config: BotConfiguration):

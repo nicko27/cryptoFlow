@@ -2,7 +2,7 @@
 Alert Service - Gestion des alertes
 """
 
-from typing import List, Optional, Callable, Dict
+from typing import List, Optional, Callable
 from datetime import datetime
 from core.models import (
     Alert, AlertType, AlertLevel, MarketData, Prediction,

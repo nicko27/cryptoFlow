@@ -1,0 +1,65 @@
+telegram:
+  bot_token: 8296923394:AAH4GIdVUFp14kpAA0ifqaDwRErsJKu6kls
+  chat_id: 6574539700
+crypto:
+  symbols:
+  - BTC
+  - ETH
+  - SOL
+  investment_amount: 100.0
+alerts:
+  enable: true
+  lookback_minutes: 120
+  drop_threshold: 10.0
+  spike_threshold: 10.0
+  funding_threshold: -0.03
+  oi_delta: 3.0
+  fear_greed_max: 30
+price_levels:
+  enable: true
+  levels:
+    BTC:
+      low: 90000.0
+      high: 105000
+    ETH:
+      low: 3000
+      high: 4000
+    SOL:
+      low: 170.0
+      high: 200.0
+  buffer_eur: 2.0
+  cooldown_minutes: 30
+features:
+  opportunity_score: true
+  opportunity_threshold: 7
+  predictions: true
+  timeline: true
+  gain_loss_calc: true
+  dca_suggestions: true
+  simple_language: true
+  educational_mode: true
+timing:
+  check_interval: 300
+  summary_hours:
+  - 9
+  - 12
+  - 18
+  quiet_hours:
+    enable: true
+    start: 23
+    end: 9
+    allow_critical: false
+display:
+  graphs: true
+  show_levels: true
+  startup_summary: true
+mode:
+  daemon: false
+  gui: true
+  detail_level: normal
+logging:
+  file: logs/crypto_bot.log
+  level: INFO
+database:
+  path: data/crypto_bot.db
+  keep_days: 30
