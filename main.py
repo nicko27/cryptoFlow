@@ -1,9 +1,9 @@
 """
-Main Entry Point - Crypto Bot v3.0
+Main Entry Point - Crypto Bot v3.0 [FIXED]
 ===================================
 
 Point d'entrée principal avec support :
-- Mode GUI (interface graphique)
+- Mode GUI (interface graphique PyQt6)
 - Mode daemon (arrière-plan)
 - Mode once (exécution unique)
 """
@@ -16,27 +16,36 @@ from pathlib import Path
 # Ajouter le répertoire parent au path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from core.models import BotConfiguration
+from core.models import BotConfiguration, AlertLevel
 from config.config_manager import ConfigManager
+from utils.logger import setup_colored_logger
+import logging
+
+logger = None
 
 
 def run_gui_mode(config: BotConfiguration):
-    """Lance l'interface graphique"""
+    """Lance l'interface graphique PyQt6"""
     try:
-        from ui.main_window import CryptoBotGUI
+        from PyQt6.QtWidgets import QApplication
+        from ui.main_window_qt import CryptoBotGUI
         
-        print("🚀 Lancement de l'interface graphique...")
-        app = CryptoBotGUI(config)
-        app.mainloop()
+        logger.info("🚀 Lancement de l'interface graphique PyQt6...")
+        
+        app = QApplication(sys.argv)
+        window = CryptoBotGUI(config)
+        window.show()
+        
+        sys.exit(app.exec())
     
     except ImportError as e:
-        print(f"❌ Erreur : dépendances manquantes pour le mode GUI")
-        print(f"   Installe les dépendances : pip install -r requirements.txt")
-        print(f"   Détail : {e}")
+        logger.error(f"❌ Erreur : dépendances manquantes pour le mode GUI")
+        logger.error(f"   Installe les dépendances : pip install -r requirements.txt")
+        logger.error(f"   Détail : {e}")
         sys.exit(1)
     
     except Exception as e:
-        print(f"❌ Erreur lancement GUI : {e}")
+        logger.error(f"❌ Erreur lancement GUI : {e}", exc_info=True)
         sys.exit(1)
 
 
@@ -45,17 +54,17 @@ def run_daemon_mode(config: BotConfiguration):
     try:
         from daemon.daemon_service import DaemonService
         
-        print("🔄 Lancement du démon...")
+        logger.info("🔄 Lancement du démon...")
         daemon = DaemonService(config)
         daemon.start()
     
     except ImportError as e:
-        print(f"❌ Erreur : module démon manquant")
-        print(f"   Détail : {e}")
+        logger.error(f"❌ Erreur : module démon manquant")
+        logger.error(f"   Détail : {e}")
         sys.exit(1)
     
     except Exception as e:
-        print(f"❌ Erreur lancement démon : {e}")
+        logger.error(f"❌ Erreur lancement démon : {e}", exc_info=True)
         sys.exit(1)
 
 
@@ -66,9 +75,9 @@ def run_once_mode(config: BotConfiguration, symbol: str = None):
     from core.services.market_service import MarketService
     from core.services.alert_service import AlertService
     
-    print(f"\n{'='*60}")
-    print(f"🔍 VÉRIFICATION UNIQUE")
-    print(f"{'='*60}\n")
+    logger.info(f"\n{'='*60}")
+    logger.info(f"🔍 VÉRIFICATION UNIQUE")
+    logger.info(f"{'='*60}\n")
     
     # Services
     binance_api = BinanceAPI()
@@ -80,14 +89,14 @@ def run_once_mode(config: BotConfiguration, symbol: str = None):
     symbols = [symbol] if symbol else config.crypto_symbols
     
     for sym in symbols:
-        print(f"\n📊 {sym}:")
-        print("-" * 60)
+        logger.info(f"\n📊 {sym}:")
+        logger.info("-" * 60)
         
         try:
             # Récupérer données
             market_data = market_service.get_market_data(sym)
             if not market_data:
-                print(f"❌ Impossible de récupérer les données")
+                logger.error(f"❌ Impossible de récupérer les données")
                 continue
             
             # Prédiction
@@ -97,43 +106,43 @@ def run_once_mode(config: BotConfiguration, symbol: str = None):
             opportunity = market_service.calculate_opportunity_score(market_data, prediction)
             
             # Afficher résumé
-            print(f"💰 Prix actuel : {market_data.current_price.price_eur:.2f} €")
-            print(f"📈 Changement 24h : {market_data.current_price.change_24h:+.2f}%")
-            print(f"🎯 RSI : {market_data.technical_indicators.rsi:.0f}")
+            logger.info(f"💰 Prix actuel : {market_data.current_price.price_eur:.2f} €")
+            logger.info(f"📈 Changement 24h : {market_data.current_price.change_24h:+.2f}%")
+            logger.info(f"🎯 RSI : {market_data.technical_indicators.rsi:.0f}")
             
             if market_data.fear_greed_index:
-                print(f"😱 Fear & Greed : {market_data.fear_greed_index}/100")
+                logger.info(f"😱 Fear & Greed : {market_data.fear_greed_index}/100")
             
-            print(f"\n🔮 Prédiction : {prediction.prediction_type.value}")
-            print(f"   Confiance : {prediction.confidence}%")
-            print(f"   Direction : {prediction.direction}")
+            logger.info(f"\n🔮 Prédiction : {prediction.prediction_type.value}")
+            logger.info(f"   Confiance : {prediction.confidence}%")
+            logger.info(f"   Direction : {prediction.direction}")
             
-            print(f"\n⭐ Score opportunité : {opportunity.score}/10")
-            print(f"   {opportunity.recommendation}")
+            logger.info(f"\n⭐ Score opportunité : {opportunity.score}/10")
+            logger.info(f"   {opportunity.recommendation}")
             
             if opportunity.reasons:
-                print(f"\n💡 Raisons :")
+                logger.info(f"\n💡 Raisons :")
                 for reason in opportunity.reasons[:3]:
-                    print(f"   • {reason}")
+                    logger.info(f"   • {reason}")
             
             # Vérifier alertes
             alerts = alert_service.check_alerts(market_data, prediction)
             
             if alerts:
-                print(f"\n🚨 Alertes ({len(alerts)}) :")
+                logger.info(f"\n🚨 Alertes ({len(alerts)}) :")
                 for alert in alerts:
-                    print(f"   • [{alert.alert_level.value.upper()}] {alert.message}")
+                    logger.info(f"   • [{alert.alert_level.value.upper()}] {alert.message}")
                     
                     # Envoyer sur Telegram
                     if alert.alert_level in [AlertLevel.IMPORTANT, AlertLevel.CRITICAL]:
                         telegram_api.send_alert(alert)
             else:
-                print(f"\nℹ️ Aucune alerte")
+                logger.info(f"\nℹ️ Aucune alerte")
         
         except Exception as e:
-            print(f"❌ Erreur : {e}")
+            logger.error(f"❌ Erreur : {e}", exc_info=True)
     
-    print(f"\n{'='*60}\n")
+    logger.info(f"\n{'='*60}\n")
 
 
 def setup_wizard():
@@ -157,6 +166,7 @@ def setup_wizard():
 
 def main():
     """Point d'entrée principal"""
+    global logger
     
     parser = argparse.ArgumentParser(
         description="Crypto Bot v3.0 - Bot d'alertes crypto intelligent",
@@ -181,7 +191,7 @@ Exemples d'utilisation :
     
     args = parser.parse_args()
     
-    # Mode setup
+    # Mode setup (pas besoin de logger encore)
     if args.setup:
         config = setup_wizard()
         sys.exit(0)
@@ -209,13 +219,20 @@ Exemples d'utilisation :
         print(f"❌ Erreur chargement configuration : {e}")
         sys.exit(1)
     
+    # Configurer logging
+    logger = setup_colored_logger(
+        name="CryptoBot",
+        log_file=config.log_file,
+        level=args.log_level
+    )
+    
     # Bannière
-    print("\n" + "="*60)
-    print("🚀 CRYPTO BOT v3.0")
-    print("="*60)
-    print(f"Cryptos surveillées : {', '.join(config.crypto_symbols)}")
-    print(f"Intervalle : {config.check_interval_seconds}s")
-    print("="*60 + "\n")
+    logger.info("\n" + "="*60)
+    logger.info("🚀 CRYPTO BOT v3.0")
+    logger.info("="*60)
+    logger.info(f"Cryptos surveillées : {', '.join(config.crypto_symbols)}")
+    logger.info(f"Intervalle : {config.check_interval_seconds}s")
+    logger.info("="*60 + "\n")
     
     # Déterminer mode
     if args.once:
@@ -233,8 +250,14 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\n\n👋 Arrêt du bot...\n")
+        if logger:
+            logger.info("\n\n👋 Arrêt du bot...\n")
+        else:
+            print("\n\n👋 Arrêt du bot...\n")
         sys.exit(0)
     except Exception as e:
-        print(f"\n❌ Erreur fatale : {e}\n")
+        if logger:
+            logger.error(f"\n❌ Erreur fatale : {e}\n", exc_info=True)
+        else:
+            print(f"\n❌ Erreur fatale : {e}\n")
         sys.exit(1)
