@@ -200,3 +200,57 @@ TypeError: can't subtract offset-naive and offset-aware datetimes
 2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | Erreurs : 3
 2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | ============================================================
 
+2025-10-14 21:49:31 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:49:31 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-14 21:49:31 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:49:31 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-14 21:49:31 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-14 21:49:31 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-14 21:49:31 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:49:31 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-14 21:49:31 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-14 21:49:31 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-14 21:49:33 | INFO     | CryptoBotDaemon |   • BTC: 97708.52€ - BON MOMENT
+2025-10-14 21:49:35 | INFO     | CryptoBotDaemon |   • ETH: 3545.45€ - BON MOMENT
+2025-10-14 21:49:36 | INFO     | CryptoBotDaemon |   • SOL: 173.03€ - ACHETER MAINTENANT
+2025-10-14 21:49:36 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-14 21:49:36 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-14 21:49:36 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-14 21:49:36 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:49:36 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-14 21:49:36 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 21:49:37 | INFO     | CryptoBotDaemon | 💰 Prix : 97252.00 € (-2.74% 24h)
+2025-10-14 21:49:37 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT BAISSIER (65%)
+2025-10-14 21:49:37 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 6/10
+2025-10-14 21:49:37 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-14 21:49:37 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-14 21:49:37 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 21:49:38 | INFO     | CryptoBotDaemon | 💰 Prix : 3529.38 € (-4.14% 24h)
+2025-10-14 21:49:38 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT BAISSIER (65%)
+2025-10-14 21:49:38 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 6/10
+2025-10-14 21:49:38 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-14 21:49:38 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-14 21:49:38 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 21:49:40 | INFO     | CryptoBotDaemon | 💰 Prix : 172.13 € (-4.41% 24h)
+2025-10-14 21:49:40 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-14 21:49:40 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
+2025-10-14 21:49:40 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-14 21:49:40 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-14 21:56:06 | INFO     | CryptoBotDaemon | Signal 2 reçu, arrêt du démon...
+2025-10-14 21:56:06 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-14 21:56:06 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-14 21:56:06 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-14 21:56:06 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:56:06 | INFO     | CryptoBotDaemon | Uptime : 0h 6m
+2025-10-14 21:56:06 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-14 21:56:06 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-14 21:56:06 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-14 21:56:06 | INFO     | CryptoBotDaemon | ============================================================
+

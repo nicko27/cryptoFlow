@@ -1,9 +1,9 @@
 """
-Models - Représentation des données du bot crypto
+Models - Représentation des données du bot crypto [TIMEZONE FIXED]
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from enum import Enum
 
@@ -52,6 +52,9 @@ class CryptoPrice:
     def __post_init__(self):
         if isinstance(self.timestamp, str):
             self.timestamp = datetime.fromisoformat(self.timestamp)
+        # Ensure timezone aware
+        if self.timestamp.tzinfo is None:
+            self.timestamp = self.timestamp.replace(tzinfo=timezone.utc)
 
 
 @dataclass
@@ -70,12 +73,18 @@ class PriceLevel:
         if self.last_triggered is None:
             return True
         
-        elapsed = (datetime.now() - self.last_triggered).total_seconds() / 60
+        # FIX: Use timezone-aware datetime
+        now = datetime.now(timezone.utc)
+        # Ensure last_triggered is timezone-aware
+        if self.last_triggered.tzinfo is None:
+            self.last_triggered = self.last_triggered.replace(tzinfo=timezone.utc)
+        
+        elapsed = (now - self.last_triggered).total_seconds() / 60
         return elapsed >= self.cooldown_minutes
     
     def record_trigger(self):
         """Enregistre un déclenchement"""
-        self.last_triggered = datetime.now()
+        self.last_triggered = datetime.now(timezone.utc)
         self.trigger_count += 1
 
 
@@ -113,8 +122,10 @@ class MarketData:
         if not self.price_history:
             return 0.0
         
+        # FIX: Use timezone-aware datetime
+        now = datetime.now(timezone.utc)
         recent_prices = [p for p in self.price_history 
-                        if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
+                        if (now - p.timestamp).total_seconds() / 60 <= minutes]
         
         if not recent_prices:
             return 0.0
@@ -136,7 +147,7 @@ class Prediction:
     timeframe_short: float = 0.0  # 2-6h
     timeframe_medium: float = 0.0  # 1-2j
     timeframe_long: float = 0.0  # 1 sem
-    timestamp: datetime = field(default_factory=datetime.now)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass
@@ -145,7 +156,7 @@ class OpportunityScore:
     score: int  # 0-10
     reasons: List[str] = field(default_factory=list)
     recommendation: str = ""
-    timestamp: datetime = field(default_factory=datetime.now)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @dataclass
@@ -156,7 +167,7 @@ class Alert:
     alert_type: AlertType
     alert_level: AlertLevel
     message: str
-    timestamp: datetime = field(default_factory=datetime.now)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     acknowledged: bool = False
     metadata: Dict[str, Any] = field(default_factory=dict)
     
@@ -199,7 +210,7 @@ class Position:
     current_value_eur: float = 0.0
     gain_loss_eur: float = 0.0
     gain_loss_pct: float = 0.0
-    entry_date: datetime = field(default_factory=datetime.now)
+    entry_date: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     
     def __post_init__(self):
         self.update_values(self.current_price_eur)
