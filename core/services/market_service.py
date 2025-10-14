@@ -1,0 +1,364 @@
+"""
+Market Service - Gestion des données de marché
+"""
+
+from typing import List, Optional, Dict
+from datetime import datetime, timedelta
+from core.models import (
+    MarketData, CryptoPrice, TechnicalIndicators,
+    Prediction, PredictionType, OpportunityScore
+)
+from api.binance_api import BinanceAPI
+
+
+class MarketService:
+    """Service de gestion des données de marché"""
+    
+    def __init__(self, binance_api: BinanceAPI):
+        self.binance_api = binance_api
+        self.market_cache: Dict[str, MarketData] = {}
+        self.price_history_cache: Dict[str, List[CryptoPrice]] = {}
+    
+    def get_market_data(self, symbol: str, refresh: bool = True) -> Optional[MarketData]:
+        """
+        Récupère les données de marché complètes pour un symbole
+        
+        Args:
+            symbol: Symbole de la crypto
+            refresh: Force le rafraîchissement des données
+        
+        Returns:
+            MarketData ou None
+        """
+        # Cache check
+        if not refresh and symbol in self.market_cache:
+            cached = self.market_cache[symbol]
+            age = (datetime.now() - cached.current_price.timestamp).total_seconds()
+            if age < 60:  # Cache de 1 minute
+                return cached
+        
+        # Récupération prix actuel
+        current_price = self.binance_api.get_current_price(symbol)
+        if not current_price:
+            return None
+        
+        # Récupération historique
+        price_history = self.binance_api.get_price_history(symbol, interval="1m", limit=200)
+        if symbol not in self.price_history_cache:
+            self.price_history_cache[symbol] = []
+        
+        # Ajouter au cache d'historique
+        self.price_history_cache[symbol].append(current_price)
+        
+        # Garder seulement les 1000 derniers prix
+        self.price_history_cache[symbol] = self.price_history_cache[symbol][-1000:]
+        
+        # Combiner historique API + cache
+        all_prices = price_history + self.price_history_cache[symbol]
+        
+        # Calculer indicateurs techniques
+        technical_indicators = self.binance_api.calculate_technical_indicators(all_prices)
+        
+        # Récupérer données dérivés
+        funding_rate = self.binance_api.get_funding_rate(symbol)
+        open_interest = self.binance_api.get_open_interest(symbol)
+        fear_greed = self.binance_api.get_fear_greed_index()
+        
+        # Créer MarketData
+        market_data = MarketData(
+            symbol=symbol,
+            current_price=current_price,
+            technical_indicators=technical_indicators,
+            funding_rate=funding_rate,
+            open_interest=open_interest,
+            fear_greed_index=fear_greed,
+            price_history=all_prices[-200:]  # Garder les 200 derniers
+        )
+        
+        # Mise à jour cache
+        self.market_cache[symbol] = market_data
+        
+        return market_data
+    
+    def get_price_history(self, symbol: str, hours: int = 24) -> List[CryptoPrice]:
+        """
+        Récupère l'historique des prix
+        
+        Args:
+            symbol: Symbole de la crypto
+            hours: Nombre d'heures d'historique
+        
+        Returns:
+            Liste de CryptoPrice
+        """
+        if symbol not in self.price_history_cache:
+            # Récupérer depuis l'API
+            prices = self.binance_api.get_price_history(symbol, interval="1h", limit=hours)
+            self.price_history_cache[symbol] = prices
+            return prices
+        
+        # Filtrer depuis le cache
+        cutoff = datetime.now() - timedelta(hours=hours)
+        return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
+    
+    def calculate_price_change(self, symbol: str, minutes: int) -> float:
+        """
+        Calcule le changement de prix sur N minutes
+        
+        Args:
+            symbol: Symbole de la crypto
+            minutes: Nombre de minutes
+        
+        Returns:
+            Pourcentage de changement
+        """
+        market_data = self.get_market_data(symbol, refresh=False)
+        if not market_data:
+            return 0.0
+        
+        return market_data.get_price_change(minutes)
+    
+    def get_extremes(self, symbol: str, hours: int = 168) -> Dict[str, float]:
+        """
+        Trouve les prix min/max/avg sur une période
+        
+        Args:
+            symbol: Symbole de la crypto
+            hours: Nombre d'heures (défaut: 7 jours)
+        
+        Returns:
+            Dict avec min, max, avg
+        """
+        prices = self.get_price_history(symbol, hours)
+        
+        if not prices:
+            return {"min": 0.0, "max": 0.0, "avg": 0.0}
+        
+        price_values = [p.price_eur for p in prices]
+        
+        return {
+            "min": min(price_values),
+            "max": max(price_values),
+            "avg": sum(price_values) / len(price_values)
+        }
+    
+    def predict_price_movement(self, market_data: MarketData) -> Prediction:
+        """
+        Prédit le mouvement de prix basé sur les indicateurs
+        
+        Args:
+            market_data: Données de marché
+        
+        Returns:
+            Prediction
+        """
+        ti = market_data.technical_indicators
+        trend_score = 0
+        signals = []
+        
+        # Analyse RSI
+        if ti.rsi < 30:
+            trend_score += 2
+            signals.append("RSI survendu (rebond probable)")
+        elif ti.rsi < 40:
+            trend_score += 1
+            signals.append("RSI bas (opportunité)")
+        elif ti.rsi > 70:
+            trend_score -= 2
+            signals.append("RSI suracheté (correction possible)")
+        elif ti.rsi > 60:
+            trend_score -= 1
+            signals.append("RSI élevé (prudence)")
+        
+        # Analyse MACD
+        if ti.macd_histogram > 0:
+            trend_score += 1
+            signals.append("MACD positif")
+        else:
+            trend_score -= 1
+            signals.append("MACD négatif")
+        
+        # Moyennes mobiles
+        current_price = market_data.current_price.price_eur
+        if current_price > ti.ma20:
+            trend_score += 1
+            signals.append("Au-dessus MA20")
+        elif current_price < ti.ma20:
+            trend_score -= 1
+            signals.append("En-dessous MA20")
+        
+        # Support/Résistance
+        if ti.support > 0:
+            distance_to_support = abs(current_price - ti.support) / current_price * 100
+            if distance_to_support < 2:
+                trend_score += 1
+                signals.append("Proche du support")
+        
+        if ti.resistance > 0:
+            distance_to_resistance = abs(ti.resistance - current_price) / current_price * 100
+            if distance_to_resistance < 2:
+                trend_score -= 1
+                signals.append("Proche résistance")
+        
+        # Déterminer la prédiction
+        if trend_score >= 3:
+            prediction_type = PredictionType.BULLISH
+            direction = "📈"
+            confidence = min(85, 60 + trend_score * 5)
+            target_high = ti.resistance if ti.resistance > 0 else current_price * 1.05
+            target_low = current_price * 0.97
+        elif trend_score >= 1:
+            prediction_type = PredictionType.SLIGHTLY_BULLISH
+            direction = "↗️"
+            confidence = 55 + trend_score * 5
+            target_high = current_price * 1.03
+            target_low = current_price * 0.98
+        elif trend_score <= -3:
+            prediction_type = PredictionType.BEARISH
+            direction = "📉"
+            confidence = min(85, 60 - trend_score * 5)
+            target_low = ti.support if ti.support > 0 else current_price * 0.95
+            target_high = current_price * 1.03
+        elif trend_score <= -1:
+            prediction_type = PredictionType.SLIGHTLY_BEARISH
+            direction = "↘️"
+            confidence = 55 - trend_score * 5
+            target_low = current_price * 0.97
+            target_high = current_price * 1.02
+        else:
+            prediction_type = PredictionType.NEUTRAL
+            direction = "➡️"
+            confidence = 50
+            target_high = ti.resistance if ti.resistance > 0 else current_price * 1.05
+            target_low = ti.support if ti.support > 0 else current_price * 0.95
+        
+        # Timeline
+        if prediction_type in [PredictionType.BULLISH, PredictionType.SLIGHTLY_BULLISH]:
+            short_mult = 1.005 if prediction_type == PredictionType.SLIGHTLY_BULLISH else 1.02
+            medium_mult = 1.03 if prediction_type == PredictionType.SLIGHTLY_BULLISH else 1.06
+            long_mult = 1.05 if prediction_type == PredictionType.SLIGHTLY_BULLISH else 1.10
+        elif prediction_type in [PredictionType.BEARISH, PredictionType.SLIGHTLY_BEARISH]:
+            short_mult = 0.995 if prediction_type == PredictionType.SLIGHTLY_BEARISH else 0.98
+            medium_mult = 0.97 if prediction_type == PredictionType.SLIGHTLY_BEARISH else 0.95
+            long_mult = 0.96 if prediction_type == PredictionType.SLIGHTLY_BEARISH else 0.92
+        else:
+            short_mult = 1.0
+            medium_mult = 1.0
+            long_mult = 1.0
+        
+        return Prediction(
+            prediction_type=prediction_type,
+            confidence=confidence,
+            direction=direction,
+            trend_score=trend_score,
+            signals=signals,
+            target_high=target_high,
+            target_low=target_low,
+            timeframe_short=current_price * short_mult,
+            timeframe_medium=current_price * medium_mult,
+            timeframe_long=current_price * long_mult
+        )
+    
+    def calculate_opportunity_score(self, market_data: MarketData, prediction: Prediction) -> OpportunityScore:
+        """
+        Calcule le score d'opportunité d'achat (0-10)
+        
+        Args:
+            market_data: Données de marché
+            prediction: Prédiction
+        
+        Returns:
+            OpportunityScore
+        """
+        score = 5.0
+        reasons = []
+        
+        # Prédiction
+        if prediction.prediction_type == PredictionType.BULLISH:
+            if prediction.confidence >= 75:
+                score += 2
+                reasons.append("✅ Signal très haussier")
+            else:
+                score += 1
+                reasons.append("✅ Signal haussier")
+        elif prediction.prediction_type == PredictionType.SLIGHTLY_BULLISH:
+            score += 0.5
+            reasons.append("✅ Tendance légèrement positive")
+        elif prediction.prediction_type == PredictionType.BEARISH:
+            score -= 2
+            reasons.append("⚠️ Signal baissier")
+        elif prediction.prediction_type == PredictionType.SLIGHTLY_BEARISH:
+            score -= 1
+            reasons.append("⚠️ Tendance légèrement négative")
+        
+        # RSI
+        rsi = market_data.technical_indicators.rsi
+        if rsi < 30:
+            score += 2
+            reasons.append("✅ Prix très bas (survendu)")
+        elif rsi < 40:
+            score += 1
+            reasons.append("✅ Prix assez bas")
+        elif rsi > 70:
+            score -= 1.5
+            reasons.append("⚠️ Prix très haut (suracheté)")
+        
+        # Fear & Greed
+        if market_data.fear_greed_index:
+            fgi = market_data.fear_greed_index
+            if fgi <= 25:
+                score += 2
+                reasons.append("✅ Marché en peur extrême")
+            elif fgi <= 40:
+                score += 1
+                reasons.append("✅ Marché craintif")
+            elif fgi >= 75:
+                score -= 1.5
+                reasons.append("⚠️ Marché très euphorique")
+        
+        # Changement 24h
+        change_24h = market_data.current_price.change_24h
+        if change_24h < -10:
+            score += 1.5
+            reasons.append(f"✅ Forte baisse récente ({change_24h:.1f}%)")
+        elif change_24h < -5:
+            score += 0.5
+            reasons.append("✅ Baisse récente")
+        elif change_24h > 15:
+            score -= 1
+            reasons.append("⚠️ Forte hausse récente")
+        
+        # Position vs historique
+        extremes = self.get_extremes(market_data.symbol, hours=168)
+        if extremes["min"] > 0:
+            current = market_data.current_price.price_eur
+            distance_to_min = ((current - extremes["min"]) / extremes["min"]) * 100
+            distance_to_max = ((extremes["max"] - current) / extremes["max"]) * 100
+            
+            if distance_to_min < 10:
+                score += 1.5
+                reasons.append("✅ Proche du plus bas récent")
+            elif distance_to_max < 10:
+                score -= 1
+                reasons.append("⚠️ Proche du plus haut récent")
+        
+        # Borner le score
+        score = max(0, min(10, int(score)))
+        
+        # Recommandation
+        if score >= 8:
+            recommendation = "EXCELLENTE opportunité d'achat ! 🎯"
+        elif score >= 7:
+            recommendation = "Très bonne opportunité 💎"
+        elif score >= 6:
+            recommendation = "Opportunité correcte"
+        elif score >= 4:
+            recommendation = "Moment neutre ⚖️"
+        else:
+            recommendation = "Pas un bon moment ❌"
+        
+        return OpportunityScore(
+            score=score,
+            reasons=reasons[:5],  # Max 5 raisons
+            recommendation=recommendation
+        )

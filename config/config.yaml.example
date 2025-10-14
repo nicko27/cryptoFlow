@@ -1,0 +1,199 @@
+# ══════════════════════════════════════════════════════════════
+# Configuration Crypto Bot v3.0
+# ══════════════════════════════════════════════════════════════
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# TELEGRAM - Configuration notifications
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+telegram:
+  # Token de votre bot Telegram (obtenu via @BotFather)
+  bot_token: "YOUR_BOT_TOKEN_HERE"
+  
+  # Votre Chat ID Telegram (obtenu via @userinfobot)
+  chat_id: "YOUR_CHAT_ID_HERE"
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# CRYPTO - Cryptomonnaies à surveiller
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+crypto:
+  # Liste des symboles à surveiller
+  symbols:
+    - BTC      # Bitcoin
+    - ETH      # Ethereum
+    - SOL      # Solana
+  
+  # Montant pour calculs de simulation (en euros)
+  investment_amount: 100.0
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ALERTES - Configuration des alertes automatiques
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+alerts:
+  # Activer le système d'alertes
+  enable: true
+  
+  # Période de référence pour calcul de variation (en minutes)
+  lookback_minutes: 120
+  
+  # Seuil de baisse pour alerte (en %)
+  drop_threshold: 10.0
+  
+  # Seuil de hausse pour alerte (en %)
+  spike_threshold: 10.0
+  
+  # Seuil funding rate négatif
+  funding_threshold: -0.03
+  
+  # Variation OI pour alerte (en %)
+  oi_delta: 3.0
+  
+  # Seuil Fear & Greed pour alerte
+  fear_greed_max: 30
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# NIVEAUX DE PRIX - Alertes sur franchissement de niveaux
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+price_levels:
+  # Activer les alertes de niveaux
+  enable: true
+  
+  # Zone tampon autour du niveau (en euros)
+  buffer_eur: 2.0
+  
+  # Temps d'attente entre 2 alertes sur même niveau (minutes)
+  cooldown_minutes: 30
+  
+  # Définir les niveaux par crypto
+  levels:
+    BTC:
+      low: 90000.0    # Alerte si BTC < 90000€
+      high: 103000.0  # Alerte si BTC > 103000€
+    
+    ETH:
+      low: 3000.0
+      high: 4000.0
+    
+    SOL:
+      low: 170.0
+      high: 200.0
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# FONCTIONNALITÉS - Activation des features intelligentes
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+features:
+  # Score d'opportunité 0-10
+  opportunity_score: true
+  
+  # Seuil minimum pour recommandation d'achat
+  opportunity_threshold: 7
+  
+  # Prédictions haussier/baissier
+  predictions: true
+  
+  # Timeline de prédictions (court/moyen/long terme)
+  timeline: true
+  
+  # Calcul gain/perte en euros
+  gain_loss_calc: true
+  
+  # Suggestions DCA (achat échelonné)
+  dca_suggestions: true
+  
+  # Utiliser un langage ultra-simple
+  simple_language: true
+  
+  # Mode éducatif (explications)
+  educational_mode: true
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# TIMING - Intervalles et horaires
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+timing:
+  # Intervalle entre vérifications (secondes)
+  check_interval: 900  # 15 minutes
+  
+  # Heures des résumés automatiques
+  summary_hours:
+    - 9   # 9h00
+    - 12  # 12h00
+    - 18  # 18h00
+  
+  # Mode nuit (heures silencieuses)
+  quiet_hours:
+    # Activer le mode nuit
+    enable: false
+    
+    # Heure de début (0-23)
+    start: 23  # 23h00
+    
+    # Heure de fin (0-23)
+    end: 7  # 07h00
+    
+    # Autoriser alertes critiques même en mode nuit
+    allow_critical: true
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# AFFICHAGE - Options d'interface
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+display:
+  # Activer les graphiques
+  graphs: true
+  
+  # Afficher les niveaux sur graphiques
+  show_levels: true
+  
+  # Envoyer un résumé au démarrage
+  startup_summary: true
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# MODE - Mode d'exécution
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+mode:
+  # Mode démon (arrière-plan)
+  daemon: false
+  
+  # Mode GUI (interface graphique)
+  gui: true
+  
+  # Niveau de détail : "simple", "normal", "expert"
+  detail_level: "normal"
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# LOGGING - Configuration des logs
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+logging:
+  # Fichier de log
+  file: "logs/crypto_bot.log"
+  
+  # Niveau : DEBUG, INFO, WARNING, ERROR
+  level: "INFO"
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# BASE DE DONNÉES - Persistance
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+database:
+  # Chemin de la base SQLite
+  path: "data/crypto_bot.db"
+  
+  # Conserver l'historique (jours)
+  keep_days: 30
+
+# ══════════════════════════════════════════════════════════════
+# NOTES
+# ══════════════════════════════════════════════════════════════
+#
+# Configuration Telegram :
+#   1. Créer bot : @BotFather sur Telegram
+#   2. Obtenir Chat ID : @userinfobot sur Telegram
+#
+# Intervalles recommandés :
+#   - 300s (5 min)  : Surveillance active
+#   - 900s (15 min) : Usage normal (recommandé)
+#   - 1800s (30 min): Surveillance passive
+#
+# Niveaux de détail :
+#   - simple : Langage enfant, recommandations claires
+#   - normal : Équilibré, bon compromis
+#   - expert : Toutes données techniques, signaux détaillés
+#
+# ══════════════════════════════════════════════════════════════
