@@ -1,459 +1,202 @@
-2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
-2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
-2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | Intervalle : 300s
-2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | Mode nuit : Activé
-2025-10-14 15:56:18 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 15:56:19 | ERROR    | CryptoBotDaemon | ❌ Connexion Telegram échouée ! Vérifiez votre configuration.
-2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
-2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
-2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | Intervalle : 300s
-2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | Mode nuit : Activé
-2025-10-14 15:59:21 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 15:59:22 | INFO     | CryptoBotDaemon | 
+2025-10-14 21:24:54 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:24:54 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-14 21:24:54 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:24:54 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-14 21:24:54 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-14 21:24:54 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-14 21:24:54 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:24:54 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-14 21:24:54 | ERROR    | CryptoBotDaemon | Erreur test Telegram : 'TelegramAPI' object has no attribute 'get_bot_info'
+2025-10-14 21:24:54 | ERROR    | CryptoBotDaemon | ❌ Connexion Telegram échouée ! Vérifiez votre configuration.
+2025-10-14 21:36:32 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:36:32 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-14 21:36:32 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:36:32 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-14 21:36:32 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-14 21:36:32 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-14 21:36:32 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:36:32 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-14 21:36:32 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-14 21:36:32 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-14 21:36:34 | INFO     | CryptoBotDaemon |   • BTC: 97892.68€ (-1.93%) - Bon achat 💎
+2025-10-14 21:36:35 | INFO     | CryptoBotDaemon |   • ETH: 3564.72€ (-2.90%) - ACHAT FORT 🎯
+2025-10-14 21:36:37 | INFO     | CryptoBotDaemon |   • SOL: 174.99€ (-2.56%) - ACHAT FORT 🎯
+2025-10-14 21:36:37 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-14 21:36:37 | INFO     | CryptoBotDaemon | 
 ============================================================
-2025-10-14 15:59:22 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
-2025-10-14 15:59:22 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 15:59:22 | INFO     | CryptoBotDaemon | 
+2025-10-14 21:36:37 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-14 21:36:37 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:36:37 | INFO     | CryptoBotDaemon | 
 📊 BTC:
-2025-10-14 15:59:22 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 15:59:24 | INFO     | CryptoBotDaemon | 💰 Prix : 95852.65 € (-3.78% 24h)
-2025-10-14 15:59:24 | INFO     | CryptoBotDaemon | 🔮 Prédiction : HAUSSIER (75%)
-2025-10-14 15:59:24 | ERROR    | CryptoBotDaemon | Erreur vérification BTC : can't compare offset-naive and offset-aware datetimes
+2025-10-14 21:36:37 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 21:36:38 | INFO     | CryptoBotDaemon | 💰 Prix : 97892.69 € (-1.93% 24h)
+2025-10-14 21:36:38 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-14 21:36:38 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-14 21:36:38 | ERROR    | CryptoBotDaemon | Erreur vérification BTC : can't subtract offset-naive and offset-aware datetimes
 Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 304, in _check_cycle
     self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 178, in _check_crypto
-    opportunity = self.market_service.calculate_opportunity_score(
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 332, in calculate_opportunity_score
-    extremes = self.get_extremes(market_data.symbol, hours=168)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 132, in get_extremes
-    prices = self.get_price_history(symbol, hours)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in get_price_history
-    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in <listcomp>
-    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
-TypeError: can't compare offset-naive and offset-aware datetimes
-2025-10-14 15:59:24 | INFO     | CryptoBotDaemon | 
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 344, in _check_crypto
+    alerts = self.alert_service.check_alerts(market_data, prediction)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 66, in check_alerts
+    price_alerts = self._check_price_alerts(market_data)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 99, in _check_price_alerts
+    change = market_data.get_price_change(self.config.price_lookback_minutes)
+  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
+    recent_prices = [p for p in self.price_history
+  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
+    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2025-10-14 21:36:38 | INFO     | CryptoBotDaemon | 
 📊 ETH:
-2025-10-14 15:59:24 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 15:59:25 | INFO     | CryptoBotDaemon | 💰 Prix : 3413.78 € (-5.12% 24h)
-2025-10-14 15:59:25 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
-2025-10-14 15:59:25 | ERROR    | CryptoBotDaemon | Erreur vérification ETH : can't compare offset-naive and offset-aware datetimes
+2025-10-14 21:36:38 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 21:36:39 | INFO     | CryptoBotDaemon | 💰 Prix : 3564.48 € (-2.91% 24h)
+2025-10-14 21:36:39 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-14 21:36:39 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-14 21:36:39 | ERROR    | CryptoBotDaemon | Erreur vérification ETH : can't subtract offset-naive and offset-aware datetimes
 Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 304, in _check_cycle
     self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 178, in _check_crypto
-    opportunity = self.market_service.calculate_opportunity_score(
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 332, in calculate_opportunity_score
-    extremes = self.get_extremes(market_data.symbol, hours=168)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 132, in get_extremes
-    prices = self.get_price_history(symbol, hours)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in get_price_history
-    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in <listcomp>
-    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
-TypeError: can't compare offset-naive and offset-aware datetimes
-2025-10-14 15:59:25 | INFO     | CryptoBotDaemon | 
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 344, in _check_crypto
+    alerts = self.alert_service.check_alerts(market_data, prediction)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 66, in check_alerts
+    price_alerts = self._check_price_alerts(market_data)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 99, in _check_price_alerts
+    change = market_data.get_price_change(self.config.price_lookback_minutes)
+  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
+    recent_prices = [p for p in self.price_history
+  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
+    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2025-10-14 21:36:39 | INFO     | CryptoBotDaemon | 
 📊 SOL:
-2025-10-14 15:59:25 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 15:59:26 | INFO     | CryptoBotDaemon | 💰 Prix : 168.34 € (-0.71% 24h)
-2025-10-14 15:59:26 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (65%)
-2025-10-14 15:59:26 | ERROR    | CryptoBotDaemon | Erreur vérification SOL : can't compare offset-naive and offset-aware datetimes
+2025-10-14 21:36:39 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 21:36:40 | INFO     | CryptoBotDaemon | 💰 Prix : 175.00 € (-2.56% 24h)
+2025-10-14 21:36:40 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-14 21:36:40 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-14 21:36:40 | ERROR    | CryptoBotDaemon | Erreur vérification SOL : can't subtract offset-naive and offset-aware datetimes
 Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 304, in _check_cycle
     self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 178, in _check_crypto
-    opportunity = self.market_service.calculate_opportunity_score(
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 332, in calculate_opportunity_score
-    extremes = self.get_extremes(market_data.symbol, hours=168)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 132, in get_extremes
-    prices = self.get_price_history(symbol, hours)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in get_price_history
-    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
-  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 102, in <listcomp>
-    return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
-TypeError: can't compare offset-naive and offset-aware datetimes
-2025-10-14 15:59:26 | INFO     | CryptoBotDaemon | 
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 344, in _check_crypto
+    alerts = self.alert_service.check_alerts(market_data, prediction)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 66, in check_alerts
+    price_alerts = self._check_price_alerts(market_data)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 99, in _check_price_alerts
+    change = market_data.get_price_change(self.config.price_lookback_minutes)
+  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
+    recent_prices = [p for p in self.price_history
+  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
+    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2025-10-14 21:36:40 | INFO     | CryptoBotDaemon | 
 📊 Stats : 1 vérifications, 0 alertes, 3 erreurs, Uptime: 0h0m
-2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | Signal 2 reçu, arrêt du démon...
-2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | 
+2025-10-14 21:41:28 | INFO     | CryptoBotDaemon | Signal 2 reçu, arrêt du démon...
+2025-10-14 21:41:28 | INFO     | CryptoBotDaemon | 
 🛑 Arrêt du démon demandé...
-2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | 
+2025-10-14 21:41:28 | INFO     | CryptoBotDaemon | 
 ============================================================
-2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
-2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | Uptime : 0h 0m
-2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | Vérifications : 1
-2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
-2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | Erreurs : 3
-2025-10-14 15:59:45 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:41:28 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-14 21:41:28 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:41:28 | INFO     | CryptoBotDaemon | Uptime : 0h 4m
+2025-10-14 21:41:28 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-14 21:41:28 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-14 21:41:28 | INFO     | CryptoBotDaemon | Erreurs : 3
+2025-10-14 21:41:28 | INFO     | CryptoBotDaemon | ============================================================
 
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | Intervalle : 300s
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | Mode nuit : Activé
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | 
+2025-10-14 21:41:33 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:41:33 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-14 21:41:33 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:41:33 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-14 21:41:33 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-14 21:41:33 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-14 21:41:33 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:41:33 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-14 21:41:33 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-14 21:41:33 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-14 21:41:35 | INFO     | CryptoBotDaemon |   • BTC: 97720.73€ - ACHETER MAINTENANT
+2025-10-14 21:41:36 | INFO     | CryptoBotDaemon |   • ETH: 3541.18€ - ACHETER MAINTENANT
+2025-10-14 21:41:38 | INFO     | CryptoBotDaemon |   • SOL: 173.63€ - ACHETER MAINTENANT
+2025-10-14 21:41:38 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-14 21:41:38 | INFO     | CryptoBotDaemon | 
 ============================================================
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | 
+2025-10-14 21:41:38 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-14 21:41:38 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:41:38 | INFO     | CryptoBotDaemon | 
 📊 BTC:
-2025-10-14 16:06:16 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:06:18 | INFO     | CryptoBotDaemon | 💰 Prix : 95938.56 € (-3.63% 24h)
-2025-10-14 16:06:18 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (65%)
-2025-10-14 16:06:18 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
-2025-10-14 16:06:18 | ERROR    | CryptoBotDaemon | Erreur vérification BTC : can't subtract offset-naive and offset-aware datetimes
+2025-10-14 21:41:38 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 21:41:39 | INFO     | CryptoBotDaemon | 💰 Prix : 97178.62 € (-2.68% 24h)
+2025-10-14 21:41:39 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-14 21:41:39 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-14 21:41:39 | ERROR    | CryptoBotDaemon | Erreur vérification BTC : can't subtract offset-naive and offset-aware datetimes
 Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 329, in _check_cycle
     self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 369, in _check_crypto
     alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 66, in check_alerts
     price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 99, in _check_price_alerts
     change = market_data.get_price_change(self.config.price_lookback_minutes)
   File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
     recent_prices = [p for p in self.price_history
   File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
     if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
 TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:06:18 | INFO     | CryptoBotDaemon | 
+2025-10-14 21:41:39 | INFO     | CryptoBotDaemon | 
 📊 ETH:
-2025-10-14 16:06:18 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:06:20 | INFO     | CryptoBotDaemon | 💰 Prix : 3412.20 € (-4.80% 24h)
-2025-10-14 16:06:20 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT BAISSIER (65%)
-2025-10-14 16:06:20 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 6/10
-2025-10-14 16:06:20 | ERROR    | CryptoBotDaemon | Erreur vérification ETH : can't subtract offset-naive and offset-aware datetimes
+2025-10-14 21:41:39 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 21:41:40 | INFO     | CryptoBotDaemon | 💰 Prix : 3521.00 € (-4.45% 24h)
+2025-10-14 21:41:40 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-14 21:41:40 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-14 21:41:40 | ERROR    | CryptoBotDaemon | Erreur vérification ETH : can't subtract offset-naive and offset-aware datetimes
 Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 329, in _check_cycle
     self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 369, in _check_crypto
     alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 66, in check_alerts
     price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 99, in _check_price_alerts
     change = market_data.get_price_change(self.config.price_lookback_minutes)
   File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
     recent_prices = [p for p in self.price_history
   File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
     if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
 TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:06:20 | INFO     | CryptoBotDaemon | 
+2025-10-14 21:41:40 | INFO     | CryptoBotDaemon | 
 📊 SOL:
-2025-10-14 16:06:20 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:06:21 | INFO     | CryptoBotDaemon | 💰 Prix : 168.29 € (-0.27% 24h)
-2025-10-14 16:06:21 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
-2025-10-14 16:06:21 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
-2025-10-14 16:06:21 | ERROR    | CryptoBotDaemon | Erreur vérification SOL : can't subtract offset-naive and offset-aware datetimes
+2025-10-14 21:41:40 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-14 21:41:41 | INFO     | CryptoBotDaemon | 💰 Prix : 172.51 € (-3.98% 24h)
+2025-10-14 21:41:41 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-14 21:41:41 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-14 21:41:41 | ERROR    | CryptoBotDaemon | Erreur vérification SOL : can't subtract offset-naive and offset-aware datetimes
 Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 329, in _check_cycle
     self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 369, in _check_crypto
     alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 66, in check_alerts
     price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
+  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 99, in _check_price_alerts
     change = market_data.get_price_change(self.config.price_lookback_minutes)
   File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
     recent_prices = [p for p in self.price_history
   File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
     if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
 TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:06:21 | INFO     | CryptoBotDaemon | 
+2025-10-14 21:41:41 | INFO     | CryptoBotDaemon | 
 📊 Stats : 1 vérifications, 0 alertes, 3 erreurs, Uptime: 0h0m
-2025-10-14 16:11:21 | INFO     | CryptoBotDaemon | 
-============================================================
-2025-10-14 16:11:21 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #2
-2025-10-14 16:11:21 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 16:11:21 | INFO     | CryptoBotDaemon | 
-📊 BTC:
-2025-10-14 16:11:21 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:11:22 | INFO     | CryptoBotDaemon | 💰 Prix : 96108.85 € (-3.35% 24h)
-2025-10-14 16:11:22 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
-2025-10-14 16:11:22 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
-2025-10-14 16:11:22 | ERROR    | CryptoBotDaemon | Erreur vérification BTC : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:11:22 | INFO     | CryptoBotDaemon | 
-📊 ETH:
-2025-10-14 16:11:22 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:11:24 | INFO     | CryptoBotDaemon | 💰 Prix : 3413.78 € (-4.51% 24h)
-2025-10-14 16:11:24 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT BAISSIER (65%)
-2025-10-14 16:11:24 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 6/10
-2025-10-14 16:11:24 | ERROR    | CryptoBotDaemon | Erreur vérification ETH : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:11:24 | INFO     | CryptoBotDaemon | 
-📊 SOL:
-2025-10-14 16:11:24 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:11:25 | INFO     | CryptoBotDaemon | 💰 Prix : 168.96 € (+0.06% 24h)
-2025-10-14 16:11:25 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (65%)
-2025-10-14 16:11:25 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
-2025-10-14 16:11:25 | ERROR    | CryptoBotDaemon | Erreur vérification SOL : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:11:25 | INFO     | CryptoBotDaemon | 
-📊 Stats : 2 vérifications, 0 alertes, 6 erreurs, Uptime: 0h5m
-2025-10-14 16:16:25 | INFO     | CryptoBotDaemon | 
-============================================================
-2025-10-14 16:16:25 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #3
-2025-10-14 16:16:25 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 16:16:25 | INFO     | CryptoBotDaemon | 
-📊 BTC:
-2025-10-14 16:16:25 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:16:27 | INFO     | CryptoBotDaemon | 💰 Prix : 96698.88 € (-2.63% 24h)
-2025-10-14 16:16:27 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
-2025-10-14 16:16:27 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
-2025-10-14 16:16:27 | ERROR    | CryptoBotDaemon | Erreur vérification BTC : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:16:27 | INFO     | CryptoBotDaemon | 
-📊 ETH:
-2025-10-14 16:16:27 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:16:28 | INFO     | CryptoBotDaemon | 💰 Prix : 3460.74 € (-3.25% 24h)
-2025-10-14 16:16:28 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
-2025-10-14 16:16:28 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
-2025-10-14 16:16:28 | ERROR    | CryptoBotDaemon | Erreur vérification ETH : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:16:28 | INFO     | CryptoBotDaemon | 
-📊 SOL:
-2025-10-14 16:16:28 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:16:29 | INFO     | CryptoBotDaemon | 💰 Prix : 171.28 € (+1.59% 24h)
-2025-10-14 16:16:29 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
-2025-10-14 16:16:29 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
-2025-10-14 16:16:29 | ERROR    | CryptoBotDaemon | Erreur vérification SOL : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:16:29 | INFO     | CryptoBotDaemon | 
-📊 Stats : 3 vérifications, 0 alertes, 9 erreurs, Uptime: 0h10m
-2025-10-14 16:21:29 | INFO     | CryptoBotDaemon | 
-============================================================
-2025-10-14 16:21:29 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #4
-2025-10-14 16:21:29 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 16:21:29 | INFO     | CryptoBotDaemon | 
-📊 BTC:
-2025-10-14 16:21:29 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:21:31 | INFO     | CryptoBotDaemon | 💰 Prix : 96738.98 € (-2.33% 24h)
-2025-10-14 16:21:31 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
-2025-10-14 16:21:31 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
-2025-10-14 16:21:31 | ERROR    | CryptoBotDaemon | Erreur vérification BTC : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:21:31 | INFO     | CryptoBotDaemon | 
-📊 ETH:
-2025-10-14 16:21:31 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:21:32 | INFO     | CryptoBotDaemon | 💰 Prix : 3453.56 € (-2.91% 24h)
-2025-10-14 16:21:32 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
-2025-10-14 16:21:32 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
-2025-10-14 16:21:32 | ERROR    | CryptoBotDaemon | Erreur vérification ETH : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:21:32 | INFO     | CryptoBotDaemon | 
-📊 SOL:
-2025-10-14 16:21:32 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:21:33 | INFO     | CryptoBotDaemon | 💰 Prix : 171.53 € (+2.25% 24h)
-2025-10-14 16:21:33 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
-2025-10-14 16:21:33 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
-2025-10-14 16:21:33 | ERROR    | CryptoBotDaemon | Erreur vérification SOL : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:21:33 | INFO     | CryptoBotDaemon | 
-📊 Stats : 4 vérifications, 0 alertes, 12 erreurs, Uptime: 0h15m
-2025-10-14 16:26:33 | INFO     | CryptoBotDaemon | 
-============================================================
-2025-10-14 16:26:33 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #5
-2025-10-14 16:26:33 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 16:26:33 | INFO     | CryptoBotDaemon | 
-📊 BTC:
-2025-10-14 16:26:33 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:26:36 | INFO     | CryptoBotDaemon | 💰 Prix : 96585.62 € (-2.35% 24h)
-2025-10-14 16:26:36 | INFO     | CryptoBotDaemon | 🔮 Prédiction : HAUSSIER (75%)
-2025-10-14 16:26:36 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
-2025-10-14 16:26:36 | ERROR    | CryptoBotDaemon | Erreur vérification BTC : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:26:36 | INFO     | CryptoBotDaemon | 
-📊 ETH:
-2025-10-14 16:26:36 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:26:37 | INFO     | CryptoBotDaemon | 💰 Prix : 3441.87 € (-3.13% 24h)
-2025-10-14 16:26:37 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
-2025-10-14 16:26:37 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
-2025-10-14 16:26:37 | ERROR    | CryptoBotDaemon | Erreur vérification ETH : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:26:37 | INFO     | CryptoBotDaemon | 
-📊 SOL:
-2025-10-14 16:26:37 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
-2025-10-14 16:26:39 | INFO     | CryptoBotDaemon | 💰 Prix : 171.18 € (+2.31% 24h)
-2025-10-14 16:26:39 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (65%)
-2025-10-14 16:26:39 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
-2025-10-14 16:26:39 | ERROR    | CryptoBotDaemon | Erreur vérification SOL : can't subtract offset-naive and offset-aware datetimes
-Traceback (most recent call last):
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 145, in _check_cycle
-    self._check_crypto(symbol)
-  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 184, in _check_crypto
-    alerts = self.alert_service.check_alerts(market_data, prediction)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 77, in check_alerts
-    price_alerts = self._check_price_alerts(market_data)
-  File "/Users/nico/Downloads/cryptoFlow/core/services/alert_service.py", line 116, in _check_price_alerts
-    change = market_data.get_price_change(self.config.price_lookback_minutes)
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 116, in get_price_change
-    recent_prices = [p for p in self.price_history
-  File "/Users/nico/Downloads/cryptoFlow/core/models/__init__.py", line 117, in <listcomp>
-    if (datetime.now() - p.timestamp).total_seconds() / 60 <= minutes]
-TypeError: can't subtract offset-naive and offset-aware datetimes
-2025-10-14 16:26:39 | INFO     | CryptoBotDaemon | 
-📊 Stats : 5 vérifications, 0 alertes, 15 erreurs, Uptime: 0h20m
-2025-10-14 16:29:05 | INFO     | CryptoBotDaemon | Signal 2 reçu, arrêt du démon...
-2025-10-14 16:29:05 | INFO     | CryptoBotDaemon | 
+2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | Signal 2 reçu, arrêt du démon...
+2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | 
 🛑 Arrêt du démon demandé...
-2025-10-14 16:29:05 | INFO     | CryptoBotDaemon | 
+2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | 
 ============================================================
-2025-10-14 16:29:05 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
-2025-10-14 16:29:05 | INFO     | CryptoBotDaemon | ============================================================
-2025-10-14 16:29:05 | INFO     | CryptoBotDaemon | Uptime : 0h 22m
-2025-10-14 16:29:05 | INFO     | CryptoBotDaemon | Vérifications : 5
-2025-10-14 16:29:05 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
-2025-10-14 16:29:05 | INFO     | CryptoBotDaemon | Erreurs : 15
-2025-10-14 16:29:05 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | Uptime : 0h 0m
+2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | Erreurs : 3
+2025-10-14 21:42:16 | INFO     | CryptoBotDaemon | ============================================================
 

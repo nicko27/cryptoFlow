@@ -20,11 +20,10 @@ class AlertService:
         self.price_levels: Dict[str, List[PriceLevel]] = {}
         self.alert_callbacks: List[Callable[[Alert], None]] = []
         
-        # Initialiser les niveaux de prix
         self._init_price_levels()
     
     def _init_price_levels(self):
-        """Initialise les niveaux de prix depuis la configuration"""
+        """Initialise les niveaux de prix"""
         for symbol, levels in self.config.price_levels.items():
             if symbol not in self.price_levels:
                 self.price_levels[symbol] = []
@@ -60,51 +59,35 @@ class AlertService:
                 print(f"Erreur callback alerte: {e}")
     
     def check_alerts(self, market_data: MarketData, prediction: Optional[Prediction] = None) -> List[Alert]:
-        """
-        Vérifie toutes les conditions d'alerte
-        
-        Args:
-            market_data: Données de marché
-            prediction: Prédiction (optionnel)
-        
-        Returns:
-            Liste des alertes générées
-        """
+        """Vérifie toutes les conditions d'alerte"""
         alerts = []
         
-        # Alertes de pourcentage de prix
         if self.config.enable_alerts:
             price_alerts = self._check_price_alerts(market_data)
             alerts.extend(price_alerts)
         
-        # Alertes de niveaux de prix
         if self.config.enable_price_levels:
             level_alerts = self._check_price_levels(market_data)
             alerts.extend(level_alerts)
         
-        # Alertes sur dérivés
         funding_alerts = self._check_funding_rate(market_data)
         alerts.extend(funding_alerts)
         
         oi_alerts = self._check_open_interest(market_data)
         alerts.extend(oi_alerts)
         
-        # Alertes Fear & Greed
         fgi_alerts = self._check_fear_greed(market_data)
         alerts.extend(fgi_alerts)
         
-        # Alertes sur prédictions
         if prediction and self.config.enable_predictions:
             pred_alerts = self._check_prediction(market_data, prediction)
             alerts.extend(pred_alerts)
         
-        # Sauvegarder et déclencher callbacks
         for alert in alerts:
             self.active_alerts.append(alert)
             self.alert_history.append(alert)
             self._trigger_callbacks(alert)
         
-        # Nettoyer l'historique (garder 1000 dernières)
         self.alert_history = self.alert_history[-1000:]
         
         return alerts
@@ -115,7 +98,6 @@ class AlertService:
         
         change = market_data.get_price_change(self.config.price_lookback_minutes)
         
-        # Chute de prix
         if change <= -abs(self.config.price_drop_threshold):
             alert = Alert(
                 alert_id="",
@@ -131,7 +113,6 @@ class AlertService:
             )
             alerts.append(alert)
         
-        # Hausse de prix
         if change >= abs(self.config.price_spike_threshold):
             alert = Alert(
                 alert_id="",
@@ -150,7 +131,7 @@ class AlertService:
         return alerts
     
     def _check_price_levels(self, market_data: MarketData) -> List[Alert]:
-        """Vérifie les franchissements de niveaux de prix"""
+        """Vérifie les franchissements de niveaux"""
         alerts = []
         
         symbol = market_data.symbol
@@ -163,7 +144,6 @@ class AlertService:
             if not price_level.can_trigger():
                 continue
             
-            # Niveau BAS
             if price_level.level_type == "low":
                 if current_price < (price_level.level - price_level.buffer):
                     alert = Alert(
@@ -199,7 +179,6 @@ class AlertService:
                     alerts.append(alert)
                     price_level.record_trigger()
             
-            # Niveau HAUT
             elif price_level.level_type == "high":
                 if current_price > (price_level.level + price_level.buffer):
                     alert = Alert(
@@ -259,7 +238,6 @@ class AlertService:
     
     def _check_open_interest(self, market_data: MarketData) -> List[Alert]:
         """Vérifie l'Open Interest"""
-        # TODO: Implémenter avec baseline
         return []
     
     def _check_fear_greed(self, market_data: MarketData) -> List[Alert]:
@@ -286,7 +264,6 @@ class AlertService:
         """Vérifie les prédictions"""
         alerts = []
         
-        # Signal fort
         if prediction.confidence >= 70:
             if "HAUSSIER" in prediction.prediction_type.value:
                 alert = Alert(

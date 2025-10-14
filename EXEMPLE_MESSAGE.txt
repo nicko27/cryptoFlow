@@ -1,0 +1,79 @@
+🚀 BOT CRYPTO - DÉMARRÉ
+
+📅 14/10/2025 à 21:35
+
+━━━━━━━━━━━━━━━━━━━━━
+💰 ÉTAT DU MARCHÉ
+━━━━━━━━━━━━━━━━━━━━━
+
+🟢 BTC - BON MOMENT
+Bonne opportunité d'achat
+
+💳 Prix sur Revolut :
+   Achat : 96332.42 €
+   Vente : 95373.10 €
+
+💶 Si j'investis 100€ :
+   Frais : 1.50 €
+   J'obtiens : 0.001022 BTC
+
+📊 Va probablement monter 📈
+   Évolution 24h : -3.8%
+   Confiance : 75%
+
+   Sentiment : 😨 Peur
+   (Bonne opportunité d'achat)
+
+Pourquoi ?
+   • ✅ Signal haussier
+   • ✅ Prix assez bas
+
+─────────────────────────
+
+🟡 ETH - ATTENDRE UN PEU
+Moment neutre, pas urgent
+
+💳 Prix sur Revolut :
+   Achat : 3430.86 €
+   Vente : 3396.89 €
+
+💶 Si j'investis 100€ :
+   Frais : 1.50 €
+   J'obtiens : 0.028714 ETH
+
+📊 Va probablement monter 📈
+   Évolution 24h : -5.1%
+   Confiance : 60%
+
+   Sentiment : 😨 Peur
+   (Bonne opportunité d'achat)
+
+─────────────────────────
+
+━━━━━━━━━━━━━━━━━━━━━
+⚙️ CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━
+
+⏱ Vérification toutes les 15 minutes
+🔔 Alertes activées :
+   • Si baisse de 10% → je t'alerte
+   • Si hausse de 10% → je t'alerte
+
+📊 Niveaux de prix surveillés :
+   BTC :
+      🟢 Si passe sous 90000€ → alerte
+      🔴 Si passe au-dessus de 105000€ → alerte
+
+🌙 Mode nuit actif de 23h à 9h
+   (Alertes importantes uniquement)
+
+━━━━━━━━━━━━━━━━━━━━━
+🚧 BIENTÔT DISPONIBLE
+━━━━━━━━━━━━━━━━━━━━━
+• 📊 Graphiques visuels des prix
+• 💡 Suggestions d'achat progressif (DCA)
+• 🎯 Calcul automatique de gain/perte
+• 📱 Dashboard web interactif
+
+✅ Bot en surveillance
+Je te tiendrai informé des opportunités !
