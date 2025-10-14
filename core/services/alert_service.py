@@ -1,9 +1,9 @@
 """
-Alert Service - Gestion des alertes [COMPLETE avec OI]
+Alert Service - Gestion des alertes [COMPLETE]
 """
 
 from typing import List, Optional, Callable, Dict
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 from core.models import (
     Alert, AlertType, AlertLevel, MarketData, Prediction,
     PriceLevel, BotConfiguration
@@ -19,10 +19,7 @@ class AlertService:
         self.alert_history: List[Alert] = []
         self.price_levels: Dict[str, List[PriceLevel]] = {}
         self.alert_callbacks: List[Callable[[Alert], None]] = []
-        
-        # Baselines pour Open Interest
-        self.oi_baselines: Dict[str, float] = {}
-        self.last_oi_check: Dict[str, datetime] = {}
+        self.oi_baseline: Dict[str, float] = {}  # Baseline pour Open Interest
         
         # Initialiser les niveaux de prix
         self._init_price_levels()
@@ -126,7 +123,7 @@ class AlertService:
                 symbol=market_data.symbol,
                 alert_type=AlertType.PRICE_DROP,
                 alert_level=AlertLevel.IMPORTANT,
-                message=f"🔻 Chute de {change:.2f}% en {self.config.price_lookback_minutes} min → {market_data.current_price.price_eur:.2f}€",
+                message=f"Chute rapide de {change:.2f}% en {self.config.price_lookback_minutes} min",
                 metadata={
                     "change_pct": change,
                     "lookback_minutes": self.config.price_lookback_minutes,
@@ -142,7 +139,7 @@ class AlertService:
                 symbol=market_data.symbol,
                 alert_type=AlertType.PRICE_SPIKE,
                 alert_level=AlertLevel.IMPORTANT,
-                message=f"🚀 Hausse de {change:.2f}% en {self.config.price_lookback_minutes} min → {market_data.current_price.price_eur:.2f}€",
+                message=f"Hausse rapide de {change:.2f}% en {self.config.price_lookback_minutes} min",
                 metadata={
                     "change_pct": change,
                     "lookback_minutes": self.config.price_lookback_minutes,
@@ -254,7 +251,7 @@ class AlertService:
                 symbol=market_data.symbol,
                 alert_type=AlertType.FUNDING_NEGATIVE,
                 alert_level=AlertLevel.INFO,
-                message=f"📊 Funding négatif : {market_data.funding_rate:.4f}% (shorts payent les longs)",
+                message=f"Funding négatif : {market_data.funding_rate:.4f}%",
                 metadata={"funding_rate": market_data.funding_rate}
             )
             alerts.append(alert)
@@ -262,7 +259,7 @@ class AlertService:
         return alerts
     
     def _check_open_interest(self, market_data: MarketData) -> List[Alert]:
-        """Vérifie l'Open Interest"""
+        """Vérifie l'Open Interest avec baseline"""
         alerts = []
         
         if market_data.open_interest is None:
@@ -271,48 +268,37 @@ class AlertService:
         symbol = market_data.symbol
         current_oi = market_data.open_interest
         
-        # Initialiser baseline si première fois
-        if symbol not in self.oi_baselines:
-            self.oi_baselines[symbol] = current_oi
-            self.last_oi_check[symbol] = datetime.now(timezone.utc)
+        # Initialiser la baseline si nécessaire
+        if symbol not in self.oi_baseline:
+            self.oi_baseline[symbol] = current_oi
             return alerts
         
-        # Vérifier seulement toutes les heures
-        now = datetime.now(timezone.utc)
-        if symbol in self.last_oi_check:
-            time_since_check = (now - self.last_oi_check[symbol]).total_seconds() / 3600
-            if time_since_check < 1:  # Moins d'1h
-                return alerts
-        
-        # Calculer changement
-        baseline = self.oi_baselines[symbol]
+        # Calculer le changement
+        baseline = self.oi_baseline[symbol]
         if baseline > 0:
             change_pct = ((current_oi - baseline) / baseline) * 100
             
             # Alerte si changement significatif
             if abs(change_pct) >= self.config.oi_delta_threshold:
-                level = AlertLevel.INFO if abs(change_pct) < 5 else AlertLevel.WARNING
-                direction = "augmenté" if change_pct > 0 else "diminué"
-                emoji = "📈" if change_pct > 0 else "📉"
+                alert_type = "hausse" if change_pct > 0 else "baisse"
                 
                 alert = Alert(
                     alert_id="",
                     symbol=symbol,
                     alert_type=AlertType.OI_CHANGE,
-                    alert_level=level,
-                    message=f"{emoji} Open Interest {direction} de {abs(change_pct):.1f}% (intérêt {'croissant' if change_pct > 0 else 'décroissant'})",
+                    alert_level=AlertLevel.INFO,
+                    message=f"Open Interest: {alert_type} de {abs(change_pct):.1f}%",
                     metadata={
-                        "oi_current": current_oi,
-                        "oi_baseline": baseline,
+                        "current_oi": current_oi,
+                        "baseline_oi": baseline,
                         "change_pct": change_pct
                     }
                 )
                 alerts.append(alert)
-                
-                # Mettre à jour baseline
-                self.oi_baselines[symbol] = current_oi
         
-        self.last_oi_check[symbol] = now
+        # Mettre à jour la baseline (moyenne mobile)
+        self.oi_baseline[symbol] = (baseline * 0.9 + current_oi * 0.1)
+        
         return alerts
     
     def _check_fear_greed(self, market_data: MarketData) -> List[Alert]:
@@ -322,29 +308,14 @@ class AlertService:
         if market_data.fear_greed_index is None:
             return alerts
         
-        fgi = market_data.fear_greed_index
-        
-        # Peur extrême
-        if fgi <= self.config.fear_greed_max:
+        if market_data.fear_greed_index <= self.config.fear_greed_max:
             alert = Alert(
                 alert_id="",
                 symbol=market_data.symbol,
                 alert_type=AlertType.FEAR_GREED,
                 alert_level=AlertLevel.INFO,
-                message=f"😱 Peur extrême : {fgi}/100 (opportunité d'achat potentielle)",
-                metadata={"fgi": fgi}
-            )
-            alerts.append(alert)
-        
-        # Cupidité extrême
-        elif fgi >= 75:
-            alert = Alert(
-                alert_id="",
-                symbol=market_data.symbol,
-                alert_type=AlertType.FEAR_GREED,
-                alert_level=AlertLevel.WARNING,
-                message=f"🤑 Cupidité extrême : {fgi}/100 (prudence recommandée)",
-                metadata={"fgi": fgi}
+                message=f"Peur extrême : {market_data.fear_greed_index}/100",
+                metadata={"fgi": market_data.fear_greed_index}
             )
             alerts.append(alert)
         
@@ -362,11 +333,10 @@ class AlertService:
                     symbol=market_data.symbol,
                     alert_type=AlertType.PREDICTION,
                     alert_level=AlertLevel.INFO,
-                    message=f"📈 Signal haussier fort ({prediction.confidence}%) - Cible: {prediction.target_high:.2f}€",
+                    message=f"Signal haussier fort ({prediction.confidence}%)",
                     metadata={
                         "prediction": prediction.prediction_type.value,
-                        "confidence": prediction.confidence,
-                        "target": prediction.target_high
+                        "confidence": prediction.confidence
                     }
                 )
                 alerts.append(alert)
@@ -377,11 +347,10 @@ class AlertService:
                     symbol=market_data.symbol,
                     alert_type=AlertType.PREDICTION,
                     alert_level=AlertLevel.WARNING,
-                    message=f"📉 Signal baissier fort ({prediction.confidence}%) - Support: {prediction.target_low:.2f}€",
+                    message=f"Signal baissier fort ({prediction.confidence}%)",
                     metadata={
                         "prediction": prediction.prediction_type.value,
-                        "confidence": prediction.confidence,
-                        "target": prediction.target_low
+                        "confidence": prediction.confidence
                     }
                 )
                 alerts.append(alert)

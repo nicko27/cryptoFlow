@@ -18,35 +18,129 @@ from utils.logger import setup_logger
 
 
 class DaemonService:
-    """Service pour exécution en mode démon"""
-    
     def __init__(self, config: BotConfiguration):
-        self.config = config
-        self.is_running = False
-        self.stop_event = Event()
+        # ... code existant ...
         
-        # Logger
-        self.logger = setup_logger(
-            name="CryptoBotDaemon",
-            log_file=config.log_file,
-            level=config.log_level
+        # Nouveaux services
+        self.db_service = DatabaseService(config.database_path)
+        self.telegram_api = EnhancedTelegramAPI(
+            config.telegram_bot_token, 
+            config.telegram_chat_id
         )
+        self.telegram_api.start_queue()
+        self.summary_service = SummaryService(config)
+        self.chart_service = ChartService()
+        self.dca_service = DCAService()
+    
+    def _check_cycle(self):
+        """Un cycle de vérification complet - AVEC MODE NUIT"""
         
-        # Services
-        self.binance_api = BinanceAPI()
-        self.telegram_api = TelegramAPI(config.telegram_bot_token, config.telegram_chat_id)
-        self.market_service = MarketService(self.binance_api)
-        self.alert_service = AlertService(config)
+        # Vérifier mode nuit
+        if self.config.enable_quiet_hours and self._is_quiet_hours():
+            self.logger.info("Mode nuit actif - vérification silencieuse")
+            quiet_mode = True
+        else:
+            quiet_mode = False
         
-        # Stats
-        self.checks_count = 0
-        self.alerts_sent = 0
-        self.errors_count = 0
-        self.start_time: Optional[datetime] = None
+        self.checks_count += 1
+        self.logger.info(f"\n{'='*60}")
+        self.logger.info(f"🔍 VÉRIFICATION #{self.checks_count}")
+        self.logger.info(f"{'='*60}")
         
-        # Enregistrer handler signaux
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
+        for symbol in self.config.crypto_symbols:
+            try:
+                market_data = self.market_service.get_market_data(symbol)
+                if not market_data:
+                    continue
+                
+                # Sauvegarder prix
+                self.db_service.save_price(market_data.current_price)
+                
+                # Prédiction
+                prediction = self.market_service.predict_price_movement(market_data)
+                
+                # Vérifier alertes
+                alerts = self.alert_service.check_alerts(market_data, prediction)
+                
+                # Envoyer alertes (respect mode nuit)
+                for alert in alerts:
+                    # Sauvegarder
+                    self.db_service.save_alert(alert)
+                    
+                    # Envoyer selon mode nuit
+                    should_send = True
+                    if quiet_mode:
+                        if self.config.quiet_allow_critical:
+                            should_send = alert.alert_level == AlertLevel.CRITICAL
+                        else:
+                            should_send = False
+                    
+                    if should_send and alert.alert_level in [AlertLevel.IMPORTANT, AlertLevel.CRITICAL]:
+                        self.telegram_api.send_alert(alert, include_metadata=True)
+                        self.alerts_sent += 1
+                
+            except Exception as e:
+                self.logger.error(f"Erreur {symbol}: {e}")
+                self.errors_count += 1
+        
+        # Résumés automatiques
+        if not quiet_mode and self.summary_service.should_send_summary():
+            self._send_auto_summary()
+        
+        # Sauvegarder stats
+        uptime = (datetime.now() - self.start_time).total_seconds() if self.start_time else 0
+        self.db_service.save_stats(self.checks_count, self.alerts_sent, 
+                                   self.errors_count, int(uptime))
+        
+        # Nettoyage périodique
+        if self.checks_count % 100 == 0:
+            self.db_service.cleanup_old_data(self.config.keep_history_days)
+    
+    def _is_quiet_hours(self) -> bool:
+        """Vérifie si on est en heures silencieuses"""
+        current_hour = datetime.now().hour
+        start = self.config.quiet_start_hour
+        end = self.config.quiet_end_hour
+        
+        if start < end:
+            return start <= current_hour < end
+        else:
+            return current_hour >= start or current_hour < end
+    
+    def _send_auto_summary(self):
+        """Envoie un résumé automatique"""
+        try:
+            # Collecter données
+            markets_data = {}
+            predictions = {}
+            opportunities = {}
+            
+            for symbol in self.config.crypto_symbols:
+                market = self.market_service.get_market_data(symbol)
+                if market:
+                    markets_data[symbol] = market
+                    predictions[symbol] = self.market_service.predict_price_movement(market)
+                    opportunities[symbol] = self.market_service.calculate_opportunity_score(
+                        market, predictions[symbol]
+                    )
+            
+            # Générer résumé
+            summary = self.summary_service.generate_summary(
+                markets_data, predictions, opportunities,
+                simple=self.config.use_simple_language
+            )
+            
+            # Envoyer
+            self.telegram_api.send_message(summary, use_queue=False)
+            
+            # Optionnel: Envoyer graphique de comparaison
+            if self.config.enable_graphs:
+                chart = self.chart_service.generate_comparison_chart(markets_data)
+                if chart:
+                    self.telegram_api.send_photo(chart, "Comparaison des cryptos")
+            
+        except Exception as e:
+            self.logger.error(f"Erreur résumé automatique: {e}")
     
     def _signal_handler(self, signum, frame):
         """Handler pour signaux système"""

@@ -1,19 +1,33 @@
-"""Main Entry Point - Crypto Bot v3.0 PyQt6"""
-import argparse
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent))
-from core.models import BotConfiguration
-from config.config_manager import ConfigManager
+# Ajouter les imports
+from database_service import DatabaseService
+from portfolio_service import PortfolioService
+from dca_service import DCAService
+from report_service import ReportService
+from chart_service import ChartService
+from enhanced_telegram_api import EnhancedTelegramAPI
+from summary_service import SummaryService
 
 def run_gui_mode(config: BotConfiguration):
-    from PyQt6.QtWidgets import QApplication
+    # Initialiser les services
+    db_service = DatabaseService(config.database_path)
+    portfolio_service = PortfolioService()
+    dca_service = DCAService()
+    report_service = ReportService()
+    chart_service = ChartService()
+    telegram_api = EnhancedTelegramAPI(config.telegram_bot_token, config.telegram_chat_id)
+    summary_service = SummaryService(config)
+    
+    # Démarrer la queue Telegram
+    telegram_api.start_queue()
+    
+    # Lancer GUI avec les nouveaux services
     from ui.main_window import CryptoBotGUI
-    print("🚀 Lancement GUI PyQt6...")
-    app = QApplication(sys.argv)
-    window = CryptoBotGUI(config)
-    window.show()
-    sys.exit(app.exec())
+    app = CryptoBotGUI(config, db_service, portfolio_service, dca_service, 
+                       report_service, chart_service, telegram_api, summary_service)
+    app.mainloop()
+    
+    # Arrêter la queue
+    telegram_api.stop_queue()
 
 def run_daemon_mode(config: BotConfiguration):
     from daemon.daemon_service import DaemonService

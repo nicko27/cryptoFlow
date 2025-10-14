@@ -50,22 +50,73 @@ class MonitorThread(QThread):
     def stop(self):
         self.running = False
 
-class CryptoBotGUI(QMainWindow):
-    def __init__(self, config: BotConfiguration):
+class CryptoBotGUI(ctk.CTk):
+    def __init__(self, config, db_service, portfolio_service, dca_service,
+                 report_service, chart_service, telegram_api, summary_service):
         super().__init__()
+        
+        # Services
         self.config = config
-        self.monitor_thread = None
-        self.binance_api = BinanceAPI()
-        self.telegram_api = TelegramAPI(config.telegram_bot_token, config.telegram_chat_id)
-        self.market_service = MarketService(self.binance_api)
-        self.alert_service = AlertService(config)
-        self.setWindowTitle("Crypto Bot v3.0 - Dashboard PyQt6")
-        self.setGeometry(100, 100, 1400, 900)
-        self.setup_ui()
-        self.update_timer = QTimer()
-        self.update_timer.timeout.connect(self.update_display)
-        self.update_timer.start(5000)
-        self.update_display()
+        self.db_service = db_service
+        self.portfolio_service = portfolio_service
+        self.dca_service = dca_service
+        self.report_service = report_service
+        self.chart_service = chart_service
+        self.telegram_api = telegram_api
+        self.summary_service = summary_service
+        
+        # ... reste du code ...
+    
+    def _update_stats(self):
+        """Met à jour les statistiques - IMPLÉMENTÉE"""
+        stats = self.db_service.get_stats_summary(days=7)
+        
+        self.stats_labels["Checks"].configure(text=str(stats["total_checks"]))
+        self.stats_labels["Alertes envoyées"].configure(text=str(stats["total_alerts"]))
+        self.stats_labels["Dernière vérification"].configure(
+            text=datetime.now().strftime('%H:%M:%S')
+        )
+    
+    def _generate_report(self):
+        """Génère un rapport complet - IMPLÉMENTÉE"""
+        # Collecter données
+        markets_data = {}
+        predictions = {}
+        opportunities = {}
+        
+        for symbol in self.config.crypto_symbols:
+            market = self.market_service.get_market_data(symbol)
+            if market:
+                markets_data[symbol] = market
+                predictions[symbol] = self.market_service.predict_price_movement(market)
+                opportunities[symbol] = self.market_service.calculate_opportunity_score(
+                    market, predictions[symbol]
+                )
+        
+        # Générer rapport
+        stats = self.db_service.get_stats_summary()
+        report = self.report_service.generate_complete_report(
+            markets_data, predictions, opportunities, stats
+        )
+        
+        # Sauvegarder
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"report_{timestamp}.txt"
+        
+        with open(f"/tmp/{filename}", "w") as f:
+            f.write(report)
+        
+        self._show_info("Rapport", f"Rapport sauvegardé : {filename}")
+    
+    def _open_settings(self):
+        """Ouvre la fenêtre de configuration - IMPLÉMENTÉE"""
+        from settings_window import SettingsWindow
+        
+        def on_save(new_config):
+            self.config = new_config
+            self._show_info("Configuration", "Configuration mise à jour !")
+        
+        settings = SettingsWindow(self, self.config, on_save)
     
     def setup_ui(self):
         central = QWidget()
