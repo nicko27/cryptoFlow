@@ -1,11 +1,11 @@
 # Ajouter les imports
-from database_service import DatabaseService
-from portfolio_service import PortfolioService
-from dca_service import DCAService
-from report_service import ReportService
-from chart_service import ChartService
-from enhanced_telegram_api import EnhancedTelegramAPI
-from summary_service import SummaryService
+from core.services.database_service import DatabaseService
+from core.services.portfolio_service import PortfolioService
+from core.services.dca_service import DCAService
+from core.services.report_service import ReportService
+from core.services.chart_service import ChartService
+from api.enhanced_telegram_api import EnhancedTelegramAPI
+from core.services.summary_service import SummaryService
 
 def run_gui_mode(config: BotConfiguration):
     # Initialiser les services
