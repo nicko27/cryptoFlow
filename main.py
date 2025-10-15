@@ -21,7 +21,11 @@ def run_gui_mode(config: BotConfiguration):
     dca_service = DCAService()
     report_service = ReportService()
     chart_service = ChartService()
-    telegram_api = EnhancedTelegramAPI(config.telegram_bot_token, config.telegram_chat_id)
+    telegram_api = EnhancedTelegramAPI(
+        config.telegram_bot_token,
+        config.telegram_chat_id,
+        message_delay=config.telegram_message_delay
+    )
     summary_service = SummaryService(config)
     
     # Démarrer la queue Telegram

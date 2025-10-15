@@ -44,7 +44,8 @@ class MarketService:
         funding_rate = self.binance_api.get_funding_rate(symbol)
         open_interest = self.binance_api.get_open_interest(symbol)
         fear_greed = self.binance_api.get_fear_greed_index()
-        
+        weekly_change = self.binance_api.get_price_change_percent(symbol, interval="1d", periods=7)
+
         market_data = MarketData(
             symbol=symbol,
             current_price=current_price,
@@ -52,7 +53,8 @@ class MarketService:
             funding_rate=funding_rate,
             open_interest=open_interest,
             fear_greed_index=fear_greed,
-            price_history=all_prices[-200:]
+            price_history=all_prices[-200:],
+            weekly_change=weekly_change
         )
         
         self.market_cache[symbol] = market_data

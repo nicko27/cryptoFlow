@@ -31,8 +31,9 @@ class DaemonService:
         # Nouveaux services
         self.db_service = DatabaseService(config.database_path)
         self.telegram_api = EnhancedTelegramAPI(
-            config.telegram_bot_token, 
-            config.telegram_chat_id
+            config.telegram_bot_token,
+            config.telegram_chat_id,
+            message_delay=config.telegram_message_delay
         )
         self.telegram_api.start_queue()
         self.summary_service = SummaryService(config)
@@ -177,6 +178,11 @@ class DaemonService:
         # Test connexion Telegram
         if not self._test_telegram():
             self.logger.error("❌ Connexion Telegram échouée ! Vérifiez votre configuration.")
+            try:
+                self.telegram_api.stop_queue()
+            except Exception:
+                pass
+            self.is_running = False
             return
         
         # Récupérer état initial du marché
@@ -514,6 +520,11 @@ class DaemonService:
         self.logger.info(f"Erreurs : {self.errors_count}")
         self.logger.info("="*60 + "\n")
         
+        try:
+            self.telegram_api.stop_queue()
+        except Exception:
+            pass
+
         # Message Telegram
         try:
             uptime_str = f"{int(uptime/3600)}h{int((uptime%3600)/60)}m" if self.start_time else "N/A"
@@ -523,10 +534,10 @@ class DaemonService:
             message += f"  • Alertes envoyées : {self.alerts_sent}\n"
             message += f"  • Erreurs : {self.errors_count}\n"
             message += f"  • Uptime : {uptime_str}\n\n"
-            message += f"👋 À bientôt !"
-            
+            message += "👋 À bientôt !"
+
             self.telegram_api.send_message(message)
-        except:
+        except Exception:
             pass
 
 
