@@ -80,6 +80,24 @@ class BinanceAPI:
         except Exception as e:
             print(f"Erreur récupération historique {symbol}: {e}")
             return []
+
+    def get_price_change_percent(self, symbol: str, interval: str = "1d", periods: int = 7) -> Optional[float]:
+        """Calcule la variation de prix en pourcentage sur une période donnée."""
+        try:
+            candles = self.get_price_history(symbol, interval=interval, limit=periods + 1)
+            if len(candles) < 2:
+                return None
+
+            start_price = candles[0].price_eur
+            end_price = candles[-1].price_eur
+
+            if start_price in (None, 0):
+                return None
+
+            return ((end_price - start_price) / start_price) * 100
+        except Exception as exc:
+            print(f"Erreur variation {symbol} ({interval}): {exc}")
+            return None
     
     def get_funding_rate(self, symbol: str) -> Optional[float]:
         """Récupère le funding rate"""

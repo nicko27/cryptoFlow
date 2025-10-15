@@ -1,6 +1,17 @@
 telegram:
   bot_token: 8296923394:AAH4GIdVUFp14kpAA0ifqaDwRErsJKu6kls
   chat_id: '6574539700'
+  message_delay: 0.5
+  display:
+    show_prices: true
+    show_trend_24h: true
+    show_trend_7d: true
+    show_recommendations: true
+  thresholds:
+    buy_24h: 2.0
+    sell_24h: -2.0
+    buy_7d: 5.0
+    sell_7d: -5.0
 crypto:
   symbols:
   - BTC

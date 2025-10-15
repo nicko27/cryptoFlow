@@ -13,13 +13,15 @@ from core.models import Alert
 class EnhancedTelegramAPI:
     """Client API Telegram amélioré avec retry et queue"""
     
-    def __init__(self, bot_token: str, chat_id: str, timeout: int = 10, 
-                 max_retries: int = 3, retry_delay: int = 2):
+    def __init__(self, bot_token: str, chat_id: str, timeout: int = 10,
+                 max_retries: int = 3, retry_delay: int = 2,
+                 message_delay: float = 0.5):
         self.bot_token = bot_token
         self.chat_id = chat_id
         self.timeout = timeout
         self.max_retries = max_retries
         self.retry_delay = retry_delay
+        self.message_delay = message_delay
         self.base_url = f"https://api.telegram.org/bot{bot_token}"
         self.session = requests.Session()
         
@@ -71,8 +73,8 @@ class EnhancedTelegramAPI:
                 else:
                     self.stats["failed"] += 1
                 
-                # Rate limiting
-                time.sleep(0.5)
+                # Rate limiting configurable
+                time.sleep(max(0.0, self.message_delay))
                 
             except Empty:
                 continue

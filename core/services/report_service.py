@@ -2,7 +2,7 @@
 Report Service - Génération de rapports complets
 """
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 from core.models import MarketData, Prediction, OpportunityScore
 from io import StringIO
@@ -65,20 +65,45 @@ class ReportService:
         
         summary = "📊 RÉSUMÉ EXÉCUTIF\n"
         summary += "-" * 70 + "\n\n"
-        
-        # Meilleure opportunité
-        best_opp = max(opportunities.items(), key=lambda x: x[1].score)
-        summary += f"🎯 Meilleure opportunité : {best_opp[0]} (Score: {best_opp[1].score}/10)\n"
-        
-        # Pire opportunité
-        worst_opp = min(opportunities.items(), key=lambda x: x[1].score)
-        summary += f"⚠️ À éviter : {worst_opp[0]} (Score: {worst_opp[1].score}/10)\n\n"
-        
-        # Tendance générale
-        avg_change = sum(m.current_price.change_24h for m in markets_data.values()) / len(markets_data)
-        trend = "📈 Haussière" if avg_change > 0 else "📉 Baissière"
-        summary += f"Tendance générale 24h : {trend} ({avg_change:+.2f}%)\n\n"
-        
+
+        has_market_data = bool(markets_data)
+        has_opportunities = bool(opportunities)
+
+        if not has_market_data and not has_opportunities:
+            summary += "Données insuffisantes pour générer un résumé exécutif.\n\n"
+            return summary
+
+        if has_opportunities:
+            # Meilleure opportunité
+            best_opp = max(opportunities.items(), key=lambda x: x[1].score)
+            summary += (
+                f"🎯 Meilleure opportunité : {best_opp[0]} "
+                f"(Score: {best_opp[1].score}/10)\n"
+            )
+
+            # Pire opportunité
+            worst_opp = min(opportunities.items(), key=lambda x: x[1].score)
+            summary += (
+                f"⚠️ À éviter : {worst_opp[0]} "
+                f"(Score: {worst_opp[1].score}/10)\n\n"
+            )
+        else:
+            summary += "Aucune opportunité analysée pour le moment.\n\n"
+
+        if has_market_data:
+            changes = self._collect_valid_changes(markets_data)
+            if changes:
+                avg_change = sum(changes) / len(changes)
+                trend = "📈 Haussière" if avg_change > 0 else "📉 Baissière"
+                summary += (
+                    f"Tendance générale 24h : {trend} "
+                    f"({avg_change:+.2f}%)\n\n"
+                )
+            else:
+                summary += "Tendance générale 24h : données indisponibles\n\n"
+        else:
+            summary += "Données de marché indisponibles pour le moment.\n\n"
+
         return summary
     
     def _generate_crypto_section(self, symbol: str, market: MarketData,
@@ -90,25 +115,40 @@ class ReportService:
         section += f"{'━' * 70}\n\n"
         
         # Prix et changement
-        price = market.current_price
-        section += f"Prix actuel : {price.price_eur:.2f}€\n"
-        section += f"Changement 24h : {price.change_24h:+.2f}%\n"
-        section += f"Volume 24h : {price.volume_24h:,.0f}\n\n"
-        
+        price_value = self._format_price(market)
+        section += f"Prix actuel : {price_value}\n"
+
+        change_value = self._format_change(market)
+        section += f"Changement 24h : {change_value}\n"
+
+        volume_value = self._format_volume(market)
+        section += f"Volume 24h : {volume_value}\n\n"
+
         # Indicateurs techniques
         ti = market.technical_indicators
-        section += "Indicateurs techniques :\n"
-        section += f"  • RSI : {ti.rsi:.0f}"
-        if ti.rsi < 30:
-            section += " (survendu 🟢)\n"
-        elif ti.rsi > 70:
-            section += " (suracheté 🔴)\n"
+        if ti:
+            section += "Indicateurs techniques :\n"
+            rsi_display = "indisponible" if ti.rsi is None else f"{ti.rsi:.0f}"
+            section += f"  • RSI : {rsi_display}"
+            if ti.rsi is not None:
+                if ti.rsi < 30:
+                    section += " (survendu 🟢)\n"
+                elif ti.rsi > 70:
+                    section += " (suracheté 🔴)\n"
+                else:
+                    section += "\n"
+            else:
+                section += "\n"
+
+            ma20_display = "indisponible" if ti.ma20 is None else f"{ti.ma20:.2f}€"
+            support_display = "indisponible" if ti.support is None else f"{ti.support:.2f}€"
+            resistance_display = "indisponible" if ti.resistance is None else f"{ti.resistance:.2f}€"
+
+            section += f"  • MA20 : {ma20_display}\n"
+            section += f"  • Support : {support_display}\n"
+            section += f"  • Résistance : {resistance_display}\n\n"
         else:
-            section += "\n"
-        
-        section += f"  • MA20 : {ti.ma20:.2f}€\n"
-        section += f"  • Support : {ti.support:.2f}€\n"
-        section += f"  • Résistance : {ti.resistance:.2f}€\n\n"
+            section += "Indicateurs techniques indisponibles.\n\n"
         
         # Prédiction
         if prediction:
@@ -129,9 +169,9 @@ class ReportService:
                 section += "\n"
         
         # Fear & Greed
-        if market.fear_greed_index:
+        if market.fear_greed_index is not None:
             section += f"😱 Fear & Greed Index : {market.fear_greed_index}/100\n\n"
-        
+
         return section
     
     def _generate_comparison_section(self, markets_data: Dict[str, MarketData],
@@ -140,21 +180,25 @@ class ReportService:
         
         section = "📊 COMPARAISON\n"
         section += "-" * 70 + "\n\n"
-        
+
+        if not markets_data:
+            section += "Aucune donnée de marché disponible.\n\n"
+            return section
+
         # Tableau comparatif
-        section += f"{'Symbole':<10} {'Prix':<12} {'24h':<10} {'RSI':<8} {'Score':<8}\n"
+        section += f"{'Symbole':<10} {'Prix':<16} {'24h':<12} {'RSI':<10} {'Score':<8}\n"
         section += "-" * 70 + "\n"
-        
+
         for symbol in sorted(markets_data.keys()):
             market = markets_data[symbol]
             opp = opportunities.get(symbol)
-            
-            price = market.current_price.price_eur
-            change = market.current_price.change_24h
-            rsi = market.technical_indicators.rsi
-            score = opp.score if opp else 0
-            
-            section += f"{symbol:<10} {price:<12.2f} {change:>+6.2f}% {rsi:>6.0f} {score:>6}/10\n"
+
+            price_text = self._format_price(market)
+            change_text = self._format_change(market)
+            rsi_value = self._format_rsi(market)
+            score_text = f"{opp.score}/10" if opp else "N/A"
+
+            section += f"{symbol:<10} {price_text:<16} {change_text:<12} {rsi_value:<10} {score_text:<8}\n"
         
         section += "\n"
         return section
@@ -162,39 +206,43 @@ class ReportService:
     def _generate_recommendations(self, markets_data: Dict[str, MarketData],
                                  opportunities: Dict[str, OpportunityScore]) -> str:
         """Recommandations"""
-        
+
         section = "💡 RECOMMANDATIONS\n"
         section += "-" * 70 + "\n\n"
-        
+
+        if not opportunities:
+            section += "Aucune opportunité analysée pour le moment.\n\n"
+            return section
+
         # Trier par score d'opportunité
         sorted_opps = sorted(opportunities.items(), key=lambda x: x[1].score, reverse=True)
-        
+
         # Achats recommandés
         section += "À acheter maintenant :\n"
         buy_recommendations = [item for item in sorted_opps if item[1].score >= 7]
-        
+
         if buy_recommendations:
             for symbol, opp in buy_recommendations:
-                market = markets_data[symbol]
-                section += f"  ✅ {symbol} à {market.current_price.price_eur:.2f}€ "
+                market = markets_data.get(symbol)
+                section += f"  ✅ {symbol} à {self._format_price(market)} "
                 section += f"(Score: {opp.score}/10)\n"
         else:
             section += "  Aucune opportunité excellente actuellement\n"
-        
+
         section += "\n"
-        
+
         # À surveiller
         section += "À surveiller :\n"
         watch_recommendations = [item for item in sorted_opps if 5 <= item[1].score < 7]
-        
+
         if watch_recommendations:
             for symbol, opp in watch_recommendations[:3]:
-                market = markets_data[symbol]
-                section += f"  👀 {symbol} à {market.current_price.price_eur:.2f}€ "
+                market = markets_data.get(symbol)
+                section += f"  👀 {symbol} à {self._format_price(market)} "
                 section += f"(Score: {opp.score}/10)\n"
         else:
             section += "  Aucune crypto à surveiller particulièrement\n"
-        
+
         section += "\n"
         
         # À éviter
@@ -206,11 +254,68 @@ class ReportService:
                 section += f"  ❌ {symbol} (Score: {opp.score}/10)\n"
         else:
             section += "  Toutes les cryptos ont un score correct\n"
-        
+
         section += "\n"
-        
+
         return section
-    
+
+    @staticmethod
+    def _format_price(market: Optional[MarketData]) -> str:
+        """Retourne une représentation textuelle robuste du prix."""
+
+        if not market or not market.current_price or market.current_price.price_eur is None:
+            return "prix indisponible"
+
+        return f"{market.current_price.price_eur:.2f}€"
+
+    @staticmethod
+    def _format_change(market: Optional[MarketData]) -> str:
+        if not market or not market.current_price:
+            return "indisponible"
+
+        change = market.current_price.change_24h
+        if change is None:
+            return "indisponible"
+
+        return f"{change:+.2f}%"
+
+    @staticmethod
+    def _format_volume(market: Optional[MarketData]) -> str:
+        if not market or not market.current_price:
+            return "indisponible"
+
+        volume = market.current_price.volume_24h
+        if volume is None:
+            return "indisponible"
+
+        return f"{volume:,.0f}"
+
+    @staticmethod
+    def _format_rsi(market: Optional[MarketData]) -> str:
+        if not market or not market.technical_indicators:
+            return "indisponible"
+
+        rsi = market.technical_indicators.rsi
+        if rsi is None:
+            return "indisponible"
+
+        return f"{rsi:.0f}"
+
+    @staticmethod
+    def _collect_valid_changes(markets_data: Dict[str, MarketData]) -> List[float]:
+        """Retourne toutes les variations 24h disponibles."""
+
+        changes: List[float] = []
+        for market in markets_data.values():
+            if not market or not market.current_price:
+                continue
+
+            change = market.current_price.change_24h
+            if change is not None:
+                changes.append(change)
+
+        return changes
+
     def _generate_stats_section(self, stats: Dict) -> str:
         """Section statistiques"""
         

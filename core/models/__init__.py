@@ -116,6 +116,7 @@ class MarketData:
     open_interest: Optional[float] = None
     fear_greed_index: Optional[int] = None
     price_history: List[CryptoPrice] = field(default_factory=list)
+    weekly_change: Optional[float] = None
     
     def get_price_change(self, minutes: int) -> float:
         """Calcule le changement de prix sur N minutes"""
@@ -273,11 +274,22 @@ class BotConfiguration:
     enable_graphs: bool = True
     show_levels_on_graph: bool = True
     enable_startup_summary: bool = True
-    
+
     # Mode
     daemon_mode: bool = False
     gui_mode: bool = True
     detail_level: str = "normal"  # "simple", "normal", "detailed"
+
+    # Telegram - affichage et recommandations
+    telegram_show_prices: bool = True
+    telegram_show_trend_24h: bool = True
+    telegram_show_trend_7d: bool = True
+    telegram_show_recommendations: bool = True
+    telegram_message_delay: float = 0.5
+    trend_buy_threshold_24h: float = 2.0
+    trend_sell_threshold_24h: float = -2.0
+    trend_buy_threshold_7d: float = 5.0
+    trend_sell_threshold_7d: float = -5.0
     
     # Logging
     log_file: str = "crypto_bot.log"

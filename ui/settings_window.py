@@ -33,6 +33,15 @@ class SettingsWindow(ctk.CTkToplevel):
         self.enable_levels_var = ctk.BooleanVar(value=config.enable_price_levels)
         self.quiet_hours_var = ctk.BooleanVar(value=config.enable_quiet_hours)
         self.detail_level_var = ctk.StringVar(value=config.detail_level)
+        self.show_prices_var = ctk.BooleanVar(value=config.telegram_show_prices)
+        self.show_trend_24h_var = ctk.BooleanVar(value=config.telegram_show_trend_24h)
+        self.show_trend_7d_var = ctk.BooleanVar(value=config.telegram_show_trend_7d)
+        self.show_reco_var = ctk.BooleanVar(value=config.telegram_show_recommendations)
+        self.telegram_delay_var = ctk.DoubleVar(value=config.telegram_message_delay)
+        self.buy_24h_var = ctk.DoubleVar(value=config.trend_buy_threshold_24h)
+        self.sell_24h_var = ctk.DoubleVar(value=config.trend_sell_threshold_24h)
+        self.buy_7d_var = ctk.DoubleVar(value=config.trend_buy_threshold_7d)
+        self.sell_7d_var = ctk.DoubleVar(value=config.trend_sell_threshold_7d)
         
         # UI
         self._create_ui()
@@ -61,71 +70,121 @@ class SettingsWindow(ctk.CTkToplevel):
             row=2, column=1, padx=10, pady=5, sticky="ew"
         )
         
-        # === SURVEILLANCE ===
-        self._create_section(main_frame, "🔍 Surveillance", 3)
-        
-        ctk.CTkLabel(main_frame, text="Intervalle (secondes):").grid(
-            row=4, column=0, padx=10, pady=5, sticky="w"
+        # === OPTIONS TELEGRAM ===
+        self._create_section(main_frame, "📬 Contenu Telegram", 3)
+
+        ctk.CTkCheckBox(main_frame, text="Afficher les prix",
+                        variable=self.show_prices_var).grid(
+            row=4, column=0, columnspan=2, padx=10, pady=5, sticky="w"
         )
-        interval_frame = ctk.CTkFrame(main_frame)
-        interval_frame.grid(row=4, column=1, padx=10, pady=5, sticky="w")
-        
-        ctk.CTkEntry(interval_frame, textvariable=self.interval_var, width=100).pack(side="left", padx=5)
-        ctk.CTkLabel(interval_frame, text="(min: 60s)").pack(side="left")
-        
-        # === ALERTES ===
-        self._create_section(main_frame, "🚨 Alertes", 5)
-        
-        ctk.CTkCheckBox(main_frame, text="Activer les alertes de prix", 
-                       variable=self.enable_alerts_var).grid(
+
+        ctk.CTkCheckBox(main_frame, text="Afficher la tendance 24h",
+                        variable=self.show_trend_24h_var).grid(
+            row=5, column=0, columnspan=2, padx=10, pady=5, sticky="w"
+        )
+
+        ctk.CTkCheckBox(main_frame, text="Afficher la tendance 7j",
+                        variable=self.show_trend_7d_var).grid(
             row=6, column=0, columnspan=2, padx=10, pady=5, sticky="w"
         )
-        
-        ctk.CTkCheckBox(main_frame, text="Activer les niveaux de prix", 
-                       variable=self.enable_levels_var).grid(
+
+        ctk.CTkCheckBox(main_frame, text="Afficher la recommandation achat/vente",
+                        variable=self.show_reco_var).grid(
             row=7, column=0, columnspan=2, padx=10, pady=5, sticky="w"
         )
-        
+
+        ctk.CTkLabel(main_frame, text="Délai entre messages (s):").grid(
+            row=8, column=0, padx=10, pady=5, sticky="w"
+        )
+        delay_frame = ctk.CTkFrame(main_frame)
+        delay_frame.grid(row=8, column=1, padx=10, pady=5, sticky="w")
+        ctk.CTkEntry(delay_frame, textvariable=self.telegram_delay_var, width=100).pack(side="left", padx=5)
+        ctk.CTkLabel(delay_frame, text=">= 0.0").pack(side="left")
+
+        # === SEUILS ===
+        self._create_section(main_frame, "🎯 Seuils tendance", 9)
+
+        thresholds_24h = ctk.CTkFrame(main_frame)
+        thresholds_24h.grid(row=10, column=0, columnspan=2, padx=10, pady=5, sticky="ew")
+        thresholds_24h.grid_columnconfigure((0, 1, 2, 3), weight=1)
+        ctk.CTkLabel(thresholds_24h, text="Achat 24h (%):").grid(row=0, column=0, padx=5, pady=5, sticky="w")
+        ctk.CTkEntry(thresholds_24h, textvariable=self.buy_24h_var, width=80).grid(row=0, column=1, padx=5, pady=5)
+        ctk.CTkLabel(thresholds_24h, text="Vente 24h (%):").grid(row=0, column=2, padx=5, pady=5, sticky="w")
+        ctk.CTkEntry(thresholds_24h, textvariable=self.sell_24h_var, width=80).grid(row=0, column=3, padx=5, pady=5)
+
+        thresholds_7d = ctk.CTkFrame(main_frame)
+        thresholds_7d.grid(row=11, column=0, columnspan=2, padx=10, pady=5, sticky="ew")
+        thresholds_7d.grid_columnconfigure((0, 1, 2, 3), weight=1)
+        ctk.CTkLabel(thresholds_7d, text="Achat 7j (%):").grid(row=0, column=0, padx=5, pady=5, sticky="w")
+        ctk.CTkEntry(thresholds_7d, textvariable=self.buy_7d_var, width=80).grid(row=0, column=1, padx=5, pady=5)
+        ctk.CTkLabel(thresholds_7d, text="Vente 7j (%):").grid(row=0, column=2, padx=5, pady=5, sticky="w")
+        ctk.CTkEntry(thresholds_7d, textvariable=self.sell_7d_var, width=80).grid(row=0, column=3, padx=5, pady=5)
+
+        # === SURVEILLANCE ===
+        self._create_section(main_frame, "🔍 Surveillance", 12)
+
+        ctk.CTkLabel(main_frame, text="Intervalle (secondes):").grid(
+            row=13, column=0, padx=10, pady=5, sticky="w"
+        )
+        interval_frame = ctk.CTkFrame(main_frame)
+        interval_frame.grid(row=13, column=1, padx=10, pady=5, sticky="w")
+
+        ctk.CTkEntry(interval_frame, textvariable=self.interval_var, width=100).pack(side="left", padx=5)
+        ctk.CTkLabel(interval_frame, text="(min: 60s)").pack(side="left")
+
+        # === ALERTES ===
+        self._create_section(main_frame, "🚨 Alertes", 14)
+
+        ctk.CTkCheckBox(main_frame, text="Activer les alertes de prix",
+                       variable=self.enable_alerts_var).grid(
+            row=15, column=0, columnspan=2, padx=10, pady=5, sticky="w"
+        )
+
+        ctk.CTkCheckBox(main_frame, text="Activer les niveaux de prix",
+                       variable=self.enable_levels_var).grid(
+            row=16, column=0, columnspan=2, padx=10, pady=5, sticky="w"
+        )
+
         # === FONCTIONNALITÉS ===
-        self._create_section(main_frame, "✨ Fonctionnalités", 8)
-        
-        ctk.CTkCheckBox(main_frame, text="Activer les prédictions", 
+        self._create_section(main_frame, "✨ Fonctionnalités", 17)
+
+        ctk.CTkCheckBox(main_frame, text="Activer les prédictions",
                        variable=self.enable_predictions_var).grid(
-            row=9, column=0, columnspan=2, padx=10, pady=5, sticky="w"
+            row=18, column=0, columnspan=2, padx=10, pady=5, sticky="w"
         )
-        
+
         # === MODE NUIT ===
-        self._create_section(main_frame, "🌙 Mode Nuit", 10)
-        
-        ctk.CTkCheckBox(main_frame, text="Activer le mode nuit", 
+        self._create_section(main_frame, "🌙 Mode Nuit", 19)
+
+        ctk.CTkCheckBox(main_frame, text="Activer le mode nuit",
                        variable=self.quiet_hours_var).grid(
-            row=11, column=0, columnspan=2, padx=10, pady=5, sticky="w"
+            row=20, column=0, columnspan=2, padx=10, pady=5, sticky="w"
         )
-        
+
         ctk.CTkLabel(main_frame, text=f"Heures silencieuses: {self.config.quiet_start_hour}h - {self.config.quiet_end_hour}h").grid(
-            row=12, column=0, columnspan=2, padx=10, pady=5, sticky="w"
+            row=21, column=0, columnspan=2, padx=10, pady=5, sticky="w"
         )
-        
+
         # === INTERFACE ===
-        self._create_section(main_frame, "🎨 Interface", 13)
-        
+        self._create_section(main_frame, "🎨 Interface", 22)
+
         ctk.CTkLabel(main_frame, text="Niveau de détail:").grid(
-            row=14, column=0, padx=10, pady=5, sticky="w"
+            row=23, column=0, padx=10, pady=5, sticky="w"
         )
-        
+
         detail_menu = ctk.CTkOptionMenu(
             main_frame,
             variable=self.detail_level_var,
             values=["simple", "normal", "expert"]
         )
-        detail_menu.grid(row=14, column=1, padx=10, pady=5, sticky="w")
-        
+        detail_menu.grid(row=23, column=1, padx=10, pady=5, sticky="w")
+
         # === CRYPTOS ===
-        self._create_section(main_frame, "💰 Cryptomonnaies surveillées", 15)
-        
+        self._create_section(main_frame, "💰 Cryptomonnaies surveillées", 24)
+
         crypto_text = ", ".join(self.config.crypto_symbols)
         ctk.CTkLabel(main_frame, text=crypto_text, wraplength=600).grid(
-            row=16, column=0, columnspan=2, padx=10, pady=5, sticky="w"
+            row=25, column=0, columnspan=2, padx=10, pady=5, sticky="w"
         )
         
         # === BOUTONS ===
@@ -174,7 +233,12 @@ class SettingsWindow(ctk.CTkToplevel):
             if interval < 60:
                 self._show_error("L'intervalle doit être >= 60 secondes")
                 return
-            
+
+            delay = float(self.telegram_delay_var.get())
+            if delay < 0:
+                self._show_error("Le délai Telegram doit être >= 0")
+                return
+
             # Mettre à jour la config
             self.config.telegram_bot_token = self.telegram_token_var.get()
             self.config.telegram_chat_id = self.telegram_chat_var.get()
@@ -184,7 +248,16 @@ class SettingsWindow(ctk.CTkToplevel):
             self.config.enable_price_levels = self.enable_levels_var.get()
             self.config.enable_quiet_hours = self.quiet_hours_var.get()
             self.config.detail_level = self.detail_level_var.get()
-            
+            self.config.telegram_show_prices = self.show_prices_var.get()
+            self.config.telegram_show_trend_24h = self.show_trend_24h_var.get()
+            self.config.telegram_show_trend_7d = self.show_trend_7d_var.get()
+            self.config.telegram_show_recommendations = self.show_reco_var.get()
+            self.config.telegram_message_delay = delay
+            self.config.trend_buy_threshold_24h = self.buy_24h_var.get()
+            self.config.trend_sell_threshold_24h = self.sell_24h_var.get()
+            self.config.trend_buy_threshold_7d = self.buy_7d_var.get()
+            self.config.trend_sell_threshold_7d = self.sell_7d_var.get()
+
             # Sauvegarder dans fichier
             config_manager = ConfigManager("config/config.yaml")
             config_manager.save_config(self.config)
@@ -215,6 +288,15 @@ class SettingsWindow(ctk.CTkToplevel):
         self.enable_levels_var.set(self.config.enable_price_levels)
         self.quiet_hours_var.set(self.config.enable_quiet_hours)
         self.detail_level_var.set(self.config.detail_level)
+        self.show_prices_var.set(self.config.telegram_show_prices)
+        self.show_trend_24h_var.set(self.config.telegram_show_trend_24h)
+        self.show_trend_7d_var.set(self.config.telegram_show_trend_7d)
+        self.show_reco_var.set(self.config.telegram_show_recommendations)
+        self.telegram_delay_var.set(self.config.telegram_message_delay)
+        self.buy_24h_var.set(self.config.trend_buy_threshold_24h)
+        self.sell_24h_var.set(self.config.trend_sell_threshold_24h)
+        self.buy_7d_var.set(self.config.trend_buy_threshold_7d)
+        self.sell_7d_var.set(self.config.trend_sell_threshold_7d)
     
     def _show_error(self, message: str):
         """Affiche une erreur"""
