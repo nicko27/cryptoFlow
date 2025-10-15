@@ -6,6 +6,13 @@ from core.services.report_service import ReportService
 from core.services.chart_service import ChartService
 from api.enhanced_telegram_api import EnhancedTelegramAPI
 from core.services.summary_service import SummaryService
+from core.models import BotConfiguration
+import sys
+import argparse
+from config.config_manager import ConfigManager
+from utils.logger import setup_logger
+from threading import Event
+
 
 def run_gui_mode(config: BotConfiguration):
     # Initialiser les services

@@ -335,3 +335,7 @@ TypeError: can't subtract offset-naive and offset-aware datetimes
 2025-10-14 22:13:38 | INFO     | CryptoBotDaemon | Erreurs : 0
 2025-10-14 22:13:38 | INFO     | CryptoBotDaemon | ============================================================
 
+2025-10-15 18:58:51 | WARNING  | daemon.daemon_service | Le démon est déjà en cours d'exécution
+2025-10-15 18:59:07 | INFO     | daemon.daemon_service | ============================================================
+2025-10-15 18:59:07 | INFO     | daemon.daemon_service | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-15 18:59:07 | INFO     | daemon.daemon_service | ============================================================

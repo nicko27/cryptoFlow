@@ -15,6 +15,13 @@ from api.telegram_api import TelegramAPI
 from core.services.market_service import MarketService
 from core.services.alert_service import AlertService
 from utils.logger import setup_logger
+from core.services.database_service import DatabaseService
+from core.services.portfolio_service import PortfolioService
+from core.services.dca_service import DCAService
+from core.services.report_service import ReportService
+from core.services.chart_service import ChartService
+from api.enhanced_telegram_api import EnhancedTelegramAPI
+from core.services.summary_service import SummaryService
 
 
 class DaemonService:
@@ -31,7 +38,10 @@ class DaemonService:
         self.summary_service = SummaryService(config)
         self.chart_service = ChartService()
         self.dca_service = DCAService()
-    
+        self.is_running = False
+        self.stop_event = Event()
+        self.logger = setup_logger(__name__)
+
     def _check_cycle(self):
         """Un cycle de vérification complet - AVEC MODE NUIT"""
         
