@@ -3,7 +3,7 @@ Market Service - Gestion des données de marché [TIMEZONE FIXED]
 """
 
 from typing import List, Optional, Dict
-from datetime import datetime, timedelta, timezone, timezone, timezone
+from datetime import datetime, timedelta, timezone
 from core.models import (
     MarketData, CryptoPrice, TechnicalIndicators,
     Prediction, PredictionType, OpportunityScore
@@ -44,7 +44,8 @@ class MarketService:
         funding_rate = self.binance_api.get_funding_rate(symbol)
         open_interest = self.binance_api.get_open_interest(symbol)
         fear_greed = self.binance_api.get_fear_greed_index()
-        
+        weekly_change = self.binance_api.get_price_change_percent(symbol, interval="1d", periods=7)
+
         market_data = MarketData(
             symbol=symbol,
             current_price=current_price,
@@ -52,21 +53,64 @@ class MarketService:
             funding_rate=funding_rate,
             open_interest=open_interest,
             fear_greed_index=fear_greed,
-            price_history=all_prices[-200:]
+            price_history=all_prices[-200:],
+            weekly_change=weekly_change
         )
         
         self.market_cache[symbol] = market_data
         return market_data
     
     def get_price_history(self, symbol: str, hours: int = 24) -> List[CryptoPrice]:
-        """Récupère l'historique des prix"""
-        if symbol not in self.price_history_cache:
-            prices = self.binance_api.get_price_history(symbol, interval="1h", limit=hours)
-            self.price_history_cache[symbol] = prices
-            return prices
-        
+        """Récupère un historique couvrant la période demandée."""
         cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
-        return [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
+
+        interval, limit = self._determine_interval(hours)
+
+        cache = self.price_history_cache.get(symbol, [])
+        need_fetch = True
+        if cache:
+            earliest = min(cache, key=lambda p: p.timestamp)
+            recent_count = len([p for p in cache if p.timestamp >= cutoff])
+            need_fetch = earliest.timestamp > cutoff or recent_count < 2
+
+        if need_fetch:
+            fresh = self.binance_api.get_price_history(symbol, interval=interval, limit=limit)
+            if fresh:
+                merged = {price.timestamp: price for price in cache}
+                for price in fresh:
+                    merged[price.timestamp] = price
+                cache = sorted(merged.values(), key=lambda p: p.timestamp)
+                self.price_history_cache[symbol] = cache[-3000:]
+        else:
+            self.price_history_cache[symbol] = cache
+
+        filtered = [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
+
+        if len(filtered) < 2:
+            # Tentative supplémentaire avec un intervalle plus large si insuffisant
+            fallback_interval, fallback_limit = self._determine_interval(hours * 2)
+            fresh = self.binance_api.get_price_history(symbol, interval=fallback_interval, limit=fallback_limit)
+            if fresh:
+                merged = {price.timestamp: price for price in self.price_history_cache.get(symbol, [])}
+                for price in fresh:
+                    merged[price.timestamp] = price
+                self.price_history_cache[symbol] = sorted(merged.values(), key=lambda p: p.timestamp)[-3000:]
+                filtered = [p for p in self.price_history_cache[symbol] if p.timestamp >= cutoff]
+
+        return filtered
+
+    @staticmethod
+    def _determine_interval(hours: int) -> tuple:
+        if hours <= 24:
+            interval = "15m" if hours > 6 else "1m"
+            limit = min(hours * (60 // (15 if interval == "15m" else 1)), 1000)
+        elif hours <= 168:
+            interval = "1h"
+            limit = min(hours, 1000)
+        else:
+            interval = "4h"
+            limit = min(max(hours // 4, 1), 1000)
+        return interval, limit
     
     def calculate_price_change(self, symbol: str, minutes: int) -> float:
         """Calcule le changement de prix sur N minutes"""

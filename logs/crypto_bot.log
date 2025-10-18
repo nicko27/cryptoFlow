@@ -339,3 +339,653 @@ TypeError: can't subtract offset-naive and offset-aware datetimes
 2025-10-15 18:59:07 | INFO     | daemon.daemon_service | ============================================================
 2025-10-15 18:59:07 | INFO     | daemon.daemon_service | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
 2025-10-15 18:59:07 | INFO     | daemon.daemon_service | ============================================================
+2025-10-15 21:22:33 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 21:22:33 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-15 21:22:33 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 21:22:33 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-15 21:22:33 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-15 21:22:33 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-15 21:22:33 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 21:22:33 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-15 21:22:33 | ERROR    | CryptoBotDaemon | Erreur test Telegram : 'EnhancedTelegramAPI' object has no attribute 'get_bot_info'
+2025-10-15 21:22:33 | ERROR    | CryptoBotDaemon | ❌ Connexion Telegram échouée ! Vérifiez votre configuration.
+2025-10-15 21:28:56 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 21:28:56 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-15 21:28:56 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 21:28:56 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-15 21:28:56 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-15 21:28:56 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-15 21:28:56 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 21:28:56 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-15 21:28:56 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-15 21:28:56 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-15 21:29:00 | INFO     | CryptoBotDaemon |   • BTC: 96710.59€ - ATTENDRE UN PEU
+2025-10-15 21:29:01 | INFO     | CryptoBotDaemon |   • ETH: 3472.99€ - ATTENDRE UN PEU
+2025-10-15 21:29:03 | INFO     | CryptoBotDaemon |   • SOL: 170.67€ - ACHETER MAINTENANT
+2025-10-15 21:29:03 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-15 21:29:03 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-15 21:29:03 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-15 21:29:03 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 21:29:03 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-15 21:29:03 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 21:29:05 | INFO     | CryptoBotDaemon | 💰 Prix : 96229.44 € (-1.63% 24h)
+2025-10-15 21:29:05 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-15 21:29:05 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 6/10
+2025-10-15 21:29:05 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 21:29:05 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-15 21:29:05 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 21:29:07 | INFO     | CryptoBotDaemon | 💰 Prix : 3455.70 € (-3.14% 24h)
+2025-10-15 21:29:07 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
+2025-10-15 21:29:07 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
+2025-10-15 21:29:07 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 21:29:07 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-15 21:29:07 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 21:29:09 | INFO     | CryptoBotDaemon | 💰 Prix : 169.82 € (-3.14% 24h)
+2025-10-15 21:29:09 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
+2025-10-15 21:29:09 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
+2025-10-15 21:29:09 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 21:29:09 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-15 21:29:52 | INFO     | CryptoBotDaemon | Signal 2 reçu, arrêt du démon...
+2025-10-15 21:29:52 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-15 21:29:52 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-15 21:29:52 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-15 21:29:52 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 21:29:52 | INFO     | CryptoBotDaemon | Uptime : 0h 0m
+2025-10-15 21:29:52 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-15 21:29:52 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-15 21:29:52 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-15 21:29:52 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-15 22:22:20 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:22:20 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-15 22:22:20 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:22:20 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-15 22:22:20 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-15 22:22:20 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-15 22:22:20 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:22:20 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-15 22:22:20 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-15 22:22:20 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-15 22:22:23 | INFO     | CryptoBotDaemon |   • BTC: 96741.88€ - ATTENDRE UN PEU
+2025-10-15 22:22:24 | INFO     | CryptoBotDaemon |   • ETH: 3463.80€ - ACHETER MAINTENANT
+2025-10-15 22:22:25 | INFO     | CryptoBotDaemon |   • SOL: 170.36€ - ATTENDRE UN PEU
+2025-10-15 22:22:25 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-15 22:22:25 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-15 22:22:25 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-15 22:22:25 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:22:25 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-15 22:22:25 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:22:27 | INFO     | CryptoBotDaemon | 💰 Prix : 96260.57 € (-1.14% 24h)
+2025-10-15 22:22:27 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-15 22:22:27 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 6/10
+2025-10-15 22:22:27 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:22:27 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-15 22:22:27 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:22:28 | INFO     | CryptoBotDaemon | 💰 Prix : 3446.72 € (-2.95% 24h)
+2025-10-15 22:22:28 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
+2025-10-15 22:22:28 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
+2025-10-15 22:22:28 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:22:28 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-15 22:22:28 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:22:29 | INFO     | CryptoBotDaemon | 💰 Prix : 169.52 € (-1.81% 24h)
+2025-10-15 22:22:29 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-15 22:22:29 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 6/10
+2025-10-15 22:22:29 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:22:29 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-15 22:34:49 | INFO     | CryptoBotDaemon | Signal 15 reçu, arrêt du démon...
+2025-10-15 22:34:49 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-15 22:34:49 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-15 22:34:49 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-15 22:34:49 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:34:49 | INFO     | CryptoBotDaemon | Uptime : 0h 12m
+2025-10-15 22:34:49 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-15 22:34:49 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-15 22:34:49 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-15 22:34:49 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-15 22:35:03 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:35:03 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-15 22:35:03 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:35:03 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-15 22:35:03 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-15 22:35:03 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-15 22:35:03 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:35:03 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-15 22:35:03 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-15 22:35:03 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-15 22:35:06 | INFO     | CryptoBotDaemon |   • BTC: 95895.56€ - ACHETER MAINTENANT
+2025-10-15 22:35:08 | INFO     | CryptoBotDaemon |   • ETH: 3421.49€ - ACHETER MAINTENANT
+2025-10-15 22:35:09 | INFO     | CryptoBotDaemon |   • SOL: 167.17€ - ACHETER MAINTENANT
+2025-10-15 22:35:09 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-15 22:35:09 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-15 22:35:09 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-15 22:35:09 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:35:09 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-15 22:35:09 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:35:11 | INFO     | CryptoBotDaemon | 💰 Prix : 95467.59 € (-1.92% 24h)
+2025-10-15 22:35:11 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-15 22:35:11 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-15 22:35:11 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:35:11 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-15 22:35:11 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:35:12 | INFO     | CryptoBotDaemon | 💰 Prix : 3404.32 € (-4.07% 24h)
+2025-10-15 22:35:12 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-15 22:35:12 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-15 22:35:12 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:35:12 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-15 22:35:12 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:35:14 | INFO     | CryptoBotDaemon | 💰 Prix : 166.30 € (-3.58% 24h)
+2025-10-15 22:35:14 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-15 22:35:14 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-15 22:35:14 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:35:14 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-15 22:37:12 | INFO     | CryptoBotDaemon | Signal 15 reçu, arrêt du démon...
+2025-10-15 22:37:12 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-15 22:37:12 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-15 22:37:12 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-15 22:37:12 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:37:12 | INFO     | CryptoBotDaemon | Uptime : 0h 2m
+2025-10-15 22:37:12 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-15 22:37:12 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-15 22:37:12 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-15 22:37:12 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-15 22:44:49 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:44:49 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-15 22:44:49 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:44:49 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-15 22:44:49 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-15 22:44:49 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-15 22:44:49 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:44:49 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-15 22:44:49 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-15 22:44:49 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-15 22:44:52 | INFO     | CryptoBotDaemon |   • BTC: 96509.57€ - ACHETER MAINTENANT
+2025-10-15 22:44:54 | INFO     | CryptoBotDaemon |   • ETH: 3454.18€ - ATTENDRE UN PEU
+2025-10-15 22:44:56 | INFO     | CryptoBotDaemon |   • SOL: 169.21€ - ATTENDRE UN PEU
+2025-10-15 22:44:56 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-15 22:44:56 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-15 22:44:56 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-15 22:44:56 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:44:56 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-15 22:44:56 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:44:57 | INFO     | CryptoBotDaemon | 💰 Prix : 96034.07 € (-1.41% 24h)
+2025-10-15 22:44:57 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
+2025-10-15 22:44:57 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 8/10
+2025-10-15 22:44:57 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:44:57 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-15 22:44:57 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:44:59 | INFO     | CryptoBotDaemon | 💰 Prix : 3437.19 € (-3.38% 24h)
+2025-10-15 22:44:59 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-15 22:44:59 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 6/10
+2025-10-15 22:44:59 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:44:59 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-15 22:44:59 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:45:01 | INFO     | CryptoBotDaemon | 💰 Prix : 168.37 € (-2.57% 24h)
+2025-10-15 22:45:01 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-15 22:45:01 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 6/10
+2025-10-15 22:45:01 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:45:01 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-15 22:56:09 | INFO     | CryptoBotDaemon | Signal 15 reçu, arrêt du démon...
+2025-10-15 22:56:09 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-15 22:56:09 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-15 22:56:09 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-15 22:56:09 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:56:09 | INFO     | CryptoBotDaemon | Uptime : 0h 11m
+2025-10-15 22:56:09 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-15 22:56:09 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-15 22:56:09 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-15 22:56:09 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-15 22:56:14 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:56:14 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-15 22:56:14 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:56:14 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-15 22:56:14 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-15 22:56:14 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-15 22:56:14 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:56:14 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-15 22:56:14 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-15 22:56:14 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-15 22:56:17 | INFO     | CryptoBotDaemon |   • BTC: 96364.88€ - ATTENDRE UN PEU
+2025-10-15 22:56:18 | INFO     | CryptoBotDaemon |   • ETH: 3435.88€ - BON MOMENT
+2025-10-15 22:56:20 | INFO     | CryptoBotDaemon |   • SOL: 168.31€ - ATTENDRE UN PEU
+2025-10-15 22:56:20 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-15 22:56:20 | INFO     | CryptoBotDaemon | Dashboard web lancé sur http://127.0.0.1:8000
+2025-10-15 22:56:20 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-15 22:56:20 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-15 22:56:20 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:56:20 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-15 22:56:20 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:56:22 | INFO     | CryptoBotDaemon | 💰 Prix : 95887.72 € (-1.64% 24h)
+2025-10-15 22:56:22 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT BAISSIER (60%)
+2025-10-15 22:56:22 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
+2025-10-15 22:56:22 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:56:22 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-15 22:56:22 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:56:23 | INFO     | CryptoBotDaemon | 💰 Prix : 3420.15 € (-3.69% 24h)
+2025-10-15 22:56:23 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT BAISSIER (60%)
+2025-10-15 22:56:23 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
+2025-10-15 22:56:23 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:56:23 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-15 22:56:23 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:56:25 | INFO     | CryptoBotDaemon | 💰 Prix : 167.53 € (-3.07% 24h)
+2025-10-15 22:56:25 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT BAISSIER (60%)
+2025-10-15 22:56:25 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
+2025-10-15 22:56:25 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:56:25 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-15 22:57:47 | INFO     | CryptoBotDaemon | Signal 15 reçu, arrêt du démon...
+2025-10-15 22:57:47 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-15 22:57:47 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-15 22:57:47 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-15 22:57:47 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:57:47 | INFO     | CryptoBotDaemon | Uptime : 0h 1m
+2025-10-15 22:57:47 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-15 22:57:47 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-15 22:57:47 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-15 22:57:47 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-15 22:59:49 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:59:49 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-15 22:59:49 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:59:49 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-15 22:59:49 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-15 22:59:49 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-15 22:59:49 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:59:49 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-15 22:59:49 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-15 22:59:49 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-15 22:59:52 | INFO     | CryptoBotDaemon |   • BTC: 96366.43€ - ATTENDRE UN PEU
+2025-10-15 22:59:53 | INFO     | CryptoBotDaemon |   • ETH: 3435.49€ - ATTENDRE UN PEU
+2025-10-15 22:59:55 | INFO     | CryptoBotDaemon |   • SOL: 168.36€ - ATTENDRE UN PEU
+2025-10-15 22:59:55 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-15 22:59:55 | INFO     | CryptoBotDaemon | Dashboard web lancé sur http://127.0.0.1:8000
+2025-10-15 22:59:55 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-15 22:59:55 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-15 22:59:55 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-15 22:59:55 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-15 22:59:55 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:59:56 | INFO     | CryptoBotDaemon | 💰 Prix : 95880.55 € (-1.67% 24h)
+2025-10-15 22:59:56 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT BAISSIER (65%)
+2025-10-15 22:59:56 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 6/10
+2025-10-15 22:59:56 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:59:56 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-15 22:59:56 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 22:59:58 | INFO     | CryptoBotDaemon | 💰 Prix : 3417.49 € (-3.84% 24h)
+2025-10-15 22:59:58 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT BAISSIER (65%)
+2025-10-15 22:59:58 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 6/10
+2025-10-15 22:59:58 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 22:59:58 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-15 22:59:58 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-15 23:00:00 | INFO     | CryptoBotDaemon | 💰 Prix : 167.53 € (-3.23% 24h)
+2025-10-15 23:00:00 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT BAISSIER (60%)
+2025-10-15 23:00:00 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
+2025-10-15 23:00:00 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-15 23:00:00 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-17 23:10:56 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-17 23:10:56 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-17 23:10:56 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-17 23:10:56 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-17 23:10:56 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-17 23:10:56 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-17 23:10:56 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-17 23:10:56 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-17 23:10:56 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-17 23:10:56 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-17 23:11:01 | INFO     | CryptoBotDaemon |   • BTC: 92379.96€ - BON MOMENT
+2025-10-17 23:11:02 | INFO     | CryptoBotDaemon |   • ETH: 3335.14€ - BON MOMENT
+2025-10-17 23:11:04 | INFO     | CryptoBotDaemon |   • SOL: 159.26€ - BON MOMENT
+2025-10-17 23:11:04 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-17 23:11:04 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-17 23:11:04 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-17 23:11:04 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-17 23:11:04 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-17 23:11:04 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-17 23:11:05 | INFO     | CryptoBotDaemon | 💰 Prix : 91898.60 € (-0.40% 24h)
+2025-10-17 23:11:05 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-17 23:11:06 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
+2025-10-17 23:11:06 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-17 23:11:06 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 22/100
+2025-10-17 23:11:06 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-17 23:11:06 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-17 23:11:07 | INFO     | CryptoBotDaemon | 💰 Prix : 3317.39 € (+0.72% 24h)
+2025-10-17 23:11:07 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-17 23:11:07 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
+2025-10-17 23:11:07 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-17 23:11:07 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 22/100
+2025-10-17 23:11:07 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-17 23:11:07 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-17 23:11:09 | INFO     | CryptoBotDaemon | 💰 Prix : 158.40 € (+0.83% 24h)
+2025-10-17 23:11:09 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-17 23:11:09 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
+2025-10-17 23:11:09 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-17 23:11:09 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 22/100
+2025-10-17 23:11:09 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-17 23:16:15 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-17 23:16:15 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-17 23:16:15 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-17 23:16:15 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-17 23:16:15 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-17 23:16:15 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-17 23:16:15 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-17 23:16:15 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-17 23:16:15 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-17 23:16:15 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-17 23:16:17 | INFO     | CryptoBotDaemon |   • BTC: 92385.25€ - BON MOMENT
+2025-10-17 23:16:19 | INFO     | CryptoBotDaemon |   • ETH: 3339.55€ - BON MOMENT
+2025-10-17 23:16:21 | INFO     | CryptoBotDaemon |   • SOL: 160.00€ - BON MOMENT
+2025-10-17 23:16:21 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-17 23:16:21 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-17 23:16:21 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-17 23:16:21 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-17 23:16:21 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-17 23:16:21 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-17 23:16:22 | INFO     | CryptoBotDaemon | 💰 Prix : 91961.37 € (-0.66% 24h)
+2025-10-17 23:16:22 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-17 23:16:22 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
+2025-10-17 23:16:22 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-17 23:16:22 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 22/100
+2025-10-17 23:16:22 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-17 23:16:22 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-17 23:16:23 | INFO     | CryptoBotDaemon | 💰 Prix : 3323.44 € (+0.49% 24h)
+2025-10-17 23:16:23 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-17 23:16:24 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
+2025-10-17 23:16:24 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-17 23:16:24 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 22/100
+2025-10-17 23:16:24 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-17 23:16:24 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-17 23:16:25 | INFO     | CryptoBotDaemon | 💰 Prix : 159.19 € (+0.95% 24h)
+2025-10-17 23:16:25 | INFO     | CryptoBotDaemon | 🔮 Prédiction : NEUTRE (50%)
+2025-10-17 23:16:26 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 7/10
+2025-10-17 23:16:26 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-17 23:16:26 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 22/100
+2025-10-17 23:16:26 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-18 10:10:09 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:10:09 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-18 10:10:09 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:10:09 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-18 10:10:09 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-18 10:10:09 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-18 10:10:09 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:10:09 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-18 10:10:09 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-18 10:10:09 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-18 10:10:11 | INFO     | CryptoBotDaemon |   • BTC: 92112.94€ - ACHETER MAINTENANT
+2025-10-18 10:10:14 | INFO     | CryptoBotDaemon |   • ETH: 3359.49€ - ACHETER MAINTENANT
+2025-10-18 10:10:15 | INFO     | CryptoBotDaemon |   • SOL: 160.95€ - ACHETER MAINTENANT
+2025-10-18 10:10:15 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-18 10:10:15 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-18 10:10:15 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-18 10:10:15 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:10:15 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-18 10:10:15 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 10:10:17 | INFO     | CryptoBotDaemon | 💰 Prix : 91623.32 € (+1.36% 24h)
+2025-10-18 10:10:17 | INFO     | CryptoBotDaemon | 🔮 Prédiction : HAUSSIER (75%)
+2025-10-18 10:10:17 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 10/10
+2025-10-18 10:10:17 | INFO     | CryptoBotDaemon | 🚨 3 alerte(s) générée(s)
+2025-10-18 10:10:17 | INFO     | CryptoBotDaemon |    • [CRITICAL] 🚨 BTC a dépassé le niveau 10000.0€ ! (maintenant 91623.32€)
+2025-10-18 10:10:17 | INFO     | CryptoBotDaemon |    ✓ Alerte envoyée sur Telegram
+2025-10-18 10:10:17 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 10:10:17 | INFO     | CryptoBotDaemon |    • [INFO] Signal haussier fort (75%)
+2025-10-18 10:10:17 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-18 10:10:17 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 10:10:18 | INFO     | CryptoBotDaemon | 💰 Prix : 3341.46 € (+3.50% 24h)
+2025-10-18 10:10:18 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (65%)
+2025-10-18 10:10:19 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-18 10:10:19 | INFO     | CryptoBotDaemon | 🚨 2 alerte(s) générée(s)
+2025-10-18 10:10:19 | INFO     | CryptoBotDaemon |    • [CRITICAL] 🚨 ETH a dépassé le niveau 3300.0€ ! (maintenant 3341.46€)
+2025-10-18 10:10:19 | INFO     | CryptoBotDaemon |    ✓ Alerte envoyée sur Telegram
+2025-10-18 10:10:19 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 10:10:19 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-18 10:10:19 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 10:10:20 | INFO     | CryptoBotDaemon | 💰 Prix : 160.12 € (+4.58% 24h)
+2025-10-18 10:10:20 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
+2025-10-18 10:10:21 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-18 10:10:21 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-18 10:10:21 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 10:10:21 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 2 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-18 10:14:46 | INFO     | CryptoBotDaemon | Signal 15 reçu, arrêt du démon...
+2025-10-18 10:14:46 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-18 10:14:46 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-18 10:14:46 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-18 10:14:46 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:14:46 | INFO     | CryptoBotDaemon | Uptime : 11h 3m
+2025-10-18 10:14:46 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-18 10:14:46 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-18 10:14:46 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-18 10:14:46 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-18 10:14:51 | INFO     | CryptoBotDaemon | Signal 15 reçu, arrêt du démon...
+2025-10-18 10:14:51 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-18 10:14:51 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-18 10:14:51 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-18 10:14:51 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:14:51 | INFO     | CryptoBotDaemon | Uptime : 0h 4m
+2025-10-18 10:14:51 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-18 10:14:51 | INFO     | CryptoBotDaemon | Alertes envoyées : 2
+2025-10-18 10:14:51 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-18 10:14:51 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-18 10:16:26 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:16:26 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-18 10:16:26 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:16:26 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-18 10:16:26 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-18 10:16:26 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-18 10:16:26 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:16:26 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-18 10:16:26 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-18 10:16:26 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-18 10:16:30 | INFO     | CryptoBotDaemon |   • BTC: 92026.05€ - ACHETER MAINTENANT
+2025-10-18 10:16:32 | INFO     | CryptoBotDaemon |   • ETH: 3353.83€ - BON MOMENT
+2025-10-18 10:16:33 | INFO     | CryptoBotDaemon |   • SOL: 160.71€ - BON MOMENT
+2025-10-18 10:16:33 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-18 10:16:33 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-18 10:16:33 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-18 10:16:33 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:16:33 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-18 10:16:33 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 10:16:35 | INFO     | CryptoBotDaemon | 💰 Prix : 91568.22 € (+2.01% 24h)
+2025-10-18 10:16:35 | INFO     | CryptoBotDaemon | 🔮 Prédiction : HAUSSIER (75%)
+2025-10-18 10:16:35 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 10/10
+2025-10-18 10:16:35 | INFO     | CryptoBotDaemon | 🚨 2 alerte(s) générée(s)
+2025-10-18 10:16:35 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 10:16:35 | INFO     | CryptoBotDaemon |    • [INFO] Signal haussier fort (75%)
+2025-10-18 10:16:35 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-18 10:16:35 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 10:16:37 | INFO     | CryptoBotDaemon | 💰 Prix : 3337.30 € (+4.58% 24h)
+2025-10-18 10:16:37 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (65%)
+2025-10-18 10:16:37 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-18 10:16:37 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-18 10:16:37 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 10:16:37 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-18 10:16:37 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 10:16:39 | INFO     | CryptoBotDaemon | 💰 Prix : 160.01 € (+6.08% 24h)
+2025-10-18 10:16:39 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
+2025-10-18 10:16:39 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-18 10:16:39 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-18 10:16:39 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 10:16:39 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-18 10:18:02 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-18 10:18:02 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-18 10:18:02 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-18 10:18:02 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:18:02 | INFO     | CryptoBotDaemon | Uptime : 0h 1m
+2025-10-18 10:18:02 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-18 10:18:02 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-18 10:18:02 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-18 10:18:02 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-18 10:26:25 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:26:25 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-18 10:26:25 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:26:25 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-18 10:26:25 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-18 10:26:25 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-18 10:26:25 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:26:25 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-18 10:26:26 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-18 10:26:26 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-18 10:26:28 | INFO     | CryptoBotDaemon |   • BTC: 91927.62€ - ACHETER MAINTENANT
+2025-10-18 10:26:30 | INFO     | CryptoBotDaemon |   • ETH: 3347.82€ - ACHETER MAINTENANT
+2025-10-18 10:26:32 | INFO     | CryptoBotDaemon |   • SOL: 160.82€ - BON MOMENT
+2025-10-18 10:26:32 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-18 10:26:32 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-18 10:26:32 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-18 10:26:32 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:26:32 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-18 10:26:32 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 10:26:34 | INFO     | CryptoBotDaemon | 💰 Prix : 91462.03 € (+1.28% 24h)
+2025-10-18 10:26:34 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
+2025-10-18 10:26:34 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-18 10:26:34 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-18 10:26:34 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 10:26:34 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-18 10:26:34 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 10:26:36 | INFO     | CryptoBotDaemon | 💰 Prix : 3330.76 € (+3.86% 24h)
+2025-10-18 10:26:36 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (65%)
+2025-10-18 10:26:36 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-18 10:26:36 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-18 10:26:36 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 10:26:36 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-18 10:26:36 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 10:26:37 | INFO     | CryptoBotDaemon | 💰 Prix : 159.98 € (+4.97% 24h)
+2025-10-18 10:26:37 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
+2025-10-18 10:26:37 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-18 10:26:37 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-18 10:26:37 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 10:26:37 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m
+2025-10-18 10:31:21 | INFO     | CryptoBotDaemon | Signal 2 reçu, arrêt du démon...
+2025-10-18 10:31:21 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-18 10:31:21 | INFO     | CryptoBotDaemon | Signal 15 reçu, arrêt du démon...
+2025-10-18 10:31:21 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-18 10:41:29 | INFO     | CryptoBotDaemon | Signal 15 reçu, arrêt du démon...
+2025-10-18 10:41:29 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-18 10:41:29 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-18 10:41:29 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-18 10:41:29 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 10:41:29 | INFO     | CryptoBotDaemon | Uptime : 0h 15m
+2025-10-18 10:41:29 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-18 10:41:29 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-18 10:41:29 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-18 10:41:29 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-18 23:00:13 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 23:00:13 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-18 23:00:13 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 23:00:13 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-18 23:00:13 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-18 23:00:13 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-18 23:00:13 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 23:00:13 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-18 23:00:13 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-18 23:00:13 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-18 23:00:16 | INFO     | CryptoBotDaemon |   • BTC: 92151.16€ - ACHETER MAINTENANT
+2025-10-18 23:00:18 | INFO     | CryptoBotDaemon |   • ETH: 3346.60€ - ACHETER MAINTENANT
+2025-10-18 23:00:20 | INFO     | CryptoBotDaemon |   • SOL: 160.75€ - ACHETER MAINTENANT
+2025-10-18 23:00:20 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-18 23:00:21 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-18 23:00:21 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-18 23:00:21 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-18 23:00:21 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-18 23:00:21 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 23:00:22 | INFO     | CryptoBotDaemon | 💰 Prix : 91696.51 € (-0.02% 24h)
+2025-10-18 23:00:22 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (65%)
+2025-10-18 23:00:22 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-18 23:00:22 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-18 23:00:22 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 23:00:22 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-18 23:00:22 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 23:00:24 | INFO     | CryptoBotDaemon | 💰 Prix : 3330.46 € (+0.76% 24h)
+2025-10-18 23:00:24 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
+2025-10-18 23:00:24 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-18 23:00:24 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-18 23:00:24 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 23:00:24 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-18 23:00:24 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-18 23:00:26 | INFO     | CryptoBotDaemon | 💰 Prix : 159.95 € (+1.68% 24h)
+2025-10-18 23:00:26 | INFO     | CryptoBotDaemon | 🔮 Prédiction : LÉGÈREMENT HAUSSIER (60%)
+2025-10-18 23:00:26 | INFO     | CryptoBotDaemon | ⭐ Opportunité : 9/10
+2025-10-18 23:00:26 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-18 23:00:26 | INFO     | CryptoBotDaemon |    • [INFO] Peur extrême : 23/100
+2025-10-18 23:00:26 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs, Uptime: 0h0m

@@ -11,7 +11,7 @@ import sys
 import argparse
 from config.config_manager import ConfigManager
 from utils.logger import setup_logger
-from threading import Event
+from PyQt6.QtWidgets import QApplication
 
 
 def run_gui_mode(config: BotConfiguration):
@@ -19,9 +19,13 @@ def run_gui_mode(config: BotConfiguration):
     db_service = DatabaseService(config.database_path)
     portfolio_service = PortfolioService()
     dca_service = DCAService()
-    report_service = ReportService()
+    report_service = ReportService(config)
     chart_service = ChartService()
-    telegram_api = EnhancedTelegramAPI(config.telegram_bot_token, config.telegram_chat_id)
+    telegram_api = EnhancedTelegramAPI(
+        config.telegram_bot_token,
+        config.telegram_chat_id,
+        message_delay=config.telegram_message_delay
+    )
     summary_service = SummaryService(config)
     
     # Démarrer la queue Telegram
@@ -29,12 +33,23 @@ def run_gui_mode(config: BotConfiguration):
     
     # Lancer GUI avec les nouveaux services
     from ui.main_window import CryptoBotGUI
-    app = CryptoBotGUI(config, db_service, portfolio_service, dca_service, 
-                       report_service, chart_service, telegram_api, summary_service)
-    app.mainloop()
+    qt_app = QApplication.instance() or QApplication(sys.argv)
+    window = CryptoBotGUI(
+        config,
+        db_service,
+        portfolio_service,
+        dca_service,
+        report_service,
+        chart_service,
+        telegram_api,
+        summary_service,
+    )
+    window.show()
     
-    # Arrêter la queue
-    telegram_api.stop_queue()
+    try:
+        qt_app.exec()
+    finally:
+        telegram_api.stop_queue()
 
 def run_daemon_mode(config: BotConfiguration):
     from daemon.daemon_service import DaemonService

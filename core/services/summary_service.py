@@ -2,7 +2,7 @@
 Summary Service - Génération de résumés automatiques
 """
 
-from typing import Dict, List
+from typing import Dict, Optional
 from datetime import datetime, time as dt_time
 from core.models import MarketData, Prediction, OpportunityScore, BotConfiguration
 
@@ -13,6 +13,20 @@ class SummaryService:
     def __init__(self, config: BotConfiguration):
         self.config = config
         self.last_summary_hour = None
+
+    # ------------------------------------------------------------------
+    # Helpers per-coin
+    # ------------------------------------------------------------------
+    def _coin_option(self, symbol: str, key: str, default):
+        if not self.config or not getattr(self.config, "coin_settings", None):
+            return default
+        return self.config.coin_settings.get(symbol, {}).get(key, default)
+
+    def _include_symbol_summary(self, symbol: str) -> bool:
+        return self._coin_option(symbol, "include_summary", True)
+
+    def _symbol_investment_amount(self, symbol: str) -> float:
+        return float(self._coin_option(symbol, "investment_amount", self.config.investment_amount))
     
     def should_send_summary(self) -> bool:
         """Détermine s'il faut envoyer un résumé"""
@@ -62,28 +76,99 @@ class SummaryService:
         """Résumé simple et clair"""
         
         msg = f"📊 <b>RÉSUMÉ {datetime.now().strftime('%H:%M')}</b>\n\n"
-        
+        msg += "Je résume en langage courant ce qu'il faut savoir.\n\n"
+        has_market_data = bool(markets_data)
+
         # Meilleure opportunité
-        best = max(opportunities.items(), key=lambda x: x[1].score)
-        if best[1].score >= 7:
-            price = markets_data[best[0]].current_price.price_eur
-            msg += f"🎯 <b>MEILLEURE OPPORTUNITÉ</b>\n"
-            msg += f"{best[0]} à {price:.2f}€\n"
-            msg += f"Score: {best[1].score}/10 ⭐\n"
-            msg += f"{best[1].recommendation}\n\n"
-        
-        # Prix de toutes les cryptos
-        msg += "<b>Prix actuels:</b>\n"
-        for symbol in sorted(markets_data.keys()):
-            market = markets_data[symbol]
-            price = market.current_price.price_eur
-            change = market.current_price.change_24h
-            emoji = "📈" if change > 0 else "📉"
-            
-            msg += f"{emoji} {symbol}: {price:.2f}€ ({change:+.1f}%)\n"
-        
+        if opportunities:
+            filtered_opps = {
+                symbol: opp for symbol, opp in opportunities.items()
+                if self._include_symbol_summary(symbol)
+            }
+            if filtered_opps:
+                best_symbol, best_opportunity = max(filtered_opps.items(), key=lambda x: x[1].score)
+                msg += "🎯 <b>MEILLEURE OPPORTUNITÉ</b>\n"
+
+                if best_opportunity.score < 7:
+                    msg += "Aucune opportunité forte détectée pour le moment.\n\n"
+                else:
+                    market = markets_data.get(best_symbol) if has_market_data else None
+                    price_text = self._format_price_for_summary(market)
+                    msg += f"{best_symbol}: {price_text}\n"
+                    msg += "➕ En clair : bon moment potentiel pour un achat, sans promesse de gain.\n"
+
+                    change_24h = self._get_change_value(market)
+                    change_7d = self._get_weekly_change_value(market)
+
+                    trend_line = self._format_trend_details(change_24h, change_7d)
+                    if trend_line:
+                        msg += f"{trend_line} (plus, c'est en hausse ; moins, c'est en baisse)\n"
+
+                    recommendation_line = self._trend_recommendation(change_24h, change_7d)
+                    if recommendation_line:
+                        msg += f"{recommendation_line}\n"
+
+                    msg += f"Score: {best_opportunity.score}/10 ⭐\n"
+                    msg += f"{best_opportunity.recommendation}\n"
+                    msg += "👉 Plus le score est élevé, plus le scénario semble favorable.\n\n"
+                    gain_line = self._format_gain_estimate(best_symbol, change_24h)
+                    if gain_line:
+                        msg += f"Avec {self._symbol_investment_amount(best_symbol):.0f}€, {gain_line}\n\n"
+            else:
+                msg += "Aucune opportunité identifiée pour le moment.\n\n"
+        else:
+            msg += "Aucune opportunité identifiée pour le moment.\n\n"
+
+        if not has_market_data:
+            msg += "Aucune donnée de marché disponible pour le moment.\n"
+            msg += f"\n🕒 Prochain résumé à {self._next_summary_time()}"
+            return msg
+
+        if self.config.telegram_show_prices:
+            msg += "<b>Prix actuels:</b>\n"
+            for symbol in sorted(markets_data.keys()):
+                if not self._include_symbol_summary(symbol):
+                    continue
+                market = markets_data[symbol]
+                price = self._get_price_value(market)
+                change_24h = self._get_change_value(market)
+                change_7d = self._get_weekly_change_value(market)
+
+                if price is None:
+                    msg += f"⚪ {symbol}: prix indisponible\n"
+                    continue
+
+                emoji = "⚪"
+                if change_24h is not None:
+                    emoji = "📈" if change_24h > 0 else "📉"
+
+                line = f"{emoji} {symbol}: {price:.2f}€"
+
+                trend_line = self._format_trend_details(change_24h, change_7d)
+                if trend_line:
+                    line += f" | {trend_line}"
+
+                recommendation_line = self._trend_recommendation(change_24h, change_7d)
+                if recommendation_line:
+                    line += f" → {recommendation_line}"
+                else:
+                    line += " → Pour l'instant, rien à faire."
+
+                if change_24h is not None:
+                    line += f" ({self._explain_change(change_24h)})"
+
+                msg += f"{line}\n"
+
+                if change_24h is not None:
+                    gain_line = self._format_gain_estimate(symbol, change_24h)
+                    if gain_line:
+                        msg += (
+                            f"   • {gain_line} si tu avais investi {self._symbol_investment_amount(symbol):.0f}€ hier.\n"
+                        )
+
         msg += f"\n🕒 Prochain résumé à {self._next_summary_time()}"
-        
+        msg += "\nℹ️ Astuce : concentre-toi sur les scores élevés et les phrases 'tendance haussière'."
+
         return msg
     
     def _generate_detailed_summary(self, 
@@ -93,30 +178,115 @@ class SummaryService:
         """Résumé détaillé"""
         
         msg = f"📊 <b>RÉSUMÉ DÉTAILLÉ - {datetime.now().strftime('%d/%m %H:%M')}</b>\n\n"
-        
+
+        visible_markets = {
+            symbol: market
+            for symbol, market in markets_data.items()
+            if self._include_symbol_summary(symbol)
+        }
+        visible_predictions = {
+            symbol: pred
+            for symbol, pred in predictions.items()
+            if self._include_symbol_summary(symbol)
+        }
+        visible_opportunities = {
+            symbol: opp
+            for symbol, opp in opportunities.items()
+            if self._include_symbol_summary(symbol)
+        }
+
+        has_market_data = bool(visible_markets)
+
         # Vue d'ensemble
         msg += "<b>🌍 VUE D'ENSEMBLE</b>\n"
-        
-        avg_change = sum(m.current_price.change_24h for m in markets_data.values()) / len(markets_data)
-        trend_emoji = "📈" if avg_change > 0 else "📉"
-        msg += f"{trend_emoji} Tendance globale: {avg_change:+.2f}%\n\n"
-        
+
+        if has_market_data:
+            change_lines = []
+
+            if self.config.telegram_show_trend_24h:
+                changes = [self._get_change_value(m) for m in visible_markets.values()]
+                valid_changes = [c for c in changes if c is not None]
+
+                if valid_changes:
+                    avg_change = sum(valid_changes) / len(valid_changes)
+                    trend_emoji = "📈" if avg_change > 0 else "📉"
+                    change_lines.append(f"{trend_emoji} 24h: {avg_change:+.2f}%")
+                else:
+                    change_lines.append("24h: données indisponibles")
+
+            if self.config.telegram_show_trend_7d:
+                weekly_changes = [self._get_weekly_change_value(m) for m in visible_markets.values()]
+                valid_weekly = [c for c in weekly_changes if c is not None]
+
+                if valid_weekly:
+                    avg_weekly = sum(valid_weekly) / len(valid_weekly)
+                    weekly_emoji = "🚀" if avg_weekly > 0 else "📉"
+                    change_lines.append(f"{weekly_emoji} 7j: {avg_weekly:+.2f}%")
+                else:
+                    change_lines.append("7j: données indisponibles")
+
+            if change_lines:
+                msg += " | ".join(change_lines) + "\n\n"
+            else:
+                msg += "ℹ️ Tendance globale: données indisponibles\n\n"
+        else:
+            msg += "Données de marché indisponibles pour le moment.\n"
+            msg += "Nous conservons néanmoins les meilleures opportunités identifiées.\n\n"
+
         # Meilleures opportunités
-        sorted_opps = sorted(opportunities.items(), key=lambda x: x[1].score, reverse=True)
-        
+        sorted_opps = [item for item in sorted(visible_opportunities.items(), key=lambda x: x[1].score, reverse=True)]
+
         msg += "<b>⭐ TOP OPPORTUNITÉS</b>\n"
+        if not sorted_opps:
+            msg += "Aucune opportunité analysée pour le moment.\n"
         for symbol, opp in sorted_opps[:3]:
-            market = markets_data[symbol]
-            pred = predictions.get(symbol)
-            
+            market = visible_markets.get(symbol) if has_market_data else None
+            pred = visible_predictions.get(symbol)
+
             msg += f"\n<b>{symbol}</b> - Score {opp.score}/10\n"
-            msg += f"Prix: {market.current_price.price_eur:.2f}€ "
-            msg += f"({market.current_price.change_24h:+.1f}%)\n"
-            
+
+            price = self._get_price_value(market)
+            change = self._get_change_value(market) if market else None
+            weekly_change = self._get_weekly_change_value(market) if market else None
+
+            if price is not None:
+                msg += f"Prix: {price:.2f}€\n"
+                trend_line = self._format_trend_details(change, weekly_change)
+                if trend_line:
+                    msg += f"Tendance: {trend_line}\n"
+            else:
+                msg += "Prix: données indisponibles\n"
+                if change is not None and self.config.telegram_show_trend_24h:
+                    msg += f"Variation 24h: {change:+.1f}%\n"
+                elif self.config.telegram_show_trend_24h:
+                    msg += "Variation 24h: indisponible\n"
+
+                if weekly_change is not None and self.config.telegram_show_trend_7d:
+                    msg += f"Variation 7j: {weekly_change:+.1f}%\n"
+                elif self.config.telegram_show_trend_7d:
+                    msg += "Variation 7j: indisponible\n"
+
+            if price is not None and change is None:
+                if self.config.telegram_show_trend_24h:
+                    msg += "Variation 24h: indisponible\n"
+
+            recommendation_line = self._trend_recommendation(change, weekly_change)
+            if recommendation_line:
+                msg += f"Recommandation: {recommendation_line}\n"
+
             if pred:
                 msg += f"Prédiction: {pred.direction} {pred.prediction_type.value}\n"
-            
-            msg += f"RSI: {market.technical_indicators.rsi:.0f}\n"
+
+            change = self._get_change_value(market) if market else None
+            gain_line = self._format_gain_estimate(symbol, change)
+            if gain_line:
+                msg += f"Gains/pertes estimés sur 24h: {gain_line}\n"
+
+            rsi = self._get_rsi_value(market)
+            if rsi is not None:
+                msg += f"RSI: {rsi:.0f}\n"
+            else:
+                msg += "RSI: indisponible\n"
         
         # À éviter
         to_avoid = [item for item in sorted_opps if item[1].score < 5]
@@ -126,28 +296,63 @@ class SummaryService:
                 msg += f"• {symbol} (Score: {opp.score}/10)\n"
         
         # Fear & Greed
-        fgi_values = [m.fear_greed_index for m in markets_data.values() 
-                     if m.fear_greed_index is not None]
+        fgi_values = [
+            m.fear_greed_index
+            for symbol, m in markets_data.items()
+            if m.fear_greed_index is not None and self._include_symbol_summary(symbol)
+        ]
         if fgi_values:
             avg_fgi = sum(fgi_values) / len(fgi_values)
             msg += f"\n<b>😱 Fear & Greed: {int(avg_fgi)}/100</b>\n"
-            
+
             if avg_fgi < 30:
                 msg += "Peur extrême - Opportunité d'achat\n"
             elif avg_fgi > 70:
                 msg += "Avidité extrême - Prudence recommandée\n"
+        else:
+            msg += "\n<b>😱 Fear & Greed:</b> données indisponibles\n"
         
         msg += f"\n🕒 Prochain résumé: {self._next_summary_time()}"
         
         return msg
+
+    @staticmethod
+    def _explain_change(change: Optional[float]) -> str:
+        if change is None:
+            return "pas de variation"
+        if change > 5:
+            return "forte hausse aujourd'hui"
+        if change > 0.5:
+            return "légère hausse aujourd'hui"
+        if change > -0.5:
+            return "quasi stable"
+        if change > -5:
+            return "légère baisse aujourd'hui"
+        return "forte baisse aujourd'hui"
+
+    def _format_gain_estimate(self, symbol: str, change_24h: Optional[float]) -> Optional[str]:
+        if change_24h is None:
+            return None
+        investment = self._symbol_investment_amount(symbol)
+        if investment <= 0:
+            return None
+        gain = investment * (change_24h / 100)
+        if abs(gain) < 0.5:
+            return "la valeur serait restée quasiment stable"
+        if gain > 0:
+            return f"tu aurais gagné environ {gain:.2f}€"
+        return f"tu aurais perdu environ {abs(gain):.2f}€"
     
     def _next_summary_time(self) -> str:
         """Calcule l'heure du prochain résumé"""
         current_hour = datetime.now().hour
         
         # Trouver la prochaine heure de résumé
+        if not self.config.summary_hours:
+            return "indisponible"
+
         next_hours = [h for h in self.config.summary_hours if h > current_hour]
-        
+
         if next_hours:
             return f"{next_hours[0]}:00"
         else:
@@ -158,27 +363,44 @@ class SummaryService:
         """Résumé spécial du matin"""
         
         msg = "☀️ <b>BONJOUR - RÉSUMÉ DU MATIN</b>\n\n"
-        
-        # Opportunités du jour
-        best_opps = sorted(opportunities.items(), key=lambda x: x[1].score, reverse=True)[:2]
-        
-        msg += "<b>🎯 OPPORTUNITÉS DU JOUR</b>\n"
-        for symbol, opp in best_opps:
-            market = markets_data[symbol]
-            msg += f"\n{symbol}: {opp.score}/10 ⭐\n"
-            msg += f"Prix: {market.current_price.price_eur:.2f}€\n"
-            msg += f"{opp.recommendation}\n"
-        
+
+        has_market_data = bool(markets_data)
+
+        if opportunities:
+            best_opps = sorted(opportunities.items(), key=lambda x: x[1].score, reverse=True)[:2]
+            msg += "<b>🎯 OPPORTUNITÉS DU JOUR</b>\n"
+            for symbol, opp in best_opps:
+                msg += f"\n{symbol}: {opp.score}/10 ⭐\n"
+                market = markets_data.get(symbol) if has_market_data else None
+                price = self._get_price_value(market)
+                if price is not None:
+                    msg += f"Prix: {price:.2f}€\n"
+                else:
+                    msg += "Prix: données indisponibles\n"
+                msg += f"{opp.recommendation}\n"
+        else:
+            msg += "Aucune opportunité détectée pour le moment.\n"
+
         # Changements nocturnes
         msg += "\n<b>📊 CHANGEMENTS 24H</b>\n"
+        if not has_market_data:
+            msg += "Données de marché indisponibles pour le moment.\n"
+            msg += "\n<i>Bonne journée de trading ! 🚀</i>"
+            return msg
+
         for symbol in sorted(markets_data.keys()):
             market = markets_data[symbol]
-            change = market.current_price.change_24h
+            change = self._get_change_value(market)
+
+            if change is None:
+                msg += f"⚪ {symbol}: variation indisponible\n"
+                continue
+
             emoji = "🟢" if change > 0 else "🔴"
             msg += f"{emoji} {symbol}: {change:+.1f}%\n"
-        
+
         msg += "\n<i>Bonne journée de trading ! 🚀</i>"
-        
+
         return msg
     
     def generate_evening_summary(self, markets_data: Dict[str, MarketData],
@@ -186,39 +408,144 @@ class SummaryService:
         """Résumé spécial du soir"""
         
         msg = "🌙 <b>RÉSUMÉ DU SOIR</b>\n\n"
-        
+
+        has_market_data = bool(markets_data)
+
         # Bilan de la journée
         msg += "<b>📈 BILAN DE LA JOURNÉE</b>\n"
-        
-        gainers = []
-        losers = []
-        
-        for symbol, market in markets_data.items():
-            change = market.current_price.change_24h
-            if change > 0:
-                gainers.append((symbol, change))
-            else:
-                losers.append((symbol, change))
-        
-        if gainers:
-            gainers.sort(key=lambda x: x[1], reverse=True)
-            msg += "\n🟢 Meilleurs performances:\n"
-            for symbol, change in gainers[:3]:
-                msg += f"  • {symbol}: +{change:.1f}%\n"
-        
-        if losers:
-            losers.sort(key=lambda x: x[1])
-            msg += "\n🔴 Plus grosses baisses:\n"
-            for symbol, change in losers[:3]:
-                msg += f"  • {symbol}: {change:.1f}%\n"
-        
+
+        if has_market_data:
+            gainers = []
+            losers = []
+
+            for symbol, market in markets_data.items():
+                change = self._get_change_value(market)
+                if change is None:
+                    continue
+                if change > 0:
+                    gainers.append((symbol, change))
+                else:
+                    losers.append((symbol, change))
+
+            if gainers:
+                gainers.sort(key=lambda x: x[1], reverse=True)
+                msg += "\n🟢 Meilleurs performances:\n"
+                for symbol, change in gainers[:3]:
+                    msg += f"  • {symbol}: +{change:.1f}%\n"
+
+            if losers:
+                losers.sort(key=lambda x: x[1])
+                msg += "\n🔴 Plus grosses baisses:\n"
+                for symbol, change in losers[:3]:
+                    msg += f"  • {symbol}: {change:.1f}%\n"
+
+            if not gainers and not losers:
+                msg += "\nAucune variation disponible pour le moment.\n"
+        else:
+            msg += "Données de marché indisponibles pour le moment.\n"
+
         # Opportunités pour demain
-        best_opp = max(opportunities.items(), key=lambda x: x[1].score)
-        if best_opp[1].score >= 6:
-            msg += f"\n<b>💡 OPPORTUNITÉ POUR DEMAIN</b>\n"
-            msg += f"{best_opp[0]} - Score {best_opp[1].score}/10\n"
-            msg += f"{best_opp[1].recommendation}\n"
-        
+        if opportunities:
+            best_opp = max(opportunities.items(), key=lambda x: x[1].score)
+            if best_opp[1].score >= 6:
+                msg += f"\n<b>💡 OPPORTUNITÉ POUR DEMAIN</b>\n"
+                msg += f"{best_opp[0]} - Score {best_opp[1].score}/10\n"
+                msg += f"{best_opp[1].recommendation}\n"
+            else:
+                msg += "\nAucune opportunité forte identifiée pour demain.\n"
+        else:
+            msg += "\nAucune opportunité identifiée pour demain.\n"
+
         msg += "\n<i>Bonne soirée ! 🌟</i>"
-        
+
         return msg
+
+    @staticmethod
+    def _get_price_value(market: Optional[MarketData]) -> Optional[float]:
+        if not market or not market.current_price:
+            return None
+
+        price = market.current_price.price_eur
+        return price if price is not None else None
+
+    @staticmethod
+    def _get_change_value(market: Optional[MarketData]) -> Optional[float]:
+        if not market or not market.current_price:
+            return None
+
+        change = market.current_price.change_24h
+        return change if change is not None else None
+
+    @staticmethod
+    def _get_weekly_change_value(market: Optional[MarketData]) -> Optional[float]:
+        if not market:
+            return None
+
+        weekly = getattr(market, "weekly_change", None)
+        return weekly if weekly is not None else None
+
+    @staticmethod
+    def _get_rsi_value(market: Optional[MarketData]) -> Optional[float]:
+        if not market or not market.technical_indicators:
+            return None
+
+        rsi = market.technical_indicators.rsi
+        return rsi if rsi is not None else None
+
+    def _format_price_for_summary(self, market: Optional[MarketData]) -> str:
+        price = self._get_price_value(market)
+        if price is not None:
+            return f"{price:.2f}€"
+        return "données de prix indisponibles"
+
+    def _format_trend_details(self,
+                              change_24h: Optional[float],
+                              change_7d: Optional[float]) -> str:
+        parts = []
+
+        if self.config.telegram_show_trend_24h:
+            if change_24h is None:
+                parts.append("24h: variation indisponible")
+            else:
+                parts.append(f"24h: {change_24h:+.1f}%")
+
+        if self.config.telegram_show_trend_7d:
+            if change_7d is None:
+                parts.append("7j: variation indisponible")
+            else:
+                parts.append(f"7j: {change_7d:+.1f}%")
+
+        return " | ".join(parts)
+
+    def _trend_recommendation(self,
+                              change_24h: Optional[float],
+                              change_7d: Optional[float]) -> str:
+        if not self.config.telegram_show_recommendations:
+            return ""
+
+        buy_signal = False
+        sell_signal = False
+
+        if change_24h is None and change_7d is None:
+            return ""
+
+        if change_24h is not None:
+            if change_24h >= self.config.trend_buy_threshold_24h:
+                buy_signal = True
+            if change_24h <= self.config.trend_sell_threshold_24h:
+                sell_signal = True
+
+        if change_7d is not None:
+            if change_7d >= self.config.trend_buy_threshold_7d:
+                buy_signal = True
+            if change_7d <= self.config.trend_sell_threshold_7d:
+                sell_signal = True
+
+        if buy_signal and sell_signal:
+            return "🤔 Signal mixte — surveiller le marché"
+        if buy_signal:
+            return "✅ Tendance haussière — opportunité d'achat"
+        if sell_signal:
+            return "⚠️ Tendance baissière — envisager de vendre"
+
+        return "⏳ Aucun signal clair"

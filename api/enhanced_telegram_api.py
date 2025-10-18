@@ -13,13 +13,15 @@ from core.models import Alert
 class EnhancedTelegramAPI:
     """Client API Telegram amélioré avec retry et queue"""
     
-    def __init__(self, bot_token: str, chat_id: str, timeout: int = 10, 
-                 max_retries: int = 3, retry_delay: int = 2):
+    def __init__(self, bot_token: str, chat_id: str, timeout: int = 10,
+                 max_retries: int = 3, retry_delay: int = 2,
+                 message_delay: float = 0.5):
         self.bot_token = bot_token
         self.chat_id = chat_id
         self.timeout = timeout
         self.max_retries = max_retries
         self.retry_delay = retry_delay
+        self.message_delay = message_delay
         self.base_url = f"https://api.telegram.org/bot{bot_token}"
         self.session = requests.Session()
         
@@ -71,8 +73,8 @@ class EnhancedTelegramAPI:
                 else:
                     self.stats["failed"] += 1
                 
-                # Rate limiting
-                time.sleep(0.5)
+                # Rate limiting configurable
+                time.sleep(max(0.0, self.message_delay))
                 
             except Empty:
                 continue
@@ -163,6 +165,11 @@ class EnhancedTelegramAPI:
             return False
         
         try:
+            if hasattr(photo, "seek"):
+                try:
+                    photo.seek(0)
+                except Exception:
+                    pass
             url = f"{self.base_url}/sendPhoto"
             files = {'photo': ('chart.png', photo, 'image/png')}
             data = {
@@ -233,6 +240,18 @@ class EnhancedTelegramAPI:
         except Exception as e:
             print(f"Erreur test connexion: {e}")
             return False
+    
+    def get_bot_info(self) -> Optional[dict]:
+        """Récupère les informations du bot (username, etc.)."""
+        try:
+            url = f"{self.base_url}/getMe"
+            response = self.session.get(url, timeout=self.timeout)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("result")
+        except Exception as e:
+            print(f"Erreur récupération info bot: {e}")
+            return None
     
     def get_stats(self) -> dict:
         """Retourne les statistiques"""
