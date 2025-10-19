@@ -5,7 +5,7 @@ Backtesting Engine - Test de stratégies sur données historiques
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Optional, Callable
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, timezone
 from dataclasses import dataclass, field
 
 from core.models import CryptoPrice, MarketData, TechnicalIndicators

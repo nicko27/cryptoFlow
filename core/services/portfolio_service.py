@@ -3,7 +3,7 @@ Portfolio Service - Gestion du portfolio utilisateur
 """
 
 from typing import Dict, List, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timezone
 from core.models import Portfolio, Position, CryptoPrice
 
 

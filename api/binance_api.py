@@ -4,7 +4,7 @@ API Client pour Binance [FIXED avec Revolut]
 
 import requests
 from typing import List, Dict, Any, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timezone
 from core.models import CryptoPrice, TechnicalIndicators
 
 

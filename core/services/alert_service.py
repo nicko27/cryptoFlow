@@ -3,7 +3,7 @@ Alert Service - Gestion des alertes [WITH OPEN INTEREST + IMPROVED ERROR HANDLIN
 """
 
 from typing import List, Optional, Callable, Dict
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timezone
 from core.models import (
     BotConfiguration, MarketData, Alert, AlertType,
     AlertLevel, Prediction, PriceLevel

@@ -6,7 +6,7 @@ import matplotlib
 matplotlib.use('Agg')  # Backend non-interactif
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from io import BytesIO
 from core.models import CryptoPrice, MarketData

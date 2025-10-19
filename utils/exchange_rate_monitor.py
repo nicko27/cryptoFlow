@@ -4,7 +4,7 @@ Compare Revolut vs taux publics vs Binance
 """
 
 from typing import Dict, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timezone
 from api.revolut_api import RevolutAPI
 import requests
 

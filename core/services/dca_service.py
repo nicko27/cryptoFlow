@@ -3,7 +3,7 @@ DCA Service - Suggestions d'achat échelonné (Dollar Cost Averaging)
 """
 
 from typing import List, Dict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from core.models import MarketData, Prediction, OpportunityScore
 
 
@@ -67,7 +67,7 @@ class DCAService:
                 "entry_number": i + 1,
                 "amount_eur": amount_per_entry,
                 "target_price": target_price,
-                "estimated_date": datetime.now() + timedelta(days=i * (timeframe_days // entries)),
+                "estimated_date": datetime.now(timezone.utc) + timedelta(days=i * (timeframe_days // entries)),
                 "condition": self._get_entry_condition(i, opportunity, prediction)
             }
             entries_list.append(entry)

@@ -4,7 +4,7 @@ Database Service - Persistance des données
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, timezone
 from typing import List, Optional, Dict
 import json
 

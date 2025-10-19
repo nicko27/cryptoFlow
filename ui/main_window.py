@@ -4,7 +4,7 @@ Version améliorée avec intégration du système de notifications avancé
 """
 
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timezone
 from typing import Dict, Optional, List
 import yaml
 
@@ -205,13 +205,13 @@ class MainWindow(QMainWindow):
         
         self.status_bar.addPermanentWidget(QLabel("   |   "))
         
-        self.time_label = QLabel(datetime.now().strftime("%H:%M:%S"))
+        self.time_label = QLabel(datetime.now(timezone.utc).strftime("%H:%M:%S"))
         self.status_bar.addPermanentWidget(self.time_label)
         
         # Timer pour mettre à jour l'heure
         time_timer = QTimer(self)
         time_timer.timeout.connect(lambda: self.time_label.setText(
-            datetime.now().strftime("%H:%M:%S")
+            datetime.now(timezone.utc).strftime("%H:%M:%S")
         ))
         time_timer.start(1000)
     
@@ -775,7 +775,7 @@ class MainWindow(QMainWindow):
             if market_data:
                 self.market_data_cache[self.current_symbol] = market_data
                 self._update_dashboard(market_data)
-                self.last_update_label.setText(datetime.now().strftime("%H:%M:%S"))
+                self.last_update_label.setText(datetime.now(timezone.utc).strftime("%H:%M:%S"))
             
         except Exception as e:
             self.logger.error(f"Erreur refresh données: {e}")
@@ -944,7 +944,7 @@ class MainWindow(QMainWindow):
     def _update_scheduled_notifications(self):
         """Met à jour l'affichage des prochaines notifications"""
         
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         current_hour = now.hour
         
         next_notifs = []
@@ -1022,7 +1022,7 @@ class MainWindow(QMainWindow):
             
             message = (
                 "🧪 **Test du bot Crypto**\n\n"
-                f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+                f"Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}\n"
                 f"Cryptos suivies: {', '.join(self.config.crypto_symbols)}\n\n"
                 "✅ La connexion fonctionne parfaitement !"
             )
@@ -1073,8 +1073,8 @@ class MainWindow(QMainWindow):
                 all_markets=self.market_data_cache,
                 all_predictions=self.predictions_cache,
                 all_opportunities=self.opportunities_cache,
-                current_hour=datetime.now().hour,
-                current_day_of_week=datetime.now().weekday()
+                current_hour=datetime.now(timezone.utc).hour,
+                current_day_of_week=datetime.now(timezone.utc).weekday()
             )
             
             if message:

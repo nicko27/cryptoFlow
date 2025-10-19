@@ -3,7 +3,7 @@ Service de génération de notifications amélioré
 Utilise le nouveau système de configuration ultra-paramétrable
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict, List
 from core.models import MarketData, Prediction, OpportunityScore
 from core.models.notification_config import (

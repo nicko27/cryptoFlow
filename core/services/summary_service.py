@@ -3,7 +3,7 @@ Summary Service - Génération de résumés automatiques
 """
 
 from typing import Dict, Optional
-from datetime import datetime, time as dt_time
+from datetime import datetime, time as dt_time, timezone
 from core.models import MarketData, Prediction, OpportunityScore, BotConfiguration
 
 
@@ -30,7 +30,7 @@ class SummaryService:
     
     def should_send_summary(self) -> bool:
         """Détermine s'il faut envoyer un résumé"""
-        current_hour = datetime.now().hour
+        current_hour = datetime.now(timezone.utc).hour
         
         # Vérifier si c'est une heure de résumé configurée
         if current_hour not in self.config.summary_hours:
@@ -50,7 +50,7 @@ class SummaryService:
     
     def _is_quiet_hours(self) -> bool:
         """Vérifie si on est en heures silencieuses"""
-        current_hour = datetime.now().hour
+        current_hour = datetime.now(timezone.utc).hour
         start = self.config.quiet_start_hour
         end = self.config.quiet_end_hour
         
@@ -75,7 +75,7 @@ class SummaryService:
                                  opportunities: Dict[str, OpportunityScore]) -> str:
         """Résumé simple et clair"""
         
-        msg = f"📊 <b>RÉSUMÉ {datetime.now().strftime('%H:%M')}</b>\n\n"
+        msg = f"📊 <b>RÉSUMÉ {datetime.now(timezone.utc).strftime('%H:%M')}</b>\n\n"
         msg += "Je résume en langage courant ce qu'il faut savoir.\n\n"
         has_market_data = bool(markets_data)
 
@@ -177,7 +177,7 @@ class SummaryService:
                                    opportunities: Dict[str, OpportunityScore]) -> str:
         """Résumé détaillé"""
         
-        msg = f"📊 <b>RÉSUMÉ DÉTAILLÉ - {datetime.now().strftime('%d/%m %H:%M')}</b>\n\n"
+        msg = f"📊 <b>RÉSUMÉ DÉTAILLÉ - {datetime.now(timezone.utc).strftime('%d/%m %H:%M')}</b>\n\n"
 
         visible_markets = {
             symbol: market
@@ -345,7 +345,7 @@ class SummaryService:
     
     def _next_summary_time(self) -> str:
         """Calcule l'heure du prochain résumé"""
-        current_hour = datetime.now().hour
+        current_hour = datetime.now(timezone.utc).hour
         
         # Trouver la prochaine heure de résumé
         if not self.config.summary_hours:

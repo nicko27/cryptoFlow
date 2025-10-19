@@ -3,7 +3,7 @@ Market Service - Gestion des données de marché [TIMEZONE FIXED]
 """
 
 from typing import List, Optional, Dict
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, timezone
 from core.models import (
     MarketData, CryptoPrice, TechnicalIndicators,
     Prediction, PredictionType, OpportunityScore

@@ -5,7 +5,7 @@ Database Models - Modèles SQLAlchemy pour persistance
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean, Text, ForeignKey, JSON
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timezone
 
 Base = declarative_base()
 

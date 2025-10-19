@@ -4,7 +4,7 @@ Portfolio & Risk Management - Gestion complète du portfolio et du risque
 
 import numpy as np
 from typing import List, Dict, Optional, Tuple
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, timezone
 from dataclasses import dataclass, field
 
 from core.models import CryptoPrice, MarketData

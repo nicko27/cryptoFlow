@@ -9,7 +9,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 import mplfinance as mpf
 import pandas as pd
 from typing import List, Optional, Tuple
-from datetime import datetime
+from datetime import datetime, timezone
 import io
 
 from core.models import CryptoPrice, MarketData, TechnicalIndicators

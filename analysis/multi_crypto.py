@@ -5,7 +5,7 @@ Multi-Crypto Analysis - Analyse comparative et corrélations entre cryptos
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Optional, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from scipy.stats import pearsonr
 from sklearn.decomposition import PCA
 
@@ -146,7 +146,7 @@ class MultiCryptoAnalyzer:
                 continue
             
             # Filtrer sur la période
-            cutoff = datetime.now() - timedelta(days=days)
+            cutoff = datetime.now(timezone.utc) - timedelta(days=days)
             recent_prices = [p for p in prices if p.timestamp >= cutoff]
             
             if len(recent_prices) < 2:

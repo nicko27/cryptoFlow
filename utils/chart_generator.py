@@ -5,7 +5,7 @@ Module de graphiques avancés - Tendance 7 jours
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.figure import Figure
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, timezone
 from typing import List, Dict, Optional
 import io
 from core.models import CryptoPrice, MarketData

@@ -3,7 +3,7 @@ Report Service - Génération de rapports complets
 """
 
 from typing import Dict, List, Optional, Tuple, Any
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, timezone
 from statistics import stdev
 from itertools import combinations
 from core.models import (
@@ -68,7 +68,7 @@ class ReportService:
 
         # En-tête
         report.write("RAPPORT COMPLET - CRYPTO BOT v3.0\n")
-        report.write(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n\n")
+        report.write(f"{datetime.now(timezone.utc).strftime('%d/%m/%Y %H:%M:%S')}\n\n")
 
         if self._section_enabled("executive_summary"):
             report.write(self._generate_executive_summary(markets_data, opportunities))
@@ -353,7 +353,7 @@ class ReportService:
         return sorted(set(result))
 
     def _current_hour(self) -> int:
-        return datetime.now().hour
+        return datetime.now(timezone.utc).hour
 
     def _coin_hours_allowed(self, symbol: str, key: str) -> bool:
         hours_value = self._coin_option(symbol, key, None)

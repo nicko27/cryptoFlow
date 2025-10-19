@@ -5,7 +5,7 @@ Logger Utility - Configuration du système de logs
 import logging
 import sys
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def setup_logger(name: str = "CryptoBot", 

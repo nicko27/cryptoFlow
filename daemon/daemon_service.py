@@ -4,7 +4,7 @@ Daemon Service - Exécution en arrière-plan avec gestion d'erreurs robuste
 
 import time
 import signal
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timezone
 from typing import Optional, Dict, Any, List
 from threading import Event
 
@@ -261,8 +261,8 @@ class DaemonService:
                     all_markets=markets,  # Toutes les données marché
                     all_predictions=predictions,  # Toutes les prédictions
                     all_opportunities=opportunities,  # Toutes les opportunités
-                    current_hour=datetime.now().hour,
-                    current_day_of_week=datetime.now().weekday()
+                    current_hour=datetime.now(timezone.utc).hour,
+                    current_day_of_week=datetime.now(timezone.utc).weekday()
                 )
                 if notification:
                     sent = self.telegram_api.send_message(notification, use_queue=True)
@@ -283,7 +283,7 @@ class DaemonService:
 
     def _is_quiet_hours(self) -> bool:
         """Vérifie si on est en heures silencieuses"""
-        current_hour = datetime.now().hour
+        current_hour = datetime.now(timezone.utc).hour
         start = self.config.quiet_start_hour
         end = self.config.quiet_end_hour
         
@@ -297,7 +297,7 @@ class DaemonService:
         if not self.config.summary_hours:
             return False
         
-        current_hour = datetime.now().hour
+        current_hour = datetime.now(timezone.utc).hour
         if current_hour not in self.config.summary_hours:
             return False
         
@@ -415,7 +415,7 @@ class DaemonService:
             header_lines = [
                 "🚀 <b>Crypto Bot Démarré</b>",
                 "",
-                f"📅 {datetime.now().strftime('%d/%m/%Y à %H:%M')}",
+                f"📅 {datetime.now(timezone.utc).strftime('%d/%m/%Y à %H:%M')}",
                 f"🔄 Vérification toutes les {self.config.check_interval_seconds // 60} minutes",
             ]
 

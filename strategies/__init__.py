@@ -1,5 +1,1 @@
-"""
-Strategies Package
-"""
-
-__all__ = []
+"""strategies Package"""

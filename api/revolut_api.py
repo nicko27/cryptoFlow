@@ -4,7 +4,7 @@ API Client pour Revolut - Taux de change
 
 import requests
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timezone
 
 
 class RevolutAPI:

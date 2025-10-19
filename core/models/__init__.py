@@ -3,7 +3,7 @@ Models - Représentation des données du bot crypto [TIMEZONE FIXED]
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timezone
 from typing import Optional, List, Dict, Any
 from enum import Enum
 

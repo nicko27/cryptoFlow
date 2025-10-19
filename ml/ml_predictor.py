@@ -5,7 +5,7 @@ Machine Learning Module - Prédictions avancées avec LSTM, Random Forest, etc.
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Tuple, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
@@ -242,7 +242,7 @@ class MLPredictor:
             return
         
         if filename is None:
-            filename = f"{self.model_type}_{datetime.now().strftime('%Y%m%d')}.pkl"
+            filename = f"{self.model_type}_{datetime.now(timezone.utc).strftime('%Y%m%d')}.pkl"
         
         filepath = self.models_dir / filename
         
