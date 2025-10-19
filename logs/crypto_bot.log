@@ -8396,3 +8396,141 @@ TypeError: __init__() got an unexpected keyword argument 'open_interest'
 2025-10-19 18:48:03 | INFO     | CryptoBotDaemon | Signal 15 (SIGTERM) reçu, arrêt du démon...
 2025-10-19 18:48:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
 2025-10-19 18:48:13 | INFO     | CryptoBotDaemon | Signal 15 (SIGTERM) reçu, arrêt du démon...
+2025-10-19 21:11:12 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 21:12:20 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 21:14:16 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 21:14:17 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-19 21:14:17 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-19 21:14:23 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-19 21:14:23 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 21:14:23 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-19 21:14:23 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 21:14:23 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-19 21:14:23 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-19 21:14:23 | ERROR    | CryptoBotGUI | Erreur démarrage daemon: 'BotConfiguration' object has no attribute 'enable_night_mode'
+2025-10-19 21:14:38 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-19 21:16:00 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 21:16:01 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-19 21:16:01 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-19 21:16:09 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-19 21:16:09 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 21:16:09 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-19 21:16:09 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 21:16:09 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-19 21:16:09 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-19 21:16:09 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-19 21:16:09 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 21:16:09 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-19 21:16:09 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-19 21:16:09 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-19 21:16:11 | ERROR    | CryptoBotDaemon | Erreur récupération BTC: __init__() missing 1 required positional argument: 'symbol'
+2025-10-19 21:16:13 | ERROR    | CryptoBotDaemon | Erreur récupération ETH: __init__() missing 1 required positional argument: 'symbol'
+2025-10-19 21:16:15 | ERROR    | CryptoBotDaemon | Erreur récupération SOL: __init__() missing 1 required positional argument: 'symbol'
+2025-10-19 21:16:15 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-19 21:16:15 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 21:16:15 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-19 21:16:15 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 21:16:15 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-19 21:16:15 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 21:16:17 | INFO     | CryptoBotDaemon | 💰 Prix : 93519.99 € (+2.08% 24h)
+2025-10-19 21:16:17 | ERROR    | CryptoBotDaemon | ❌ Erreur prédiction BTC: __init__() missing 1 required positional argument: 'symbol'
+2025-10-19 21:16:17 | ERROR    | CryptoBotDaemon | ❌ Erreur calcul opportunité BTC: 'NoneType' object has no attribute 'prediction_type'
+2025-10-19 21:16:17 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-19 21:16:17 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-19 21:16:17 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 21:16:18 | INFO     | CryptoBotDaemon | 💰 Prix : 3419.00 € (+2.62% 24h)
+2025-10-19 21:16:18 | ERROR    | CryptoBotDaemon | ❌ Erreur prédiction ETH: __init__() missing 1 required positional argument: 'symbol'
+2025-10-19 21:16:18 | ERROR    | CryptoBotDaemon | ❌ Erreur calcul opportunité ETH: 'NoneType' object has no attribute 'prediction_type'
+2025-10-19 21:16:18 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-19 21:16:18 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-19 21:16:18 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 21:16:20 | INFO     | CryptoBotDaemon | 💰 Prix : 162.05 € (+1.67% 24h)
+2025-10-19 21:16:20 | ERROR    | CryptoBotDaemon | ❌ Erreur prédiction SOL: __init__() missing 1 required positional argument: 'symbol'
+2025-10-19 21:16:20 | ERROR    | CryptoBotDaemon | ❌ Erreur calcul opportunité SOL: 'NoneType' object has no attribute 'prediction_type'
+2025-10-19 21:16:20 | ERROR    | CryptoBotDaemon | ❌ Erreur vérification alertes SOL: __init__() got an unexpected keyword argument 'alert_level'
+2025-10-19 21:16:20 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs (0 consécutives), Uptime: 0h0m
+2025-10-19 21:16:41 | INFO     | CryptoBotDaemon | Signal 2 (SIGINT) reçu, arrêt du démon...
+2025-10-19 21:16:41 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 21:16:41 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-19 21:16:41 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 21:16:41 | INFO     | CryptoBotDaemon | Uptime : 0h 0m
+2025-10-19 21:16:41 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-19 21:16:41 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-19 21:16:41 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-19 21:16:41 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-19 21:16:41 | INFO     | CryptoBotGUI | Daemon démarré
+2025-10-19 21:16:52 | INFO     | CryptoBotDaemon | Signal 15 (SIGTERM) reçu, arrêt du démon...
+2025-10-19 21:21:00 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 21:21:01 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-19 21:21:01 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-19 21:32:08 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 21:32:09 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-19 21:32:09 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-19 21:32:30 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-19 21:32:30 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 21:32:30 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-19 21:32:30 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 21:32:30 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-19 21:32:30 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-19 21:32:30 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-19 21:32:30 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 21:32:30 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-19 21:32:30 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-19 21:32:30 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-19 21:32:33 | ERROR    | CryptoBotDaemon | Erreur récupération BTC: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 21:32:34 | ERROR    | CryptoBotDaemon | Erreur récupération ETH: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 21:32:36 | ERROR    | CryptoBotDaemon | Erreur récupération SOL: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 21:32:36 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-19 21:32:36 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 21:32:36 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-19 21:32:36 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 21:32:36 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-19 21:32:36 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 21:32:38 | INFO     | CryptoBotDaemon | 💰 Prix : 93409.01 € (+1.89% 24h)
+2025-10-19 21:32:38 | ERROR    | CryptoBotDaemon | ❌ Erreur prédiction BTC: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 21:32:38 | ERROR    | CryptoBotDaemon | ❌ Erreur calcul opportunité BTC: 'NoneType' object has no attribute 'prediction_type'
+2025-10-19 21:32:38 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-19 21:32:38 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-19 21:32:38 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 21:32:40 | INFO     | CryptoBotDaemon | 💰 Prix : 3417.70 € (+2.52% 24h)
+2025-10-19 21:32:40 | ERROR    | CryptoBotDaemon | ❌ Erreur prédiction ETH: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 21:32:40 | ERROR    | CryptoBotDaemon | ❌ Erreur calcul opportunité ETH: 'NoneType' object has no attribute 'prediction_type'
+2025-10-19 21:32:40 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-19 21:32:40 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-19 21:32:40 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 21:32:42 | INFO     | CryptoBotDaemon | 💰 Prix : 162.00 € (+1.66% 24h)
+2025-10-19 21:32:42 | ERROR    | CryptoBotDaemon | ❌ Erreur prédiction SOL: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 21:32:42 | ERROR    | CryptoBotDaemon | ❌ Erreur calcul opportunité SOL: 'NoneType' object has no attribute 'prediction_type'
+2025-10-19 21:32:42 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-19 21:32:42 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 0 erreurs (0 consécutives), Uptime: 0h0m
+2025-10-19 21:32:55 | INFO     | CryptoBotDaemon | Signal 2 (SIGINT) reçu, arrêt du démon...
+2025-10-19 21:32:55 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 21:32:55 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-19 21:32:55 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 21:32:55 | INFO     | CryptoBotDaemon | Uptime : 0h 0m
+2025-10-19 21:32:55 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-19 21:32:55 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-19 21:32:55 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-19 21:32:55 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-19 21:32:55 | INFO     | CryptoBotGUI | Daemon démarré
+2025-10-19 21:33:04 | INFO     | CryptoBotDaemon | Signal 15 (SIGTERM) reçu, arrêt du démon...
+2025-10-19 21:40:31 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 21:41:34 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml

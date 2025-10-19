@@ -243,8 +243,8 @@ class MarketService:
             direction=direction,
             trend_score=trend_score,
             signals=signals,
-            target_price_high=target_high,
-            target_price_low=target_low,
+            target_high=target_high,
+            target_low=target_low,
             timeframe_short=current_price * short_mult,
             timeframe_medium=current_price * medium_mult,
             timeframe_long=current_price * long_mult

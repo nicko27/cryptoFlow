@@ -3,7 +3,7 @@ Market Service - Gestion des données de marché [TIMEZONE FIXED]
 """
 
 from typing import List, Optional, Dict
-from datetime import datetime, timedelta, timezone, timezone
+from datetime import datetime, timedelta, timezone
 from core.models import (
     MarketData, CryptoPrice, TechnicalIndicators,
     Prediction, PredictionType, OpportunityScore
@@ -46,10 +46,16 @@ class MarketService:
         fear_greed = self.binance_api.get_fear_greed_index()
         weekly_change = self.binance_api.get_price_change_percent(symbol, interval="1d", periods=7)
 
+        price_change_24h = current_price.change_24h if current_price else None
+        volume_24h = current_price.volume_24h if current_price else None
+
         market_data = MarketData(
             symbol=symbol,
             current_price=current_price,
             technical_indicators=technical_indicators,
+            price_change_24h=price_change_24h,
+            price_change_7d=weekly_change,
+            volume_24h=volume_24h,
             funding_rate=funding_rate,
             open_interest=open_interest,
             fear_greed_index=fear_greed,
@@ -237,8 +243,8 @@ class MarketService:
             direction=direction,
             trend_score=trend_score,
             signals=signals,
-            target_high=target_high,
-            target_low=target_low,
+            target_price_high=target_high,
+            target_price_low=target_low,
             timeframe_short=current_price * short_mult,
             timeframe_medium=current_price * medium_mult,
             timeframe_long=current_price * long_mult

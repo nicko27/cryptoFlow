@@ -6,7 +6,7 @@ FIXED: Problèmes 10, 18, 19 - Validation améliorée des heures et des paramèt
 import json
 from dataclasses import replace
 from typing import Optional, Callable, Dict, List, Any
-
+from unified_notification_dialog import UnifiedNotificationDialog
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QDialog,
@@ -52,6 +52,12 @@ class SettingsDialog(QDialog):
 
         self._init_widgets()
         self._load_config(self._config)
+
+    def _open_unified_config(self):
+       dialog = UnifiedNotificationDialog("config/config.yaml", self)
+       if dialog.exec() == QDialog.DialogCode.Accepted:
+           self.config = self.config_manager.load_config()
+           QMessageBox.information(self, "Succès", "Config appliquée !")
 
     def _init_widgets(self):
         self.main_layout = QVBoxLayout(self)
@@ -178,6 +184,11 @@ class SettingsDialog(QDialog):
     def _create_buttons(self):
         """Crée les boutons d'action"""
         button_layout = QHBoxLayout()
+
+        btn = QPushButton("📋 Config unifiée pour toutes les cryptos")
+        btn.clicked.connect(self._open_unified_config)
+        # Ajoutez ce bouton dans votre layout
+
 
         save_btn = QPushButton("💾 Sauvegarder")
         save_btn.clicked.connect(self._on_save_clicked)

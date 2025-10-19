@@ -1,10 +1,10 @@
 """
 Models - Représentation des données du bot crypto
-FIXED: Problème 2 - Timezone aware/naive datetime corrigé
+VERSION FINALE COMPLÈTE avec TOUS les champs du config.yaml
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone  # FIXED: Import simple de timezone
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from enum import Enum
 
@@ -51,11 +51,10 @@ class CryptoPrice:
     low_24h: float = 0.0
     
     def __post_init__(self):
-        # FIXED: Problème 2 - Assurer que timestamp est timezone-aware
+        """FIXED: Assurer que timestamp est timezone-aware"""
         if isinstance(self.timestamp, str):
             self.timestamp = datetime.fromisoformat(self.timestamp)
         
-        # Si naive, ajouter UTC
         if self.timestamp.tzinfo is None:
             self.timestamp = self.timestamp.replace(tzinfo=timezone.utc)
 
@@ -65,7 +64,7 @@ class PriceLevel:
     """Niveau de prix configuré"""
     symbol: str
     level: float
-    level_type: str  # "low" ou "high"
+    level_type: str
     buffer: float = 2.0
     cooldown_minutes: int = 30
     last_triggered: Optional[datetime] = None
@@ -76,10 +75,14 @@ class PriceLevel:
         if self.last_triggered is None:
             return True
         
-        # FIXED: Problème 2 - Utiliser datetime timezone-aware
         now = datetime.now(timezone.utc)
         elapsed_minutes = (now - self.last_triggered).total_seconds() / 60
         return elapsed_minutes >= self.cooldown_minutes
+    
+    def record_trigger(self):
+        """Enregistre le déclenchement"""
+        self.last_triggered = datetime.now(timezone.utc)
+        self.trigger_count += 1
 
 
 @dataclass
@@ -88,7 +91,7 @@ class TechnicalIndicators:
     rsi: float = 50.0
     macd: float = 0.0
     macd_signal: float = 0.0
-    macd_histogram: float = 0.0
+    macd_histogram: float = 0.0  # FIXED
     ma20: float = 0.0
     ma50: float = 0.0
     ma200: float = 0.0
@@ -101,7 +104,7 @@ class TechnicalIndicators:
     volume_trend: str = "NEUTRAL"
 
     def __post_init__(self):
-        # Harmonise les alias support/resistance
+        """Harmonise les alias support/resistance"""
         if self.support_level is None and self.support is not None:
             self.support_level = self.support
         if self.resistance_level is None and self.resistance is not None:
@@ -114,7 +117,7 @@ class TechnicalIndicators:
 
 @dataclass
 class MarketData:
-    """Données complètes du marché pour une crypto"""
+    """Données complètes du marché"""
     symbol: str
     current_price: CryptoPrice
     technical_indicators: TechnicalIndicators
@@ -122,7 +125,7 @@ class MarketData:
     price_change_7d: Optional[float] = None
     volume_24h: Optional[float] = None
     market_cap: Optional[float] = None
-    open_interest: Optional[float] = None
+    open_interest: Optional[float] = None  # FIXED
     fear_greed_index: Optional[int] = None
     funding_rate: Optional[float] = None
     open_interest_change: Optional[float] = None
@@ -130,75 +133,67 @@ class MarketData:
     price_history: List[CryptoPrice] = field(default_factory=list)
     
     def get_price_change(self, minutes: int) -> Optional[float]:
-        """
-        FIXED: Problème 2 - Calcul de changement avec datetimes timezone-aware
-        Calcule le changement de prix sur X minutes
-        """
+        """FIXED: Calcul avec timezone-aware"""
         if not self.price_history:
             return None
         
-        # FIXED: Utiliser datetime.now(timezone.utc)
         now = datetime.now(timezone.utc)
         
-        # Filtrer les prix récents avec timestamps timezone-aware
         recent_prices = [
             p for p in self.price_history
-            if p.timestamp.tzinfo is not None and  # Vérifier que c'est timezone-aware
+            if p.timestamp.tzinfo is not None and
             (now - p.timestamp).total_seconds() / 60 <= minutes
         ]
         
         if not recent_prices or len(recent_prices) < 2:
             return None
         
-        # Prix le plus ancien et le plus récent
         oldest = min(recent_prices, key=lambda p: p.timestamp)
         newest = max(recent_prices, key=lambda p: p.timestamp)
         
         if oldest.price_eur == 0:
             return None
         
-        change_pct = ((newest.price_eur - oldest.price_eur) / oldest.price_eur) * 100
-        return change_pct
+        return ((newest.price_eur - oldest.price_eur) / oldest.price_eur) * 100
 
 
 @dataclass
 class Alert:
     """Alerte générée par le système"""
     alert_type: AlertType
-    alert_level: AlertLevel
+    alert_level: AlertLevel  # FIXED: 'alert_level' au lieu de 'level'
     symbol: str
     message: str
-    price: Optional[float] = None
+    price: Optional[float] = None  # FIXED: 'price' au lieu de 'value'
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def __post_init__(self):
-        # FIXED: Problème 2 - S'assurer que timestamp est timezone-aware
         if isinstance(self.timestamp, str):
             self.timestamp = datetime.fromisoformat(self.timestamp)
         
         if self.timestamp.tzinfo is None:
             self.timestamp = self.timestamp.replace(tzinfo=timezone.utc)
+            self.timestamp = self.timestamp.replace(tzinfo=timezone.utc)
 
 
 @dataclass
 class Prediction:
-    """Prédiction de mouvement de prix"""
+    """Prédiction de marché"""
     symbol: str
     prediction_type: PredictionType
-    confidence: int  # 0-100
-    direction: str  # UP, DOWN, NEUTRAL
-    trend_score: int  # -10 à +10
+    confidence: int  # FIXED: int au lieu de float (0-100)
+    direction: str
+    trend_score: int  # FIXED: Obligatoire au lieu d'Optional
     signals: List[str] = field(default_factory=list)
-    target_price_high: Optional[float] = None
-    target_price_low: Optional[float] = None
-    timeframe_short: str = "1h"
-    timeframe_medium: str = "4h"
-    timeframe_long: str = "24h"
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    target_price_high: Optional[float] = None  # FIXED: Nom complet
+    target_price_low: Optional[float] = None  # FIXED: Nom complet
+    timeframe_short: str = "1h"  # FIXED: str au lieu de float
+    timeframe_medium: str = "4h"  # FIXED: str au lieu de float
+    timeframe_long: str = "24h"  # FIXED: str au lieu de float
     
     def __post_init__(self):
-        # FIXED: Problème 2 - S'assurer que timestamp est timezone-aware
         if isinstance(self.timestamp, str):
             self.timestamp = datetime.fromisoformat(self.timestamp)
         
@@ -208,22 +203,187 @@ class Prediction:
 
 @dataclass
 class OpportunityScore:
-    """Score d'opportunité d'achat/vente"""
+    """Score d'opportunité d'investissement"""
     symbol: str
     score: int  # 0-10
     recommendation: str  # BUY, SELL, HOLD
-    confidence: int  # 0-100
-    reasons: List[str] = field(default_factory=list)
-    risk_level: str = "MEDIUM"  # LOW, MEDIUM, HIGH
+    confidence: int  # FIXED: Ajouté - 0-100
+    reasons: List[str] = field(default_factory=list)  # FIXED: Ajouté
+    risk_level: str = "MEDIUM"  # FIXED: Ajouté - LOW, MEDIUM, HIGH
+    factors: Dict[str, Any] = field(default_factory=dict)
+    buy_probability: Optional[float] = None
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     
     def __post_init__(self):
-        # FIXED: Problème 2 - S'assurer que timestamp est timezone-aware
         if isinstance(self.timestamp, str):
             self.timestamp = datetime.fromisoformat(self.timestamp)
         
         if self.timestamp.tzinfo is None:
             self.timestamp = self.timestamp.replace(tzinfo=timezone.utc)
+
+
+@dataclass
+class BotConfiguration:
+    """
+    Configuration du bot - VERSION COMPLÈTE FINALE
+    Tous les champs utilisés par config_manager.py
+    """
+    # === TELEGRAM ===
+    telegram_bot_token: str = ""
+    telegram_chat_id: str = ""
+    telegram_message_delay: float = 0.5
+    telegram_show_prices: bool = True
+    telegram_show_trend_24h: bool = True
+    telegram_show_trend_7d: bool = True
+    telegram_show_recommendations: bool = True
+    
+    # Thresholds Telegram
+    trend_buy_threshold_24h: float = 2.0
+    trend_sell_threshold_24h: float = -2.0
+    trend_buy_threshold_7d: float = 5.0
+    trend_sell_threshold_7d: float = -5.0
+    
+    # === CRYPTO ===
+    crypto_symbols: List[str] = field(default_factory=lambda: ["BTC", "ETH", "SOL"])
+    investment_amount: float = 100.0
+    
+    # === TIMING ===
+    check_interval_seconds: int = 900
+    summary_hours: List[int] = field(default_factory=lambda: [9, 12, 18])
+    
+    # === ALERTS ===
+    enable_alerts: bool = True
+    price_lookback_minutes: int = 120
+    price_drop_threshold: float = 10.0
+    price_spike_threshold: float = 10.0
+    funding_negative_threshold: float = -0.03
+    oi_delta_threshold: float = 3.0
+    fear_greed_max: int = 30
+    
+    # RSI thresholds
+    rsi_oversold: int = 30  # FIXED: Ajouté
+    rsi_overbought: int = 70  # FIXED: Ajouté
+    
+    # Fear & Greed thresholds
+    fear_greed_extreme_fear: int = 25  # FIXED: Ajouté
+    fear_greed_extreme_greed: int = 75  # FIXED: Ajouté
+    
+    # === PRICE LEVELS ===
+    enable_price_levels: bool = True
+    price_levels: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    level_buffer_eur: float = 2.0
+    level_cooldown_minutes: int = 30
+    
+    # === QUIET HOURS ===
+    enable_quiet_hours: bool = False
+    quiet_start_hour: int = 23
+    quiet_end_hour: int = 7
+    quiet_allow_critical: bool = True
+    
+    # Mode nuit (alias de quiet_hours pour rétrocompatibilité)
+    enable_night_mode: bool = False  # FIXED: Ajouté
+    night_mode_start_hour: int = 23  # FIXED: Ajouté
+    night_mode_end_hour: int = 7  # FIXED: Ajouté
+    
+    # === FEATURES ===
+    enable_graphs: bool = True
+    show_levels_on_graph: bool = True
+    enable_startup_summary: bool = True
+    send_summary_chart: bool = False  # FIXED: Ajouté
+    send_summary_dca: bool = False  # FIXED: Ajouté
+    enable_opportunity_score: bool = True
+    opportunity_threshold: int = 7
+    enable_predictions: bool = True
+    prediction_confidence_threshold: int = 60  # FIXED: Ajouté
+    enable_timeline: bool = True
+    enable_gain_loss_calc: bool = True
+    enable_dca_suggestions: bool = True
+    use_simple_language: bool = True  # FIXED: Nom corrigé
+    educational_mode: bool = True
+    detail_level: str = "normal"
+    
+    # Daily summary
+    enable_daily_summary: bool = False  # FIXED: Ajouté
+    daily_summary_hour: int = 9  # FIXED: Ajouté
+    
+    # DCA settings
+    enable_dca: bool = False  # FIXED: Ajouté
+    dca_amount_eur: float = 100.0  # FIXED: Ajouté
+    dca_frequency_days: int = 7  # FIXED: Ajouté
+    
+    # Trend periods
+    trend_short_days: int = 7  # FIXED: Ajouté
+    trend_medium_days: int = 30  # FIXED: Ajouté
+    trend_long_days: int = 90  # FIXED: Ajouté
+    
+    # === REPORT ===
+    report_detail_level: str = "detailed"
+    report_enabled_sections: Dict[str, bool] = field(default_factory=lambda: {  # FIXED: Nom corrigé
+        "executive_summary": True,
+        "per_crypto": True,
+        "comparison": True,
+        "recommendations": True,
+        "advanced_analysis": True,
+        "statistics": True,
+    })
+    report_advanced_metrics: Dict[str, bool] = field(default_factory=lambda: {  # FIXED: Nom corrigé
+        "volatility": True,
+        "drawdown": True,
+        "trend_strength": True,
+        "risk_score": True,
+        "dca_projection": False,
+        "correlation": False,
+    })
+    report_include_summary: bool = False
+    report_include_telegram_report: bool = False
+    report_include_chart: bool = False
+    report_include_dca: bool = False
+    report_include_broker_prices: bool = True
+    
+    # === BROKERS ===
+    enabled_brokers: List[str] = field(default_factory=lambda: ["binance", "revolut"])
+    broker_settings: Dict[str, Any] = field(default_factory=dict)  # FIXED: Nom corrigé
+    
+    # === NOTIFICATIONS ===
+    notification_per_coin: bool = True  # FIXED: Nom corrigé
+    notification_include_chart: bool = True  # FIXED: Nom corrigé
+    notification_chart_timeframes: List[int] = field(default_factory=lambda: [24, 168])  # FIXED: Nom corrigé
+    notification_include_brokers: bool = True  # FIXED: Nom corrigé
+    notification_send_glossary: bool = True  # FIXED: Nom corrigé
+    notification_thresholds: Dict[str, Any] = field(default_factory=dict)  # FIXED: Nom corrigé
+    notification_content_by_coin: Dict[str, Any] = field(default_factory=dict)  # FIXED: Nom corrigé
+    
+    # === COINS ===
+    coin_settings: Dict[str, Any] = field(default_factory=dict)  # FIXED: Nom corrigé
+    
+    # === MODES ===
+    daemon_mode: bool = False
+    gui_mode: bool = True
+    
+    # === DATABASE ===
+    database_path: str = "data/crypto_bot.db"
+    keep_history_days: int = 30
+    
+    # === LOGGING ===
+    log_file: str = "logs/crypto_bot.log"
+    log_level: str = "INFO"
+    
+    def is_quiet_time(self) -> bool:
+        """Vérifie si on est en période de silence"""
+        if not self.enable_quiet_hours:
+            return False
+        
+        now = datetime.now(timezone.utc)
+        current_hour = now.hour
+        
+        if self.quiet_start_hour > self.quiet_end_hour:
+            if current_hour >= self.quiet_start_hour or current_hour < self.quiet_end_hour:
+                return True
+        else:
+            if self.quiet_start_hour <= current_hour < self.quiet_end_hour:
+                return True
+        
+        return False
 
 
 @dataclass
@@ -297,140 +457,6 @@ class Portfolio:
 
 
 @dataclass
-class BotConfiguration:
-    """Configuration du bot"""
-    # Telegram
-    telegram_bot_token: str = ""
-    telegram_chat_id: str = ""
-    telegram_message_delay: float = 0.5
-    telegram_show_prices: bool = True
-    telegram_show_trend_24h: bool = True
-    telegram_show_trend_7d: bool = True
-    telegram_show_recommendations: bool = True
-    trend_buy_threshold_24h: float = 2.0
-    trend_sell_threshold_24h: float = -2.0
-    trend_buy_threshold_7d: float = 5.0
-    trend_sell_threshold_7d: float = -5.0
-    
-    # Cryptos à surveiller
-    crypto_symbols: List[str] = field(default_factory=lambda: ["BTC", "ETH", "SOL"])
-    investment_amount: float = 100.0
-    
-    # Intervalles
-    check_interval_seconds: int = 900  # 15 minutes
-    summary_hours: List[int] = field(default_factory=lambda: [9, 12, 18])
-    
-    # Alertes
-    enable_alerts: bool = True
-    price_lookback_minutes: int = 120
-    price_drop_threshold: float = 10.0  # %
-    price_spike_threshold: float = 10.0  # %
-    funding_negative_threshold: float = -0.03
-    oi_delta_threshold: float = 3.0
-    fear_greed_max: int = 30
-    enable_price_levels: bool = True
-    price_levels: Dict[str, Dict[str, float]] = field(default_factory=dict)
-    level_buffer_eur: float = 2.0
-    level_cooldown_minutes: int = 30
-    
-    # RSI
-    rsi_oversold: int = 30
-    rsi_overbought: int = 70
-    
-    # Fear & Greed
-    fear_greed_extreme_fear: int = 25
-    fear_greed_extreme_greed: int = 75
-    
-    # Prédictions
-    enable_predictions: bool = True
-    prediction_confidence_threshold: int = 60
-    
-    # Mode nuit
-    enable_night_mode: bool = False
-    night_mode_start_hour: int = 23
-    night_mode_end_hour: int = 7
-    enable_quiet_hours: bool = False
-    quiet_start_hour: int = 23
-    quiet_end_hour: int = 7
-    quiet_allow_critical: bool = True
-    
-    # Résumés
-    enable_startup_summary: bool = True
-    enable_daily_summary: bool = False
-    daily_summary_hour: int = 9
-    send_summary_chart: bool = False
-    send_summary_dca: bool = False
-    enable_timeline: bool = True
-    enable_gain_loss_calc: bool = True
-    enable_dca_suggestions: bool = True
-    enable_opportunity_score: bool = True
-    opportunity_threshold: int = 7
-    enable_graphs: bool = True
-    show_levels_on_graph: bool = True
-    use_simple_language: bool = True
-    educational_mode: bool = True
-    detail_level: str = "normal"  # "minimal", "normal", "detailed"
-    
-    # Base de données
-    database_path: str = "data/crypto_bot.db"
-    keep_history_days: int = 30
-    
-    # Logs
-    log_file: str = "logs/crypto_bot.log"
-    log_level: str = "INFO"
-    daemon_mode: bool = False
-    gui_mode: bool = True
-    
-    # DCA
-    enable_dca: bool = False
-    dca_amount_eur: float = 100.0
-    dca_frequency_days: int = 7
-    
-    # Autres
-    trend_short_days: int = 7
-    trend_medium_days: int = 30
-    trend_long_days: int = 90
-    coin_settings: Dict[str, Any] = field(default_factory=dict)
-    
-    # Rapports
-    report_detail_level: str = "detailed"
-    report_enabled_sections: Dict[str, bool] = field(default_factory=lambda: {
-        "executive_summary": True,
-        "per_crypto": True,
-        "comparison": True,
-        "recommendations": True,
-        "advanced_analysis": True,
-        "statistics": True,
-    })
-    report_advanced_metrics: Dict[str, bool] = field(default_factory=lambda: {
-        "volatility": True,
-        "drawdown": True,
-        "trend_strength": True,
-        "risk_score": True,
-        "dca_projection": False,
-        "correlation": False,
-    })
-    report_include_summary: bool = False
-    report_include_telegram_report: bool = False
-    report_include_chart: bool = False
-    report_include_dca: bool = False
-    report_include_broker_prices: bool = True
-    
-    # Brokers
-    enabled_brokers: List[str] = field(default_factory=lambda: ["binance", "revolut"])
-    broker_settings: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-    
-    # Notifications
-    notification_per_coin: bool = True
-    notification_include_chart: bool = True
-    notification_chart_timeframes: List[int] = field(default_factory=lambda: [24, 168])
-    notification_include_brokers: bool = True
-    notification_send_glossary: bool = True
-    notification_thresholds: Dict[str, Any] = field(default_factory=dict)
-    notification_content_by_coin: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-
-
-@dataclass
 class SystemStatus:
     """Statut du système"""
     is_running: bool = False
@@ -445,5 +471,24 @@ class SystemStatus:
         if not self.start_time:
             return 0
         
-        # FIXED: Problème 2 - Utiliser timezone.utc
         return int((datetime.now(timezone.utc) - self.start_time).total_seconds())
+
+
+# Exports
+__all__ = [
+    'AlertType',
+    'AlertLevel',
+    'PredictionType',
+    'CryptoPrice',
+    'PriceLevel',
+    'TechnicalIndicators',
+    'MarketData',
+    'Alert',
+    'Prediction',
+    'OpportunityScore',
+    'BotConfiguration',
+    'BrokerQuote',
+    'Position',
+    'Portfolio',
+    'SystemStatus',
+]
