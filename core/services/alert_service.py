@@ -1,12 +1,12 @@
 """
-Alert Service - Gestion des alertes [COMPLETE]
+Alert Service - Gestion des alertes [WITH OPEN INTEREST + IMPROVED ERROR HANDLING]
 """
 
-from typing import List, Optional, Callable, Dict, Dict, Dict
-from datetime import datetime
+from typing import List, Optional, Callable, Dict
+from datetime import datetime, timezone
 from core.models import (
-    Alert, AlertType, AlertLevel, MarketData, Prediction,
-    PriceLevel, BotConfiguration
+    BotConfiguration, MarketData, Alert, AlertType,
+    AlertLevel, Prediction, PriceLevel
 )
 
 
@@ -19,18 +19,23 @@ class AlertService:
         self.alert_history: List[Alert] = []
         self.price_levels: Dict[str, List[PriceLevel]] = {}
         self.alert_callbacks: List[Callable[[Alert], None]] = []
-        self.oi_baseline: Dict[str, float] = {}  # Baseline pour Open Interest
         
-        # Initialiser les niveaux de prix
-        self._init_price_levels()
+        # Open Interest baseline tracking
+        self.oi_baseline: Dict[str, float] = {}
+        self.oi_last_check: Dict[str, datetime] = {}
+        
+        self._setup_price_levels()
     
-    def _init_price_levels(self):
-        """Initialise les niveaux de prix depuis la configuration"""
+    def _setup_price_levels(self):
+        """Configure les niveaux de prix à surveiller"""
+        if not self.config.enable_price_levels:
+            return
+        
         for symbol, levels in self.config.price_levels.items():
             if symbol not in self.price_levels:
                 self.price_levels[symbol] = []
             
-            if "low" in levels:
+            if "low" in levels and levels["low"] > 0:
                 self.price_levels[symbol].append(PriceLevel(
                     symbol=symbol,
                     level=levels["low"],
@@ -39,7 +44,7 @@ class AlertService:
                     cooldown_minutes=self.config.level_cooldown_minutes
                 ))
             
-            if "high" in levels:
+            if "high" in levels and levels["high"] > 0:
                 self.price_levels[symbol].append(PriceLevel(
                     symbol=symbol,
                     level=levels["high"],
@@ -53,16 +58,16 @@ class AlertService:
         self.alert_callbacks.append(callback)
     
     def _trigger_callbacks(self, alert: Alert):
-        """Déclenche tous les callbacks"""
+        """Déclenche tous les callbacks avec gestion d'erreur"""
         for callback in self.alert_callbacks:
             try:
                 callback(alert)
             except Exception as e:
-                print(f"Erreur callback alerte: {e}")
+                print(f"⚠️ Erreur callback alerte {alert.alert_id}: {e}")
     
     def check_alerts(self, market_data: MarketData, prediction: Optional[Prediction] = None) -> List[Alert]:
         """
-        Vérifie toutes les conditions d'alerte
+        Vérifie toutes les conditions d'alerte avec gestion d'erreur robuste
         
         Args:
             market_data: Données de marché
@@ -75,29 +80,47 @@ class AlertService:
         
         # Alertes de pourcentage de prix
         if self.config.enable_alerts:
-            price_alerts = self._check_price_alerts(market_data)
-            alerts.extend(price_alerts)
+            try:
+                price_alerts = self._check_price_alerts(market_data)
+                alerts.extend(price_alerts)
+            except Exception as e:
+                print(f"⚠️ Erreur check price alerts {market_data.symbol}: {e}")
         
         # Alertes de niveaux de prix
         if self.config.enable_price_levels:
-            level_alerts = self._check_price_levels(market_data)
-            alerts.extend(level_alerts)
+            try:
+                level_alerts = self._check_price_levels(market_data)
+                alerts.extend(level_alerts)
+            except Exception as e:
+                print(f"⚠️ Erreur check price levels {market_data.symbol}: {e}")
         
         # Alertes sur dérivés
-        funding_alerts = self._check_funding_rate(market_data)
-        alerts.extend(funding_alerts)
+        try:
+            funding_alerts = self._check_funding_rate(market_data)
+            alerts.extend(funding_alerts)
+        except Exception as e:
+            print(f"⚠️ Erreur check funding {market_data.symbol}: {e}")
         
-        oi_alerts = self._check_open_interest(market_data)
-        alerts.extend(oi_alerts)
+        try:
+            oi_alerts = self._check_open_interest(market_data)
+            alerts.extend(oi_alerts)
+        except Exception as e:
+            print(f"⚠️ Erreur check OI {market_data.symbol}: {e}")
         
         # Alertes Fear & Greed
-        fgi_alerts = self._check_fear_greed(market_data)
-        alerts.extend(fgi_alerts)
+        try:
+            fgi_alerts = self._check_fear_greed(market_data)
+            alerts.extend(fgi_alerts)
+        except Exception as e:
+            print(f"⚠️ Erreur check FGI {market_data.symbol}: {e}")
         
         # Alertes sur prédictions
         if prediction and self.config.enable_predictions:
-            pred_alerts = self._check_prediction(market_data, prediction)
-            alerts.extend(pred_alerts)
+            try:
+                pred_alerts = self._check_prediction(market_data, prediction)
+                alerts.extend(pred_alerts)
+            except Exception as e:
+                print(f"⚠️ Erreur check prediction {market_data.symbol}: {e}")
         
         # Sauvegarder et déclencher callbacks
         for alert in alerts:
@@ -114,7 +137,11 @@ class AlertService:
         """Vérifie les alertes de changement de prix"""
         alerts = []
         
-        change = market_data.get_price_change(self.config.price_lookback_minutes)
+        try:
+            change = market_data.get_price_change(self.config.price_lookback_minutes)
+        except Exception as e:
+            print(f"⚠️ Impossible de calculer price_change pour {market_data.symbol}: {e}")
+            return alerts
         
         # Chute de prix
         if change <= -abs(self.config.price_drop_threshold):
@@ -123,7 +150,7 @@ class AlertService:
                 symbol=market_data.symbol,
                 alert_type=AlertType.PRICE_DROP,
                 alert_level=AlertLevel.IMPORTANT,
-                message=f"Chute rapide de {change:.2f}% en {self.config.price_lookback_minutes} min",
+                message=f"🔻 Chute de {change:.1f}% en {self.config.price_lookback_minutes} min → {market_data.current_price.price_eur:.2f}€",
                 metadata={
                     "change_pct": change,
                     "lookback_minutes": self.config.price_lookback_minutes,
@@ -138,8 +165,8 @@ class AlertService:
                 alert_id="",
                 symbol=market_data.symbol,
                 alert_type=AlertType.PRICE_SPIKE,
-                alert_level=AlertLevel.IMPORTANT,
-                message=f"Hausse rapide de {change:.2f}% en {self.config.price_lookback_minutes} min",
+                alert_level=AlertLevel.INFO,
+                message=f"🚀 Hausse de +{change:.1f}% en {self.config.price_lookback_minutes} min → {market_data.current_price.price_eur:.2f}€",
                 metadata={
                     "change_pct": change,
                     "lookback_minutes": self.config.price_lookback_minutes,
@@ -151,7 +178,7 @@ class AlertService:
         return alerts
     
     def _check_price_levels(self, market_data: MarketData) -> List[Alert]:
-        """Vérifie les franchissements de niveaux de prix"""
+        """Vérifie les niveaux de prix configurés"""
         alerts = []
         
         symbol = market_data.symbol
@@ -164,15 +191,15 @@ class AlertService:
             if not price_level.can_trigger():
                 continue
             
-            # Niveau BAS
+            # Niveau bas atteint
             if price_level.level_type == "low":
-                if current_price < (price_level.level - price_level.buffer):
+                if current_price <= price_level.level:
                     alert = Alert(
                         alert_id="",
                         symbol=symbol,
                         alert_type=AlertType.LEVEL_CROSSED,
-                        alert_level=AlertLevel.CRITICAL,
-                        message=f"🚨 {symbol} a cassé le niveau {price_level.level}€ ! (maintenant {current_price:.2f}€)",
+                        alert_level=AlertLevel.IMPORTANT,
+                        message=f"📍 {symbol} atteint le niveau BAS {price_level.level}€ (maintenant {current_price:.2f}€)",
                         metadata={
                             "level": price_level.level,
                             "level_type": "low",
@@ -200,15 +227,15 @@ class AlertService:
                     alerts.append(alert)
                     price_level.record_trigger()
             
-            # Niveau HAUT
+            # Niveau haut atteint
             elif price_level.level_type == "high":
-                if current_price > (price_level.level + price_level.buffer):
+                if current_price >= price_level.level:
                     alert = Alert(
                         alert_id="",
                         symbol=symbol,
                         alert_type=AlertType.LEVEL_CROSSED,
-                        alert_level=AlertLevel.CRITICAL,
-                        message=f"🚨 {symbol} a dépassé le niveau {price_level.level}€ ! (maintenant {current_price:.2f}€)",
+                        alert_level=AlertLevel.IMPORTANT,
+                        message=f"📍 {symbol} atteint le niveau HAUT {price_level.level}€ (maintenant {current_price:.2f}€)",
                         metadata={
                             "level": price_level.level,
                             "level_type": "high",
@@ -251,7 +278,7 @@ class AlertService:
                 symbol=market_data.symbol,
                 alert_type=AlertType.FUNDING_NEGATIVE,
                 alert_level=AlertLevel.INFO,
-                message=f"Funding négatif : {market_data.funding_rate:.4f}%",
+                message=f"💰 Funding négatif : {market_data.funding_rate:.4f}% (longs paient shorts)",
                 metadata={"funding_rate": market_data.funding_rate}
             )
             alerts.append(alert)
@@ -259,7 +286,7 @@ class AlertService:
         return alerts
     
     def _check_open_interest(self, market_data: MarketData) -> List[Alert]:
-        """Vérifie l'Open Interest avec baseline"""
+        """Vérifie l'Open Interest avec baseline tracking et cooldown"""
         alerts = []
         
         if market_data.open_interest is None:
@@ -267,10 +294,18 @@ class AlertService:
         
         symbol = market_data.symbol
         current_oi = market_data.open_interest
+        now = datetime.now(timezone.utc)
+        
+        # Cooldown de 1h entre vérifications OI
+        if symbol in self.oi_last_check:
+            elapsed = (now - self.oi_last_check[symbol]).total_seconds() / 3600
+            if elapsed < 1.0:
+                return alerts
         
         # Initialiser la baseline si nécessaire
         if symbol not in self.oi_baseline:
             self.oi_baseline[symbol] = current_oi
+            self.oi_last_check[symbol] = now
             return alerts
         
         # Calculer le changement
@@ -280,14 +315,21 @@ class AlertService:
             
             # Alerte si changement significatif
             if abs(change_pct) >= self.config.oi_delta_threshold:
-                alert_type = "hausse" if change_pct > 0 else "baisse"
+                if change_pct > 0:
+                    emoji = "📈"
+                    trend = "augmentation"
+                else:
+                    emoji = "📉"
+                    trend = "diminution"
+                
+                level = AlertLevel.WARNING if abs(change_pct) > 5 else AlertLevel.INFO
                 
                 alert = Alert(
                     alert_id="",
                     symbol=symbol,
                     alert_type=AlertType.OI_CHANGE,
-                    alert_level=AlertLevel.INFO,
-                    message=f"Open Interest: {alert_type} de {abs(change_pct):.1f}%",
+                    alert_level=level,
+                    message=f"{emoji} Open Interest: {trend} de {abs(change_pct):.1f}% (intérêt {'croissant' if change_pct > 0 else 'décroissant'})",
                     metadata={
                         "current_oi": current_oi,
                         "baseline_oi": baseline,
@@ -295,6 +337,7 @@ class AlertService:
                     }
                 )
                 alerts.append(alert)
+                self.oi_last_check[symbol] = now
         
         # Mettre à jour la baseline (moyenne mobile)
         self.oi_baseline[symbol] = (baseline * 0.9 + current_oi * 0.1)
@@ -302,27 +345,42 @@ class AlertService:
         return alerts
     
     def _check_fear_greed(self, market_data: MarketData) -> List[Alert]:
-        """Vérifie le Fear & Greed Index"""
+        """Vérifie le Fear & Greed Index avec messages améliorés"""
         alerts = []
         
         if market_data.fear_greed_index is None:
             return alerts
         
-        if market_data.fear_greed_index <= self.config.fear_greed_max:
+        fgi = market_data.fear_greed_index
+        
+        # Peur extrême (opportunité d'achat)
+        if fgi <= self.config.fear_greed_max:
             alert = Alert(
                 alert_id="",
                 symbol=market_data.symbol,
                 alert_type=AlertType.FEAR_GREED,
                 alert_level=AlertLevel.INFO,
-                message=f"Peur extrême : {market_data.fear_greed_index}/100",
-                metadata={"fgi": market_data.fear_greed_index}
+                message=f"😱 Peur extrême : {fgi}/100 (opportunité d'achat potentielle)",
+                metadata={"fgi": fgi, "sentiment": "extreme_fear"}
+            )
+            alerts.append(alert)
+        
+        # Cupidité extrême (prudence)
+        elif fgi >= 80:
+            alert = Alert(
+                alert_id="",
+                symbol=market_data.symbol,
+                alert_type=AlertType.FEAR_GREED,
+                alert_level=AlertLevel.WARNING,
+                message=f"🤑 Cupidité extrême : {fgi}/100 (prudence recommandée)",
+                metadata={"fgi": fgi, "sentiment": "extreme_greed"}
             )
             alerts.append(alert)
         
         return alerts
     
     def _check_prediction(self, market_data: MarketData, prediction: Prediction) -> List[Alert]:
-        """Vérifie les prédictions"""
+        """Vérifie les prédictions avec emojis améliorés"""
         alerts = []
         
         # Signal fort
@@ -333,7 +391,7 @@ class AlertService:
                     symbol=market_data.symbol,
                     alert_type=AlertType.PREDICTION,
                     alert_level=AlertLevel.INFO,
-                    message=f"Signal haussier fort ({prediction.confidence}%)",
+                    message=f"📈 Signal haussier fort ({prediction.confidence:.0f}%) - Tendance à la hausse probable",
                     metadata={
                         "prediction": prediction.prediction_type.value,
                         "confidence": prediction.confidence
@@ -347,7 +405,7 @@ class AlertService:
                     symbol=market_data.symbol,
                     alert_type=AlertType.PREDICTION,
                     alert_level=AlertLevel.WARNING,
-                    message=f"Signal baissier fort ({prediction.confidence}%)",
+                    message=f"📉 Signal baissier fort ({prediction.confidence:.0f}%) - Tendance à la baisse probable",
                     metadata={
                         "prediction": prediction.prediction_type.value,
                         "confidence": prediction.confidence

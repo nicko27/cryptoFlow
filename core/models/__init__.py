@@ -52,7 +52,7 @@ class CryptoPrice:
     def __post_init__(self):
         if isinstance(self.timestamp, str):
             self.timestamp = datetime.fromisoformat(self.timestamp)
-        # Ensure timezone aware
+        # FIX: Ensure timezone aware
         if self.timestamp.tzinfo is None:
             self.timestamp = self.timestamp.replace(tzinfo=timezone.utc)
 
@@ -244,6 +244,11 @@ class BotConfiguration:
     # Telegram
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
+    telegram_message_delay: float = 0.5
+    telegram_show_prices: bool = True
+    telegram_show_trend_24h: bool = True
+    telegram_show_trend_7d: bool = True
+    telegram_show_recommendations: bool = True
     
     # Cryptos surveillées
     crypto_symbols: List[str] = field(default_factory=lambda: ["BTC"])
@@ -264,7 +269,7 @@ class BotConfiguration:
     level_buffer_eur: float = 2.0
     level_cooldown_minutes: int = 30
     
-    # Features intelligentes
+    # Features
     enable_opportunity_score: bool = True
     opportunity_threshold: int = 7
     enable_predictions: bool = True
@@ -288,73 +293,26 @@ class BotConfiguration:
     enable_startup_summary: bool = True
     send_summary_chart: bool = False
     send_summary_dca: bool = False
-
-    # Rapports
-    report_enabled_sections: Dict[str, bool] = field(default_factory=lambda: {
-        "executive_summary": True,
-        "per_crypto": True,
-        "comparison": True,
-        "recommendations": True,
-        "advanced_analysis": True,
-        "statistics": True,
-    })
-    report_advanced_metrics: Dict[str, bool] = field(default_factory=lambda: {
-        "volatility": True,
-        "drawdown": True,
-        "trend_strength": True,
-        "risk_score": True,
-        "dca_projection": False,
-        "correlation": False,
-    })
-    report_detail_level: str = "detailed"  # "simple", "detailed"
-    report_include_summary: bool = False
-    report_include_telegram_report: bool = False
-    report_include_chart: bool = False
-    report_include_dca: bool = False
-    coin_settings: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-    enabled_brokers: List[str] = field(default_factory=lambda: ["binance", "revolut"])
-    broker_settings: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-    report_include_broker_prices: bool = True
-    notification_per_coin: bool = True
-    notification_include_chart: bool = True
-    notification_chart_timeframes: List[int] = field(default_factory=lambda: [24, 168])
-    notification_include_brokers: bool = True
-    notification_send_glossary: bool = True
-    notification_thresholds: Dict[str, Any] = field(default_factory=dict)
-    notification_content_by_coin: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-
-    # Mode
-    daemon_mode: bool = False
-    gui_mode: bool = True
-    detail_level: str = "normal"  # "simple", "normal", "detailed"
-
-    # Telegram - affichage et recommandations
-    telegram_show_prices: bool = True
-    telegram_show_trend_24h: bool = True
-    telegram_show_trend_7d: bool = True
-    telegram_show_recommendations: bool = True
-    telegram_message_delay: float = 0.5
-    trend_buy_threshold_24h: float = 2.0
-    trend_sell_threshold_24h: float = -2.0
-    trend_buy_threshold_7d: float = 5.0
-    trend_sell_threshold_7d: float = -5.0
     
-    # Logging
-    log_file: str = "crypto_bot.log"
-    log_level: str = "INFO"
+    # Tendances
+    trend_buy_threshold_24h: float = -5.0
+    trend_sell_threshold_24h: float = 5.0
+    trend_buy_threshold_7d: float = -10.0
+    trend_sell_threshold_7d: float = 10.0
+    trend_enabled_symbols: List[str] = field(default_factory=list)
     
-    # Database
+    # Database & logging
     database_path: str = "data/crypto_bot.db"
     keep_history_days: int = 30
-
-
-@dataclass
-class SystemStatus:
-    """État du système"""
-    is_running: bool = False
-    start_time: Optional[datetime] = None
-    last_check_time: Optional[datetime] = None
-    checks_count: int = 0
-    alerts_sent_count: int = 0
-    errors_count: int = 0
-    current_mode: str = "stopped"  # stopped, daemon, gui
+    log_file: str = "logs/crypto_bot.log"
+    log_level: str = "INFO"
+    
+    # Configuration par monnaie
+    notification_per_coin: bool = True
+    coin_settings: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    notification_content_by_coin: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    
+    # Brokers
+    broker_names: List[str] = field(default_factory=list)
+    broker_overrides: Dict[str, Any] = field(default_factory=dict)
+    notification_thresholds: Dict[str, Any] = field(default_factory=dict)
