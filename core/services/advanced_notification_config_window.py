@@ -595,6 +595,9 @@ class AdvancedNotificationConfigWindow(QDialog):
         super().__init__(parent)
         self.settings = settings
         self.symbols = symbols
+        self.coin_editors: Dict[str, SimpleCoinNotificationEditor] = {}
+        self.coins_tab: Optional[QTabWidget] = None
+        self.schedule_widget: Optional[SimpleNotificationScheduleWidget] = None
         self.setWindowTitle("⚙️ Configuration avancée des notifications")
         self.resize(1000, 700)
         self._init_ui()
@@ -616,16 +619,17 @@ class AdvancedNotificationConfigWindow(QDialog):
         # Onglet 1: Horaires
         schedule_tab = QWidget()
         schedule_layout = QVBoxLayout(schedule_tab)
-        schedule_widget = SimpleNotificationScheduleWidget()
-        schedule_layout.addWidget(schedule_widget)
+        self.schedule_widget = SimpleNotificationScheduleWidget()
+        schedule_layout.addWidget(self.schedule_widget)
         tabs.addTab(schedule_tab, "🕐 Horaires")
         
         # Onglet 2: Configuration par crypto
-        coins_tab = QTabWidget()
+        self.coins_tab = QTabWidget()
         for symbol in self.symbols:
             coin_editor = SimpleCoinNotificationEditor(symbol)
-            coins_tab.addTab(coin_editor, f"💎 {symbol}")
-        tabs.addTab(coins_tab, "💰 Par crypto")
+            self.coin_editors[symbol] = coin_editor
+            self.coins_tab.addTab(coin_editor, f"💎 {symbol}")
+        tabs.addTab(self.coins_tab, "💰 Par crypto")
         
         # Onglet 3: Paramètres globaux
         global_tab = self._create_global_settings_tab()
@@ -711,10 +715,29 @@ class AdvancedNotificationConfigWindow(QDialog):
         
         preview_text = QTextEdit()
         preview_text.setReadOnly(True)
+        current_symbol = self.symbols[0] if self.symbols else "BTC"
+        if self.coins_tab:
+            current_index = self.coins_tab.currentIndex()
+            if 0 <= current_index < len(self.symbols):
+                current_symbol = self.symbols[current_index]
+
+        tracked_set = {sym.upper() for sym in self.symbols}
+        available_suggestions = [
+            s for s in ["ADA", "XRP", "DOGE", "DOT", "LINK", "AVAX", "MATIC"]
+            if s not in tracked_set
+        ] or ["ADA", "XRP"]
+        suggestion_lines = []
+        for idx, sym in enumerate(available_suggestions[:2], start=1):
+            emoji = "📈" if idx == 1 else "💎"
+            suggestion_lines.append(
+                f"{idx}. {emoji} {sym} montre des signaux intéressants"
+            )
+        suggestions_text = "\n".join(suggestion_lines)
+
         preview_text.setPlainText(
-            "🔔 Notification du matin - BTC\n\n"
+            f"🔔 Notification du matin - {current_symbol}\n\n"
             "💰 Prix actuel\n"
-            "Le Bitcoin coûte actuellement 91,623.32€\n"
+            f"Le prix actuel est affiché avec une explication simple.\n"
             "📈 Il a monté de +1.36% en 24h - C'est bien !\n"
             "🔊 Beaucoup de gens l'achètent aujourd'hui (volume élevé)\n\n"
             "🔮 Prédiction Intelligence Artificielle\n"
@@ -723,10 +746,7 @@ class AdvancedNotificationConfigWindow(QDialog):
             "⭐ Score d'opportunité : 10/10\n"
             "🌟 Excellente opportunité ! À surveiller de près.\n\n"
             "💡 D'autres cryptos qui pourraient t'intéresser :\n"
-            "1. 📈 ETH coûte 3,359.49€ et monte bien !\n"
-            "   Score : 8.5/10 🛡️\n"
-            "2. 💎 SOL coûte 160.95€ et c'est un bon prix\n"
-            "   Score : 7.8/10 ⚖️\n\n"
+            f"{suggestions_text}\n\n"
             "📚 Petit glossaire\n"
             "• Prix : Combien coûte 1 unité de cette crypto en euros\n"
             "• IA : Intelligence Artificielle = ordinateur qui essaie de prédire le futur\n"

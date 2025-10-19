@@ -821,7 +821,7 @@ class CryptoBotGUI(QMainWindow):  # FIXED: Problème 13 - Nom de classe sans esp
                 self._save_notification_settings()
                 
                 if self.daemon_service:
-                    self.daemon_service.update_notification_settings(self.notification_settings)
+                    self.daemon_service.notification_settings = self.notification_settings
                 
                 QMessageBox.information(
                     self,

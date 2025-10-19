@@ -58,6 +58,7 @@ class InvestmentSuggestionService:
         prefer_low_volatility: bool = False,
         prefer_trending: bool = True,
         prefer_undervalued: bool = True,
+        excluded_symbols: Optional[List[str]] = None,
     ) -> List[InvestmentSuggestion]:
         """
         Génère des suggestions d'investissement
@@ -75,11 +76,13 @@ class InvestmentSuggestionService:
             prefer_undervalued: Privilégier les cryptos sous-évaluées
         """
         suggestions = []
+        excluded = {s.upper() for s in (excluded_symbols or [])}
+        if exclude_current:
+            excluded.add(current_symbol.upper())
         
         # Parcourir toutes les cryptos disponibles
         for symbol in all_market_data.keys():
-            # Exclure la crypto actuelle si demandé
-            if exclude_current and symbol == current_symbol:
+            if symbol.upper() in excluded:
                 continue
             
             market = all_market_data.get(symbol)
@@ -238,29 +241,58 @@ class InvestmentSuggestionService:
         score: float,
         market: MarketData,
     ) -> str:
-        """Crée un message adapté pour un enfant"""
-        
-        # Message de base
-        price = market.current_price.price_eur if market.current_price else 0
-        msg = f"{symbol} coûte actuellement {price:.2f}€"
-        
-        # Ajouter contexte selon raisons
-        if "strong_trend" in reasons:
-            msg += " 📈 et monte bien !"
-        elif "undervalued" in reasons:
-            msg += " 💎 et c'est un bon prix pour acheter"
-        elif "recovery" in reasons:
-            msg += " 🌱 et remonte après une baisse"
-        
-        # Ajouter info volume si pertinent
-        if "high_volume" in reasons:
-            msg += " Beaucoup de gens l'achètent et la vendent 🔥"
-        
-        # Ajouter prédiction si présente
-        if "good_prediction" in reasons:
-            msg += " L'IA pense qu'elle va monter 🎯"
-        
-        return msg
+        """Crée un message clair et motivant pour l'utilisateur.
+
+        On inclut prix actuel, variation récente, et un prix d'entrée conseillé.
+        """
+        lines = [
+            f"Je lui donne {score:.1f}/10 parce que {self._summarize_primary_reason(reasons)}.",
+            "Ce qui ressort :",
+        ]
+
+        reason_map = {
+            "strong_trend": "La tendance est très haussière, le marché est enthousiaste 📈",
+            "undervalued": "Le prix semble attractif par rapport aux récents niveaux 💎",
+            "high_volume": "Il y a beaucoup d'échanges, donc tu peux acheter/vendre facilement 🔥",
+            "good_prediction": "L'IA prévoit une poursuite de la hausse 🎯",
+            "low_volatility": "Le prix bouge doucement, pratique pour accumuler sereinement 🛡️",
+            "momentum": "La dynamique sur plusieurs jours est très positive 🚀",
+            "recovery": "Elle se reprend après une baisse, signe de rebond 🌱",
+        }
+
+        detailed_reasons = [
+            f"• {reason_map[key]}"
+            for key in reasons
+            if key in reason_map
+        ]
+        lines.extend(detailed_reasons or ["• C'est une opportunité solide à surveiller 👀"])
+
+        return "\n".join(lines)
+
+    def _summarize_primary_reason(self, reasons: List[str]) -> str:
+        """Résumé en une phrase lisible de la principale raison."""
+        reason_order = [
+            "strong_trend",
+            "undervalued",
+            "good_prediction",
+            "high_volume",
+            "momentum",
+            "recovery",
+            "low_volatility",
+        ]
+        descriptions = {
+            "strong_trend": "elle est en pleine forme",
+            "undervalued": "le prix est intéressant",
+            "good_prediction": "l'IA est confiante",
+            "high_volume": "la liquidité est très forte",
+            "momentum": "le mouvement reste puissant",
+            "recovery": "elle rebondit et reprend de la force",
+            "low_volatility": "elle est stable et rassurante",
+        }
+        for key in reason_order:
+            if key in reasons:
+                return descriptions.get(key, "c'est une opportunité solide")
+        return "c'est une opportunité solide"
     
     def format_suggestions_message(
         self,
@@ -300,8 +332,11 @@ class InvestmentSuggestionService:
                     break
             
             if kid_friendly:
-                lines.append(f"{i}. {reason_emoji} {suggestion.kid_friendly_message}")
-                lines.append(f"   Score : {suggestion.score:.1f}/10 {risk_emoji}")
+                lines.append(f"{i}. {reason_emoji} {suggestion.symbol} ({suggestion.score:.1f}/10 {risk_emoji})")
+                lines.append(f"   Prix actuel : {suggestion.current_price:.2f}€ ({suggestion.change_24h:+.1f}% /24h)")
+                entry_price = max(suggestion.current_price * 0.98, 0.0)
+                lines.append(f"   Prix d'achat conseillé : {entry_price:.2f}€")
+                lines.append("   " + suggestion.kid_friendly_message.replace("\n", "\n   "))
             else:
                 lines.append(
                     f"{i}. {reason_emoji} **{suggestion.symbol}** - "

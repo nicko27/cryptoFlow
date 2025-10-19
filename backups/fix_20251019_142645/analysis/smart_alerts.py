@@ -3,7 +3,7 @@ Smart Alerts - Système d'alertes intelligentes avancées
 """
 
 from typing import List, Dict, Optional, Callable
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, timezone
 from dataclasses import dataclass
 import numpy as np
 

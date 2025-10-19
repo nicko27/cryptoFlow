@@ -293,7 +293,8 @@ class SettingsDialog(QDialog):
     @staticmethod
     def _parse_hours_list(text: str, label: str) -> List[int]:
         """
-        Parse une liste d'heures depuis une chaîne (0-23)
+        FIXED: Problème 10 - Validation correcte des heures sans accepter les négatifs
+        Parse une liste d'heures depuis une chaîne
         """
         if not text or not text.strip():
             return []
@@ -306,7 +307,7 @@ class SettingsDialog(QDialog):
             if not part:
                 continue
             
-            # Ne plus accepter les signes +/-
+            # FIXED: Ne plus accepter les signes +/- 
             if not part.isdigit():
                 raise ValueError(
                     f"{label} doit contenir uniquement des nombres entiers positifs (0-23)"

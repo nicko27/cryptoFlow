@@ -3,8 +3,8 @@ Portfolio Service - Gestion du portfolio utilisateur
 """
 
 from typing import Dict, List, Optional
-from datetime import datetime, timezone, timezone
-from core.models import Portfolio, Position, CryptoPrice
+
+from core.models import Portfolio, Position
 
 
 class PortfolioService:
@@ -32,7 +32,6 @@ class PortfolioService:
         )
         
         self.portfolio.add_position(position)
-        self.portfolio.total_investment_eur += position.investment_eur
         
         return position
     

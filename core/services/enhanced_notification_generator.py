@@ -20,9 +20,10 @@ from core.services.investment_suggestion_service import InvestmentSuggestionServ
 class EnhancedNotificationGenerator:
     """Générateur de notifications avancé et paramétrable"""
     
-    def __init__(self, settings: GlobalNotificationSettings):
+    def __init__(self, settings: GlobalNotificationSettings, tracked_symbols: Optional[List[str]] = None):
         self.settings = settings
         self.suggestion_service = InvestmentSuggestionService()
+        self._tracked_symbols = {s.upper() for s in (tracked_symbols or [])}
         
         # Termes détectés dans le message pour le glossaire automatique
         self.detected_terms = set()
@@ -554,6 +555,7 @@ class EnhancedNotificationGenerator:
             prefer_low_volatility=block.prefer_low_volatility,
             prefer_trending=block.prefer_trending,
             prefer_undervalued=block.prefer_undervalued,
+            excluded_symbols=list(self._tracked_symbols),
         )
         
         if not suggestions:

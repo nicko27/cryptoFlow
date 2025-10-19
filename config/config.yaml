@@ -1,7 +1,7 @@
 telegram:
   bot_token: 8296923394:AAH4GIdVUFp14kpAA0ifqaDwRErsJKu6kls
   chat_id: '6574539700'
-  message_delay: 0.5
+  message_delay: 1
   display:
     show_prices: true
     show_trend_24h: true
@@ -21,40 +21,87 @@ crypto:
 alerts:
   enable: true
   lookback_minutes: 120
+  drop_threshold: 10.0
+  spike_threshold: 10.0
+  funding_negative_threshold: -0.03
+  oi_delta_threshold: 3.0
+  fear_greed_max: 30
 price_levels:
   enable: true
   levels:
     SOL:
       low: 150
       high: 200
+  buffer_eur: 2.0
+  cooldown_minutes: 30
 timing:
   check_interval: 900
+summaries:
+  hours:
+  - 9
+  - 12
+  - 18
+quiet_hours:
+  enable: false
+  start_hour: 23
+  end_hour: 7
+  allow_critical: true
 features:
   graphs: true
   show_levels_on_graph: true
   startup_summary: true
   send_summary_chart: true
   send_summary_dca: true
-logging:
-  file: logs/crypto_bot.log
-  level: INFO
+  opportunity_score: true
+  opportunity_threshold: 7
+  predictions: true
+  timeline: true
+  gain_loss_calc: true
+  dca_suggestions: true
+  simple_language: true
+  educational_mode: true
+  detail_level: normal
 report:
+  detail_level: detailed
+  sections:
+    executive_summary: true
+    per_crypto: true
+    comparison: true
+    recommendations: true
+    advanced_analysis: true
+    statistics: true
+  metrics:
+    volatility: true
+    drawdown: true
+    trend_strength: true
+    risk_score: true
+    dca_projection: false
+    correlation: false
+  include_summary: false
+  include_telegram_report: false
+  include_chart: false
+  include_dca: false
   include_broker_prices: true
 brokers:
   enabled:
-    - binance
-    - revolut
+  - binance
+  - revolut
   overrides: {}
 notifications:
   per_coin: true
   include_chart: true
-  chart_timeframes: [24, 168]
+  chart_timeframes:
+  - 24
+  - 168
   include_brokers: true
   send_glossary: true
   thresholds: {}
+  content: {}
 coins:
   SOL:
-    report_hours: [9, 21]
+    report_hours:
+    - 9
+    - 21
     report_options:
       show_price: true
       show_volume: true
@@ -65,8 +112,12 @@ coins:
       show_brokers: true
       show_fear_greed: true
       show_gain: true
-      chart_timeframes: [24, 168]
-    notification_hours: [9, 21]
+      chart_timeframes:
+      - 24
+      - 168
+    notification_hours:
+    - 9
+    - 21
     notification_options:
       show_price: true
       show_curves: true
@@ -75,3 +126,12 @@ coins:
       show_brokers: true
       show_fear_greed: true
       show_gain: true
+modes:
+  daemon: false
+  gui: true
+database:
+  path: data/crypto_bot.db
+  keep_history_days: 30
+logging:
+  file: logs/crypto_bot.log
+  level: INFO

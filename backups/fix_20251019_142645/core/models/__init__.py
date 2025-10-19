@@ -85,31 +85,17 @@ class PriceLevel:
 @dataclass
 class TechnicalIndicators:
     """Indicateurs techniques"""
-    rsi: float = 50.0
-    macd: float = 0.0
-    macd_signal: float = 0.0
-    macd_histogram: float = 0.0
-    ma20: float = 0.0
-    ma50: float = 0.0
-    ma200: float = 0.0
-    bollinger_upper: Optional[float] = None
-    bollinger_lower: Optional[float] = None
-    support: Optional[float] = None
-    resistance: Optional[float] = None
+    rsi: float
+    macd: float
+    macd_signal: float
+    ma20: float
+    ma50: float
+    ma200: float
+    bollinger_upper: float
+    bollinger_lower: float
     support_level: Optional[float] = None
     resistance_level: Optional[float] = None
     volume_trend: str = "NEUTRAL"
-
-    def __post_init__(self):
-        # Harmonise les alias support/resistance
-        if self.support_level is None and self.support is not None:
-            self.support_level = self.support
-        if self.resistance_level is None and self.resistance is not None:
-            self.resistance_level = self.resistance
-        if self.support is None and self.support_level is not None:
-            self.support = self.support_level
-        if self.resistance is None and self.resistance_level is not None:
-            self.resistance = self.resistance_level
 
 
 @dataclass
@@ -118,15 +104,9 @@ class MarketData:
     symbol: str
     current_price: CryptoPrice
     technical_indicators: TechnicalIndicators
-    price_change_24h: Optional[float] = None
-    price_change_7d: Optional[float] = None
-    volume_24h: Optional[float] = None
-    market_cap: Optional[float] = None
-    open_interest: Optional[float] = None
     fear_greed_index: Optional[int] = None
     funding_rate: Optional[float] = None
     open_interest_change: Optional[float] = None
-    weekly_change: Optional[float] = None
     price_history: List[CryptoPrice] = field(default_factory=list)
     
     def get_price_change(self, minutes: int) -> Optional[float]:
@@ -227,111 +207,29 @@ class OpportunityScore:
 
 
 @dataclass
-class BrokerQuote:
-    """Cotations d'un courtier"""
-    broker: str
-    buy_price: float
-    sell_price: float
-    currency: str = "€"
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    notes: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
-class Position:
-    """Position détenue dans le portfolio"""
-    symbol: str
-    amount: float
-    entry_price_eur: float
-    current_price_eur: float
-    investment_eur: float
-    current_value_eur: float = 0.0
-    gain_loss_eur: float = 0.0
-    gain_loss_pct: float = 0.0
-    last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-
-    def __post_init__(self) -> None:
-        self.update_values(self.current_price_eur)
-
-    def update_values(self, current_price_eur: float) -> None:
-        """Met à jour les valeurs courantes de la position"""
-        self.current_price_eur = current_price_eur
-        self.current_value_eur = self.amount * current_price_eur
-        self.gain_loss_eur = self.current_value_eur - self.investment_eur
-        self.gain_loss_pct = (
-            (self.gain_loss_eur / self.investment_eur) * 100
-            if self.investment_eur else 0.0
-        )
-        self.last_updated = datetime.now(timezone.utc)
-
-
-@dataclass
-class Portfolio:
-    """Portfolio utilisateur"""
-    positions: Dict[str, Position] = field(default_factory=dict)
-    total_investment_eur: float = 0.0
-    total_value_eur: float = 0.0
-    total_gain_loss_eur: float = 0.0
-    total_gain_loss_pct: float = 0.0
-    last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-
-    def add_position(self, position: Position) -> None:
-        """Ajoute ou remplace une position dans le portfolio"""
-        self.positions[position.symbol] = position
-        self.recalculate()
-
-    def recalculate(self) -> None:
-        """Recalcule les agrégats du portfolio"""
-        total_investment = sum(p.investment_eur for p in self.positions.values())
-        total_value = sum(p.current_value_eur for p in self.positions.values())
-
-        self.total_investment_eur = total_investment
-        self.total_value_eur = total_value
-        self.total_gain_loss_eur = total_value - total_investment
-        self.total_gain_loss_pct = (
-            (self.total_gain_loss_eur / total_investment) * 100
-            if total_investment else 0.0
-        )
-        self.last_updated = datetime.now(timezone.utc)
-
-
-@dataclass
 class BotConfiguration:
     """Configuration du bot"""
     # Telegram
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
-    telegram_message_delay: float = 0.5
+    telegram_message_delay: int = 2
     telegram_show_prices: bool = True
     telegram_show_trend_24h: bool = True
     telegram_show_trend_7d: bool = True
     telegram_show_recommendations: bool = True
-    trend_buy_threshold_24h: float = 2.0
-    trend_sell_threshold_24h: float = -2.0
-    trend_buy_threshold_7d: float = 5.0
-    trend_sell_threshold_7d: float = -5.0
     
     # Cryptos à surveiller
     crypto_symbols: List[str] = field(default_factory=lambda: ["BTC", "ETH", "SOL"])
-    investment_amount: float = 100.0
     
     # Intervalles
     check_interval_seconds: int = 900  # 15 minutes
-    summary_hours: List[int] = field(default_factory=lambda: [9, 12, 18])
     
     # Alertes
-    enable_alerts: bool = True
-    price_lookback_minutes: int = 120
-    price_drop_threshold: float = 10.0  # %
-    price_spike_threshold: float = 10.0  # %
-    funding_negative_threshold: float = -0.03
-    oi_delta_threshold: float = 3.0
-    fear_greed_max: int = 30
+    price_drop_threshold: float = 5.0  # %
+    price_spike_threshold: float = 5.0  # %
+    price_lookback_minutes: int = 60
     enable_price_levels: bool = True
     price_levels: Dict[str, Dict[str, float]] = field(default_factory=dict)
-    level_buffer_eur: float = 2.0
-    level_cooldown_minutes: int = 30
     
     # RSI
     rsi_oversold: int = 30
@@ -349,27 +247,11 @@ class BotConfiguration:
     enable_night_mode: bool = False
     night_mode_start_hour: int = 23
     night_mode_end_hour: int = 7
-    enable_quiet_hours: bool = False
-    quiet_start_hour: int = 23
-    quiet_end_hour: int = 7
-    quiet_allow_critical: bool = True
     
     # Résumés
     enable_startup_summary: bool = True
     enable_daily_summary: bool = False
     daily_summary_hour: int = 9
-    send_summary_chart: bool = False
-    send_summary_dca: bool = False
-    enable_timeline: bool = True
-    enable_gain_loss_calc: bool = True
-    enable_dca_suggestions: bool = True
-    enable_opportunity_score: bool = True
-    opportunity_threshold: int = 7
-    enable_graphs: bool = True
-    show_levels_on_graph: bool = True
-    use_simple_language: bool = True
-    educational_mode: bool = True
-    detail_level: str = "normal"  # "minimal", "normal", "detailed"
     
     # Base de données
     database_path: str = "data/crypto_bot.db"
@@ -378,8 +260,6 @@ class BotConfiguration:
     # Logs
     log_file: str = "logs/crypto_bot.log"
     log_level: str = "INFO"
-    daemon_mode: bool = False
-    gui_mode: bool = True
     
     # DCA
     enable_dca: bool = False
@@ -387,47 +267,15 @@ class BotConfiguration:
     dca_frequency_days: int = 7
     
     # Autres
+    investment_amount: float = 1000.0
     trend_short_days: int = 7
     trend_medium_days: int = 30
     trend_long_days: int = 90
+    
+    # Nouveaux paramètres pour notifications avancées
+    detail_level: str = "normal"  # "minimal", "normal", "detailed"
     coin_settings: Dict[str, Any] = field(default_factory=dict)
-    
-    # Rapports
-    report_detail_level: str = "detailed"
-    report_enabled_sections: Dict[str, bool] = field(default_factory=lambda: {
-        "executive_summary": True,
-        "per_crypto": True,
-        "comparison": True,
-        "recommendations": True,
-        "advanced_analysis": True,
-        "statistics": True,
-    })
-    report_advanced_metrics: Dict[str, bool] = field(default_factory=lambda: {
-        "volatility": True,
-        "drawdown": True,
-        "trend_strength": True,
-        "risk_score": True,
-        "dca_projection": False,
-        "correlation": False,
-    })
-    report_include_summary: bool = False
-    report_include_telegram_report: bool = False
-    report_include_chart: bool = False
-    report_include_dca: bool = False
-    report_include_broker_prices: bool = True
-    
-    # Brokers
-    enabled_brokers: List[str] = field(default_factory=lambda: ["binance", "revolut"])
-    broker_settings: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-    
-    # Notifications
-    notification_per_coin: bool = True
-    notification_include_chart: bool = True
-    notification_chart_timeframes: List[int] = field(default_factory=lambda: [24, 168])
-    notification_include_brokers: bool = True
-    notification_send_glossary: bool = True
-    notification_thresholds: Dict[str, Any] = field(default_factory=dict)
-    notification_content_by_coin: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    notification_content_by_coin: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass

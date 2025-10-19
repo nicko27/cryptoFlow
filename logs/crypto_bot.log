@@ -8087,3 +8087,312 @@ sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) disk I/O error
 2025-10-19 13:47:03 | INFO     | CryptoBotDaemon | Erreurs : 11
 2025-10-19 13:47:03 | INFO     | CryptoBotDaemon | ============================================================
 
+2025-10-19 17:33:48 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 17:34:24 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 18:03:55 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 18:03:56 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-19 18:03:56 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-19 18:03:58 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:04:13 | INFO     | CryptoBotGUI | Configuration sauvegardée
+2025-10-19 18:07:20 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-19 18:07:20 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 18:07:20 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-19 18:07:20 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:07:20 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-19 18:07:20 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-19 18:07:20 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-19 18:07:20 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:07:20 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-19 18:07:21 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-19 18:07:21 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-19 18:07:22 | ERROR    | CryptoBotDaemon | Erreur récupération BTC: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:07:23 | ERROR    | CryptoBotDaemon | Erreur récupération ETH: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:07:23 | ERROR    | CryptoBotDaemon | Erreur récupération SOL: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:07:23 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-19 18:07:23 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 18:07:23 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-19 18:07:23 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:07:23 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-19 18:07:23 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 18:07:24 | ERROR    | CryptoBotDaemon | ❌ Erreur récupération données BTC: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:07:24 | ERROR    | CryptoBotDaemon | ❌ Erreur vérification BTC : __init__() got an unexpected keyword argument 'macd_histogram'
+Traceback (most recent call last):
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 275, in _check_cycle
+    self._process_symbol(symbol, quiet_mode)
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 317, in _process_symbol
+    market_data = self.market_service.get_market_data(symbol)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 42, in get_market_data
+    technical_indicators = self.binance_api.calculate_technical_indicators(all_prices)
+  File "/Users/nico/Downloads/cryptoFlow/api/binance_api.py", line 202, in calculate_technical_indicators
+    return TechnicalIndicators(
+TypeError: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:07:24 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-19 18:07:24 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 18:07:25 | ERROR    | CryptoBotDaemon | ❌ Erreur récupération données ETH: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:07:25 | ERROR    | CryptoBotDaemon | ❌ Erreur vérification ETH : __init__() got an unexpected keyword argument 'macd_histogram'
+Traceback (most recent call last):
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 275, in _check_cycle
+    self._process_symbol(symbol, quiet_mode)
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 317, in _process_symbol
+    market_data = self.market_service.get_market_data(symbol)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 42, in get_market_data
+    technical_indicators = self.binance_api.calculate_technical_indicators(all_prices)
+  File "/Users/nico/Downloads/cryptoFlow/api/binance_api.py", line 202, in calculate_technical_indicators
+    return TechnicalIndicators(
+TypeError: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:07:25 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-19 18:07:25 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 18:07:25 | ERROR    | CryptoBotDaemon | ❌ Erreur récupération données SOL: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:07:25 | ERROR    | CryptoBotDaemon | ❌ Erreur vérification SOL : __init__() got an unexpected keyword argument 'macd_histogram'
+Traceback (most recent call last):
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 275, in _check_cycle
+    self._process_symbol(symbol, quiet_mode)
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 317, in _process_symbol
+    market_data = self.market_service.get_market_data(symbol)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 42, in get_market_data
+    technical_indicators = self.binance_api.calculate_technical_indicators(all_prices)
+  File "/Users/nico/Downloads/cryptoFlow/api/binance_api.py", line 202, in calculate_technical_indicators
+    return TechnicalIndicators(
+TypeError: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:07:25 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 3 erreurs (3 consécutives), Uptime: 0h0m
+2025-10-19 18:08:02 | INFO     | CryptoBotDaemon | Signal 2 (SIGINT) reçu, arrêt du démon...
+2025-10-19 18:08:02 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 18:08:02 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-19 18:08:02 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:08:02 | INFO     | CryptoBotDaemon | Uptime : 0h 0m
+2025-10-19 18:08:02 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-19 18:08:02 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-19 18:08:02 | INFO     | CryptoBotDaemon | Erreurs : 3
+2025-10-19 18:08:02 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-19 18:08:02 | INFO     | CryptoBotGUI | Daemon démarré
+2025-10-19 18:08:33 | INFO     | CryptoBotDaemon | Signal 2 (SIGINT) reçu, arrêt du démon...
+2025-10-19 18:08:33 | INFO     | CryptoBotDaemon | Signal 15 (SIGTERM) reçu, arrêt du démon...
+2025-10-19 18:08:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:09:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:09:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:10:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:10:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:11:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:11:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:12:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:12:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:13:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:13:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:14:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:14:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:15:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:15:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:16:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:16:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:17:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:17:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:18:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:18:28 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 18:18:29 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-19 18:18:29 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-19 18:18:31 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'open_interest'
+2025-10-19 18:18:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:19:03 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-19 18:19:03 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 18:19:03 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-19 18:19:03 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:19:03 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-19 18:19:03 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-19 18:19:03 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-19 18:19:03 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:19:03 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-19 18:19:03 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-19 18:19:03 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-19 18:19:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:19:06 | ERROR    | CryptoBotDaemon | Erreur récupération BTC: __init__() got an unexpected keyword argument 'open_interest'
+2025-10-19 18:19:08 | ERROR    | CryptoBotDaemon | Erreur récupération ETH: __init__() got an unexpected keyword argument 'open_interest'
+2025-10-19 18:19:09 | ERROR    | CryptoBotDaemon | Erreur récupération SOL: __init__() got an unexpected keyword argument 'open_interest'
+2025-10-19 18:19:09 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-19 18:19:09 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 18:19:09 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-19 18:19:09 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:19:09 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-19 18:19:09 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 18:19:11 | ERROR    | CryptoBotDaemon | ❌ Erreur récupération données BTC: __init__() got an unexpected keyword argument 'open_interest'
+2025-10-19 18:19:11 | ERROR    | CryptoBotDaemon | ❌ Erreur vérification BTC : __init__() got an unexpected keyword argument 'open_interest'
+Traceback (most recent call last):
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 288, in _check_cycle
+    self._process_symbol(symbol, quiet_mode)
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 330, in _process_symbol
+    market_data = self.market_service.get_market_data(symbol)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 49, in get_market_data
+    market_data = MarketData(
+TypeError: __init__() got an unexpected keyword argument 'open_interest'
+2025-10-19 18:19:11 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-19 18:19:11 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 18:19:12 | ERROR    | CryptoBotDaemon | ❌ Erreur récupération données ETH: __init__() got an unexpected keyword argument 'open_interest'
+2025-10-19 18:19:12 | ERROR    | CryptoBotDaemon | ❌ Erreur vérification ETH : __init__() got an unexpected keyword argument 'open_interest'
+Traceback (most recent call last):
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 288, in _check_cycle
+    self._process_symbol(symbol, quiet_mode)
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 330, in _process_symbol
+    market_data = self.market_service.get_market_data(symbol)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 49, in get_market_data
+    market_data = MarketData(
+TypeError: __init__() got an unexpected keyword argument 'open_interest'
+2025-10-19 18:19:12 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-19 18:19:12 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 18:19:14 | ERROR    | CryptoBotDaemon | ❌ Erreur récupération données SOL: __init__() got an unexpected keyword argument 'open_interest'
+2025-10-19 18:19:14 | ERROR    | CryptoBotDaemon | ❌ Erreur vérification SOL : __init__() got an unexpected keyword argument 'open_interest'
+Traceback (most recent call last):
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 288, in _check_cycle
+    self._process_symbol(symbol, quiet_mode)
+  File "/Users/nico/Downloads/cryptoFlow/daemon/daemon_service.py", line 330, in _process_symbol
+    market_data = self.market_service.get_market_data(symbol)
+  File "/Users/nico/Downloads/cryptoFlow/core/services/market_service.py", line 49, in get_market_data
+    market_data = MarketData(
+TypeError: __init__() got an unexpected keyword argument 'open_interest'
+2025-10-19 18:19:14 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 0 alertes, 3 erreurs (3 consécutives), Uptime: 0h0m
+2025-10-19 18:19:21 | INFO     | CryptoBotDaemon | Signal 2 (SIGINT) reçu, arrêt du démon...
+2025-10-19 18:19:21 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 18:19:21 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-19 18:19:21 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:19:21 | INFO     | CryptoBotDaemon | Uptime : 0h 0m
+2025-10-19 18:19:21 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-19 18:19:21 | INFO     | CryptoBotDaemon | Alertes envoyées : 0
+2025-10-19 18:19:21 | INFO     | CryptoBotDaemon | Erreurs : 3
+2025-10-19 18:19:21 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-19 18:19:21 | INFO     | CryptoBotGUI | Daemon démarré
+2025-10-19 18:19:33 | INFO     | CryptoBotDaemon | Signal 15 (SIGTERM) reçu, arrêt du démon...
+2025-10-19 18:19:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:20:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:20:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:21:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:21:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:22:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:22:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:23:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:23:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:24:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:24:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:25:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:25:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:26:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:26:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:27:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:27:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:28:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:28:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:29:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:29:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:30:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:30:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:31:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:31:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:32:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:32:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:33:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:33:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:34:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:34:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:35:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:35:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:36:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:36:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:37:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:37:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:38:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:38:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:39:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:39:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:40:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:40:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:41:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:41:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:42:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:42:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:43:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:43:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:44:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:44:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:45:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:45:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:46:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:46:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:47:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:47:09 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-19 18:47:10 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-19 18:47:10 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-19 18:47:15 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-19 18:47:15 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 18:47:15 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-19 18:47:15 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:47:15 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-19 18:47:15 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-19 18:47:15 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-19 18:47:15 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:47:15 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-19 18:47:15 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-19 18:47:15 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-19 18:47:18 | ERROR    | CryptoBotDaemon | Erreur récupération BTC: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 18:47:19 | ERROR    | CryptoBotDaemon | Erreur récupération ETH: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 18:47:21 | ERROR    | CryptoBotDaemon | Erreur récupération SOL: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 18:47:21 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-19 18:47:21 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 18:47:21 | INFO     | CryptoBotDaemon | 🔍 VÉRIFICATION #1
+2025-10-19 18:47:21 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:47:21 | INFO     | CryptoBotDaemon | 
+📊 BTC:
+2025-10-19 18:47:21 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 18:47:22 | INFO     | CryptoBotDaemon | 💰 Prix : 93145.76 € (+1.91% 24h)
+2025-10-19 18:47:22 | ERROR    | CryptoBotDaemon | ❌ Erreur prédiction BTC: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 18:47:22 | ERROR    | CryptoBotDaemon | ❌ Erreur calcul opportunité BTC: 'NoneType' object has no attribute 'prediction_type'
+2025-10-19 18:47:22 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-19 18:47:22 | INFO     | CryptoBotDaemon | 
+📊 ETH:
+2025-10-19 18:47:22 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 18:47:23 | INFO     | CryptoBotDaemon | 💰 Prix : 3409.81 € (+3.06% 24h)
+2025-10-19 18:47:23 | ERROR    | CryptoBotDaemon | ❌ Erreur prédiction ETH: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 18:47:23 | ERROR    | CryptoBotDaemon | ❌ Erreur calcul opportunité ETH: 'NoneType' object has no attribute 'prediction_type'
+2025-10-19 18:47:23 | INFO     | CryptoBotDaemon | 🚨 1 alerte(s) générée(s)
+2025-10-19 18:47:23 | INFO     | CryptoBotDaemon |    • [WARNING] RSI en surachat (71)
+2025-10-19 18:47:24 | INFO     | CryptoBotDaemon |    ✓ Alerte envoyée sur Telegram
+2025-10-19 18:47:24 | INFO     | CryptoBotDaemon | 
+📊 SOL:
+2025-10-19 18:47:24 | INFO     | CryptoBotDaemon | ------------------------------------------------------------
+2025-10-19 18:47:25 | INFO     | CryptoBotDaemon | 💰 Prix : 163.70 € (+3.96% 24h)
+2025-10-19 18:47:25 | ERROR    | CryptoBotDaemon | ❌ Erreur prédiction SOL: __init__() got an unexpected keyword argument 'target_high'
+2025-10-19 18:47:25 | ERROR    | CryptoBotDaemon | ❌ Erreur calcul opportunité SOL: 'NoneType' object has no attribute 'prediction_type'
+2025-10-19 18:47:25 | INFO     | CryptoBotDaemon | ℹ️ Aucune alerte
+2025-10-19 18:47:25 | INFO     | CryptoBotDaemon | 
+📊 Stats : 1 vérifications, 1 alertes, 0 erreurs (0 consécutives), Uptime: 0h0m
+2025-10-19 18:47:33 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:47:43 | INFO     | CryptoBotDaemon | Signal 2 (SIGINT) reçu, arrêt du démon...
+2025-10-19 18:47:43 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-19 18:47:43 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-19 18:47:43 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-19 18:47:43 | INFO     | CryptoBotDaemon | Uptime : 0h 0m
+2025-10-19 18:47:43 | INFO     | CryptoBotDaemon | Vérifications : 1
+2025-10-19 18:47:43 | INFO     | CryptoBotDaemon | Alertes envoyées : 1
+2025-10-19 18:47:43 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-19 18:47:43 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-19 18:47:43 | INFO     | CryptoBotGUI | Daemon démarré
+2025-10-19 18:47:52 | INFO     | CryptoBotDaemon | Signal 15 (SIGTERM) reçu, arrêt du démon...
+2025-10-19 18:48:03 | INFO     | CryptoBotDaemon | Signal 15 (SIGTERM) reçu, arrêt du démon...
+2025-10-19 18:48:03 | ERROR    | CryptoBotGUI | Erreur refresh données: __init__() got an unexpected keyword argument 'macd_histogram'
+2025-10-19 18:48:13 | INFO     | CryptoBotDaemon | Signal 15 (SIGTERM) reçu, arrêt du démon...

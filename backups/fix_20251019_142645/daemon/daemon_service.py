@@ -62,8 +62,8 @@ class DaemonService:
             config.telegram_chat_id,
             message_delay=config.telegram_message_delay
         )
-        initial_settings = self._load_notification_settings()
-        self.update_notification_settings(initial_settings)
+        self.notification_settings = self._load_notification_settings()
+        self.notification_generator = EnhancedNotificationGenerator(self.notification_settings)
 
         # FIXED: Problème 20 - Gestion des signaux système thread-safe
         signal.signal(signal.SIGINT, self._signal_handler)
@@ -99,25 +99,12 @@ class DaemonService:
             default_scheduled_hours=data.get('default_scheduled_hours', [9, 12, 18])
         )
 
-    def update_notification_settings(self, settings: GlobalNotificationSettings) -> None:
-        """Met à jour les paramètres de notification et régénère le générateur associé."""
-        with self._state_lock:
-            self.notification_settings = settings
-            self.notification_generator = EnhancedNotificationGenerator(
-                settings,
-                self.config.crypto_symbols,
-            )
-
     def update_configuration(self, config: BotConfiguration) -> None:
         """Met à jour les services internes avec une nouvelle configuration."""
         with self._state_lock:
             self.config = config
             # Recréer les services si nécessaire
             self.alert_service = AlertService(config)
-            self.notification_generator = EnhancedNotificationGenerator(
-                self.notification_settings,
-                config.crypto_symbols,
-            )
             self.logger.info("Configuration mise à jour")
 
     def _signal_handler(self, signum, frame):
