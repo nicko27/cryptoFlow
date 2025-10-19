@@ -1,0 +1,778 @@
+notifications:
+  enabled: true
+  kid_friendly_mode: true
+  max_message_length: 4096
+  default_scheduled_hours:
+  - 9
+  - 12
+  - 18
+  quiet_hours:
+    enabled: true
+    start: 23
+    end: 7
+  global_header_template: 🔔 Notification Crypto {time_slot}
+  global_footer_template: 💡 N'investis jamais plus que ce que tu peux te permettre
+    de perdre !
+coins:
+  BTC:
+    enabled: true
+    nickname: null
+    custom_emoji: null
+    intro_message: null
+    outro_message: null
+    detail_level: normal
+    scheduled_notifications:
+    - name: Notification 9h
+      description: Notification quotidienne
+      enabled: true
+      hours:
+      - 9
+      days_of_week:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      blocks_order:
+      - header
+      - price
+      - chart
+      - prediction
+      - opportunity
+      - brokers
+      - fear_greed
+      - gain_loss
+      - investment_suggestions
+      - glossary
+      - custom
+      - footer
+      header_message: 🔔 {time_slot} - Mise à jour {symbol}
+      footer_message: ℹ️ Ceci est une information, pas un conseil financier !
+      kid_friendly_mode: true
+      use_emojis_everywhere: true
+      explain_everything: true
+      avoid_technical_terms: true
+      send_only_if_change_above: null
+      send_only_if_opportunity_above: null
+      price_block:
+        enabled: true
+        title: 💰 Prix actuel
+        show_emoji: true
+        show_price_eur: true
+        show_variation_24h: true
+        show_variation_7d: true
+        show_volume: true
+        add_price_comment: true
+      chart_block:
+        enabled: true
+        title: 📊 Évolution du prix
+        show_emoji: true
+        show_sparklines: true
+        send_full_chart: false
+        timeframes: &id001
+        - 24
+        - 168
+      prediction_block:
+        enabled: true
+        title: 🔮 Prédiction Intelligence Artificielle
+        show_emoji: true
+        show_prediction_type: true
+        show_confidence: true
+        min_confidence_to_show: 50
+      opportunity_block:
+        enabled: true
+        title: ⭐ Score d'opportunité
+        show_emoji: true
+        show_score: true
+        show_recommendation: true
+        min_score_to_show: 0
+      brokers_block:
+        enabled: true
+        title: 💱 Où acheter le moins cher
+        show_emoji: true
+      fear_greed_block:
+        enabled: true
+        title: 😨😁 Humeur du marché
+        show_emoji: true
+      gain_loss_block:
+        enabled: true
+        title: 💵 Si tu avais investi
+        show_emoji: true
+      investment_suggestions_block:
+        enabled: true
+        title: 💡 Autres cryptos intéressantes
+        show_emoji: true
+        max_suggestions: 3
+        min_opportunity_score: 7
+        exclude_current: true
+        prefer_low_volatility: false
+        prefer_trending: true
+        prefer_undervalued: true
+      glossary_block:
+        enabled: true
+        title: 📚 Petit glossaire
+        show_emoji: true
+        auto_detect_terms: true
+        custom_terms: {}
+    - name: Notification 12h
+      description: Notification quotidienne
+      enabled: true
+      hours:
+      - 12
+      days_of_week:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      blocks_order:
+      - header
+      - price
+      - chart
+      - prediction
+      - opportunity
+      - brokers
+      - fear_greed
+      - gain_loss
+      - investment_suggestions
+      - glossary
+      - custom
+      - footer
+      header_message: 🔔 {time_slot} - Mise à jour {symbol}
+      footer_message: ℹ️ Ceci est une information, pas un conseil financier !
+      kid_friendly_mode: true
+      use_emojis_everywhere: true
+      explain_everything: true
+      avoid_technical_terms: true
+      send_only_if_change_above: null
+      send_only_if_opportunity_above: null
+      price_block:
+        enabled: true
+        title: 💰 Prix actuel
+        show_emoji: true
+        show_price_eur: true
+        show_variation_24h: true
+        show_variation_7d: true
+        show_volume: true
+        add_price_comment: true
+      chart_block:
+        enabled: true
+        title: 📊 Évolution du prix
+        show_emoji: true
+        show_sparklines: true
+        send_full_chart: false
+        timeframes: *id001
+      prediction_block:
+        enabled: true
+        title: 🔮 Prédiction Intelligence Artificielle
+        show_emoji: true
+        show_prediction_type: true
+        show_confidence: true
+        min_confidence_to_show: 50
+      opportunity_block:
+        enabled: true
+        title: ⭐ Score d'opportunité
+        show_emoji: true
+        show_score: true
+        show_recommendation: true
+        min_score_to_show: 0
+      brokers_block:
+        enabled: true
+        title: 💱 Où acheter le moins cher
+        show_emoji: true
+      fear_greed_block:
+        enabled: true
+        title: 😨😁 Humeur du marché
+        show_emoji: true
+      gain_loss_block:
+        enabled: true
+        title: 💵 Si tu avais investi
+        show_emoji: true
+      investment_suggestions_block:
+        enabled: true
+        title: 💡 Autres cryptos intéressantes
+        show_emoji: true
+        max_suggestions: 3
+        min_opportunity_score: 7
+        exclude_current: true
+        prefer_low_volatility: false
+        prefer_trending: true
+        prefer_undervalued: true
+      glossary_block:
+        enabled: true
+        title: 📚 Petit glossaire
+        show_emoji: true
+        auto_detect_terms: true
+        custom_terms: {}
+    - name: Notification 18h
+      description: Notification quotidienne
+      enabled: true
+      hours:
+      - 18
+      days_of_week:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      blocks_order:
+      - header
+      - price
+      - chart
+      - prediction
+      - opportunity
+      - brokers
+      - fear_greed
+      - gain_loss
+      - investment_suggestions
+      - glossary
+      - custom
+      - footer
+      header_message: 🔔 {time_slot} - Mise à jour {symbol}
+      footer_message: ℹ️ Ceci est une information, pas un conseil financier !
+      kid_friendly_mode: true
+      use_emojis_everywhere: true
+      explain_everything: true
+      avoid_technical_terms: true
+      send_only_if_change_above: null
+      send_only_if_opportunity_above: null
+      price_block:
+        enabled: true
+        title: 💰 Prix actuel
+        show_emoji: true
+        show_price_eur: true
+        show_variation_24h: true
+        show_variation_7d: true
+        show_volume: true
+        add_price_comment: true
+      chart_block:
+        enabled: true
+        title: 📊 Évolution du prix
+        show_emoji: true
+        show_sparklines: true
+        send_full_chart: false
+        timeframes: *id001
+      prediction_block:
+        enabled: true
+        title: 🔮 Prédiction Intelligence Artificielle
+        show_emoji: true
+        show_prediction_type: true
+        show_confidence: true
+        min_confidence_to_show: 50
+      opportunity_block:
+        enabled: true
+        title: ⭐ Score d'opportunité
+        show_emoji: true
+        show_score: true
+        show_recommendation: true
+        min_score_to_show: 0
+      brokers_block:
+        enabled: true
+        title: 💱 Où acheter le moins cher
+        show_emoji: true
+      fear_greed_block:
+        enabled: true
+        title: 😨😁 Humeur du marché
+        show_emoji: true
+      gain_loss_block:
+        enabled: true
+        title: 💵 Si tu avais investi
+        show_emoji: true
+      investment_suggestions_block:
+        enabled: true
+        title: 💡 Autres cryptos intéressantes
+        show_emoji: true
+        max_suggestions: 3
+        min_opportunity_score: 7
+        exclude_current: true
+        prefer_low_volatility: false
+        prefer_trending: true
+        prefer_undervalued: true
+      glossary_block:
+        enabled: true
+        title: 📚 Petit glossaire
+        show_emoji: true
+        auto_detect_terms: true
+        custom_terms: {}
+  ETH:
+    enabled: true
+    nickname: null
+    custom_emoji: null
+    intro_message: null
+    outro_message: null
+    detail_level: normal
+    scheduled_notifications:
+    - name: Notification 9h
+      description: Notification quotidienne
+      enabled: true
+      hours:
+      - 9
+      days_of_week:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      blocks_order:
+      - header
+      - price
+      - chart
+      - prediction
+      - opportunity
+      - brokers
+      - fear_greed
+      - gain_loss
+      - investment_suggestions
+      - glossary
+      - custom
+      - footer
+      header_message: 🔔 {time_slot} - Mise à jour {symbol}
+      footer_message: ℹ️ Ceci est une information, pas un conseil financier !
+      kid_friendly_mode: true
+      use_emojis_everywhere: true
+      explain_everything: true
+      avoid_technical_terms: true
+      send_only_if_change_above: null
+      send_only_if_opportunity_above: null
+      price_block:
+        enabled: true
+        title: 💰 Prix actuel
+        show_emoji: true
+        show_price_eur: true
+        show_variation_24h: true
+        show_variation_7d: true
+        show_volume: true
+        add_price_comment: true
+      chart_block:
+        enabled: true
+        title: 📊 Évolution du prix
+        show_emoji: true
+        show_sparklines: true
+        send_full_chart: false
+        timeframes: *id001
+      prediction_block:
+        enabled: true
+        title: 🔮 Prédiction Intelligence Artificielle
+        show_emoji: true
+        show_prediction_type: true
+        show_confidence: true
+        min_confidence_to_show: 50
+      opportunity_block:
+        enabled: true
+        title: ⭐ Score d'opportunité
+        show_emoji: true
+        show_score: true
+        show_recommendation: true
+        min_score_to_show: 0
+      brokers_block:
+        enabled: true
+        title: 💱 Où acheter le moins cher
+        show_emoji: true
+      fear_greed_block:
+        enabled: true
+        title: 😨😁 Humeur du marché
+        show_emoji: true
+      gain_loss_block:
+        enabled: true
+        title: 💵 Si tu avais investi
+        show_emoji: true
+      investment_suggestions_block:
+        enabled: true
+        title: 💡 Autres cryptos intéressantes
+        show_emoji: true
+        max_suggestions: 3
+        min_opportunity_score: 7
+        exclude_current: true
+        prefer_low_volatility: false
+        prefer_trending: true
+        prefer_undervalued: true
+      glossary_block:
+        enabled: true
+        title: 📚 Petit glossaire
+        show_emoji: true
+        auto_detect_terms: true
+        custom_terms: {}
+    - name: Notification 12h
+      description: Notification quotidienne
+      enabled: true
+      hours:
+      - 12
+      days_of_week:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      blocks_order:
+      - header
+      - price
+      - chart
+      - prediction
+      - opportunity
+      - brokers
+      - fear_greed
+      - gain_loss
+      - investment_suggestions
+      - glossary
+      - custom
+      - footer
+      header_message: 🔔 {time_slot} - Mise à jour {symbol}
+      footer_message: ℹ️ Ceci est une information, pas un conseil financier !
+      kid_friendly_mode: true
+      use_emojis_everywhere: true
+      explain_everything: true
+      avoid_technical_terms: true
+      send_only_if_change_above: null
+      send_only_if_opportunity_above: null
+      price_block:
+        enabled: true
+        title: 💰 Prix actuel
+        show_emoji: true
+        show_price_eur: true
+        show_variation_24h: true
+        show_variation_7d: true
+        show_volume: true
+        add_price_comment: true
+      chart_block:
+        enabled: true
+        title: 📊 Évolution du prix
+        show_emoji: true
+        show_sparklines: true
+        send_full_chart: false
+        timeframes: *id001
+      prediction_block:
+        enabled: true
+        title: 🔮 Prédiction Intelligence Artificielle
+        show_emoji: true
+        show_prediction_type: true
+        show_confidence: true
+        min_confidence_to_show: 50
+      opportunity_block:
+        enabled: true
+        title: ⭐ Score d'opportunité
+        show_emoji: true
+        show_score: true
+        show_recommendation: true
+        min_score_to_show: 0
+      brokers_block:
+        enabled: true
+        title: 💱 Où acheter le moins cher
+        show_emoji: true
+      fear_greed_block:
+        enabled: true
+        title: 😨😁 Humeur du marché
+        show_emoji: true
+      gain_loss_block:
+        enabled: true
+        title: 💵 Si tu avais investi
+        show_emoji: true
+      investment_suggestions_block:
+        enabled: true
+        title: 💡 Autres cryptos intéressantes
+        show_emoji: true
+        max_suggestions: 3
+        min_opportunity_score: 7
+        exclude_current: true
+        prefer_low_volatility: false
+        prefer_trending: true
+        prefer_undervalued: true
+      glossary_block:
+        enabled: true
+        title: 📚 Petit glossaire
+        show_emoji: true
+        auto_detect_terms: true
+        custom_terms: {}
+    - name: Notification 18h
+      description: Notification quotidienne
+      enabled: true
+      hours:
+      - 18
+      days_of_week:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      blocks_order:
+      - header
+      - price
+      - chart
+      - prediction
+      - opportunity
+      - brokers
+      - fear_greed
+      - gain_loss
+      - investment_suggestions
+      - glossary
+      - custom
+      - footer
+      header_message: 🔔 {time_slot} - Mise à jour {symbol}
+      footer_message: ℹ️ Ceci est une information, pas un conseil financier !
+      kid_friendly_mode: true
+      use_emojis_everywhere: true
+      explain_everything: true
+      avoid_technical_terms: true
+      send_only_if_change_above: null
+      send_only_if_opportunity_above: null
+      price_block:
+        enabled: true
+        title: 💰 Prix actuel
+        show_emoji: true
+        show_price_eur: true
+        show_variation_24h: true
+        show_variation_7d: true
+        show_volume: true
+        add_price_comment: true
+      chart_block:
+        enabled: true
+        title: 📊 Évolution du prix
+        show_emoji: true
+        show_sparklines: true
+        send_full_chart: false
+        timeframes: *id001
+      prediction_block:
+        enabled: true
+        title: 🔮 Prédiction Intelligence Artificielle
+        show_emoji: true
+        show_prediction_type: true
+        show_confidence: true
+        min_confidence_to_show: 50
+      opportunity_block:
+        enabled: true
+        title: ⭐ Score d'opportunité
+        show_emoji: true
+        show_score: true
+        show_recommendation: true
+        min_score_to_show: 0
+      brokers_block:
+        enabled: true
+        title: 💱 Où acheter le moins cher
+        show_emoji: true
+      fear_greed_block:
+        enabled: true
+        title: 😨😁 Humeur du marché
+        show_emoji: true
+      gain_loss_block:
+        enabled: true
+        title: 💵 Si tu avais investi
+        show_emoji: true
+      investment_suggestions_block:
+        enabled: true
+        title: 💡 Autres cryptos intéressantes
+        show_emoji: true
+        max_suggestions: 3
+        min_opportunity_score: 7
+        exclude_current: true
+        prefer_low_volatility: false
+        prefer_trending: true
+        prefer_undervalued: true
+      glossary_block:
+        enabled: true
+        title: 📚 Petit glossaire
+        show_emoji: true
+        auto_detect_terms: true
+        custom_terms: {}
+  SOL:
+    enabled: true
+    nickname: null
+    custom_emoji: null
+    intro_message: null
+    outro_message: null
+    detail_level: normal
+    scheduled_notifications:
+    - name: Notification 9h
+      description: Notification quotidienne
+      enabled: true
+      hours:
+      - 9
+      days_of_week:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      blocks_order:
+      - header
+      - price
+      - chart
+      - prediction
+      - opportunity
+      - brokers
+      - fear_greed
+      - gain_loss
+      - investment_suggestions
+      - glossary
+      - custom
+      - footer
+      header_message: 🔔 {time_slot} - Mise à jour {symbol}
+      footer_message: ℹ️ Ceci est une information, pas un conseil financier !
+      kid_friendly_mode: true
+      use_emojis_everywhere: true
+      explain_everything: true
+      avoid_technical_terms: true
+      send_only_if_change_above: null
+      send_only_if_opportunity_above: null
+      price_block:
+        enabled: true
+        title: 💰 Prix actuel
+        show_emoji: true
+        show_price_eur: true
+        show_variation_24h: true
+        show_variation_7d: true
+        show_volume: true
+        add_price_comment: true
+      chart_block:
+        enabled: true
+        title: 📊 Évolution du prix
+        show_emoji: true
+        show_sparklines: true
+        send_full_chart: false
+        timeframes: *id001
+      prediction_block:
+        enabled: true
+        title: 🔮 Prédiction Intelligence Artificielle
+        show_emoji: true
+        show_prediction_type: true
+        show_confidence: true
+        min_confidence_to_show: 50
+      opportunity_block:
+        enabled: true
+        title: ⭐ Score d'opportunité
+        show_emoji: true
+        show_score: true
+        show_recommendation: true
+        min_score_to_show: 0
+      brokers_block:
+        enabled: true
+        title: 💱 Où acheter le moins cher
+        show_emoji: true
+      fear_greed_block:
+        enabled: true
+        title: 😨😁 Humeur du marché
+        show_emoji: true
+      gain_loss_block:
+        enabled: true
+        title: 💵 Si tu avais investi
+        show_emoji: true
+      investment_suggestions_block:
+        enabled: true
+        title: 💡 Autres cryptos intéressantes
+        show_emoji: true
+        max_suggestions: 3
+        min_opportunity_score: 7
+        exclude_current: true
+        prefer_low_volatility: false
+        prefer_trending: true
+        prefer_undervalued: true
+      glossary_block:
+        enabled: true
+        title: 📚 Petit glossaire
+        show_emoji: true
+        auto_detect_terms: true
+        custom_terms: {}
+    - name: Notification 21h
+      description: Notification quotidienne
+      enabled: true
+      hours:
+      - 21
+      days_of_week:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      blocks_order:
+      - header
+      - price
+      - chart
+      - prediction
+      - opportunity
+      - brokers
+      - fear_greed
+      - gain_loss
+      - investment_suggestions
+      - glossary
+      - custom
+      - footer
+      header_message: 🔔 {time_slot} - Mise à jour {symbol}
+      footer_message: ℹ️ Ceci est une information, pas un conseil financier !
+      kid_friendly_mode: true
+      use_emojis_everywhere: true
+      explain_everything: true
+      avoid_technical_terms: true
+      send_only_if_change_above: null
+      send_only_if_opportunity_above: null
+      price_block:
+        enabled: true
+        title: 💰 Prix actuel
+        show_emoji: true
+        show_price_eur: true
+        show_variation_24h: true
+        show_variation_7d: true
+        show_volume: true
+        add_price_comment: true
+      chart_block:
+        enabled: true
+        title: 📊 Évolution du prix
+        show_emoji: true
+        show_sparklines: true
+        send_full_chart: false
+        timeframes: *id001
+      prediction_block:
+        enabled: true
+        title: 🔮 Prédiction Intelligence Artificielle
+        show_emoji: true
+        show_prediction_type: true
+        show_confidence: true
+        min_confidence_to_show: 50
+      opportunity_block:
+        enabled: true
+        title: ⭐ Score d'opportunité
+        show_emoji: true
+        show_score: true
+        show_recommendation: true
+        min_score_to_show: 0
+      brokers_block:
+        enabled: true
+        title: 💱 Où acheter le moins cher
+        show_emoji: true
+      fear_greed_block:
+        enabled: true
+        title: 😨😁 Humeur du marché
+        show_emoji: true
+      gain_loss_block:
+        enabled: true
+        title: 💵 Si tu avais investi
+        show_emoji: true
+      investment_suggestions_block:
+        enabled: true
+        title: 💡 Autres cryptos intéressantes
+        show_emoji: true
+        max_suggestions: 3
+        min_opportunity_score: 7
+        exclude_current: true
+        prefer_low_volatility: false
+        prefer_trending: true
+        prefer_undervalued: true
+      glossary_block:
+        enabled: true
+        title: 📚 Petit glossaire
+        show_emoji: true
+        auto_detect_terms: true
+        custom_terms: {}

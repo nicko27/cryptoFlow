@@ -1,0 +1,77 @@
+telegram:
+  bot_token: 8296923394:AAH4GIdVUFp14kpAA0ifqaDwRErsJKu6kls
+  chat_id: '6574539700'
+  message_delay: 0.5
+  display:
+    show_prices: true
+    show_trend_24h: true
+    show_trend_7d: true
+    show_recommendations: true
+  thresholds:
+    buy_24h: 2.0
+    sell_24h: -2.0
+    buy_7d: 5.0
+    sell_7d: -5.0
+crypto:
+  symbols:
+  - BTC
+  - ETH
+  - SOL
+  investment_amount: 100.0
+alerts:
+  enable: true
+  lookback_minutes: 120
+price_levels:
+  enable: true
+  levels:
+    SOL:
+      low: 150
+      high: 200
+timing:
+  check_interval: 900
+features:
+  graphs: true
+  show_levels_on_graph: true
+  startup_summary: true
+  send_summary_chart: true
+  send_summary_dca: true
+logging:
+  file: logs/crypto_bot.log
+  level: INFO
+report:
+  include_broker_prices: true
+brokers:
+  enabled:
+    - binance
+    - revolut
+  overrides: {}
+notifications:
+  per_coin: true
+  include_chart: true
+  chart_timeframes: [24, 168]
+  include_brokers: true
+  send_glossary: true
+  thresholds: {}
+coins:
+  SOL:
+    report_hours: [9, 21]
+    report_options:
+      show_price: true
+      show_volume: true
+      show_curves: true
+      show_technicals: true
+      show_prediction: true
+      show_opportunity: true
+      show_brokers: true
+      show_fear_greed: true
+      show_gain: true
+      chart_timeframes: [24, 168]
+    notification_hours: [9, 21]
+    notification_options:
+      show_price: true
+      show_curves: true
+      show_prediction: true
+      show_opportunity: true
+      show_brokers: true
+      show_fear_greed: true
+      show_gain: true

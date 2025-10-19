@@ -1,0 +1,443 @@
+# Configuration complète des notifications
+# Ce fichier montre toutes les possibilités de personnalisation
+
+# ============================================================
+# PARAMÈTRES GLOBAUX
+# ============================================================
+notifications:
+  # Activation générale
+  enabled: true
+  
+  # Mode adapté aux enfants (explications simples, emojis, pédagogie)
+  kid_friendly_mode: true
+  
+  # Longueur maximale des messages (limite Telegram)
+  max_message_length: 4096
+  
+  # Horaires par défaut pour les nouvelles cryptos
+  default_scheduled_hours: [9, 12, 18]
+  
+  # Heures silencieuses (mode nuit)
+  quiet_hours:
+    enabled: true
+    start: 23  # 23h
+    end: 7     # 7h du matin
+  
+  # Templates globaux (utilisés si pas de personnalisation)
+  global_header_template: "🔔 {emoji} Notification {time_slot} - {symbol}"
+  global_footer_template: "💡 N'investis jamais plus que ce que tu peux te permettre de perdre !"
+
+
+# ============================================================
+# CONFIGURATION PAR CRYPTO-MONNAIE
+# ============================================================
+coins:
+  
+  # ========== BITCOIN (BTC) ==========
+  BTC:
+    enabled: true
+    nickname: "Bitcoin"
+    custom_emoji: "₿"
+    detail_level: "normal"  # simple, normal, detailed
+    
+    # Messages personnalisés
+    intro_message: "Salut ! Voici les dernières infos sur le Bitcoin ₿"
+    outro_message: "À bientôt pour de nouvelles mises à jour !"
+    
+    # Notifications programmées
+    scheduled_notifications:
+      
+      # ---------- Notification du matin (9h) ----------
+      - name: "Matinale Bitcoin"
+        description: "Notification simple du matin avant l'école"
+        enabled: true
+        hours: [9]
+        days_of_week: [0, 1, 2, 3, 4]  # Lundi à Vendredi
+        
+        # Ordre d'affichage des blocs
+        blocks_order:
+          - header
+          - price
+          - prediction
+          - opportunity
+          - investment_suggestions
+          - glossary
+          - footer
+        
+        # En-tête et pied de page personnalisés
+        header_message: "☀️ Bonjour ! Voici ton Bitcoin du matin"
+        footer_message: "Bonne journée ! 🌟"
+        
+        # Mode enfant renforcé
+        kid_friendly_mode: true
+        use_emojis_everywhere: true
+        explain_everything: true
+        avoid_technical_terms: true
+        
+        # Seuils (optionnel - n'envoie que si conditions remplies)
+        # send_only_if_change_above: 3.0  # Seulement si variation > 3%
+        # send_only_if_opportunity_above: 6  # Seulement si score > 6/10
+        
+        # ===== BLOC PRIX =====
+        price_block:
+          enabled: true
+          title: "💰 Prix actuel du Bitcoin"
+          show_emoji: true
+          explain_for_kids: true
+          
+          # Options d'affichage
+          show_price_eur: true
+          show_price_usd: false
+          show_variation_24h: true
+          show_variation_7d: true
+          show_volume: true
+          show_market_cap: false
+          add_price_comment: true
+          
+          # Messages personnalisés
+          message_prix_monte: "📈 Super ! Le Bitcoin monte ! Si tu en possèdes, tu gagnes de l'argent."
+          message_prix_descend: "📉 Le Bitcoin baisse. Ça peut être un bon moment pour en acheter si tu crois en lui."
+          message_prix_stable: "➡️ Le Bitcoin est stable aujourd'hui. Le marché hésite."
+        
+        # ===== BLOC GRAPHIQUES =====
+        chart_block:
+          enabled: true
+          title: "📊 Évolution du prix"
+          show_sparklines: true  # Mini-graphiques texte
+          send_full_chart: false  # Image complète
+          timeframes: [24, 168]  # 1 jour et 1 semaine (en heures)
+          show_support_resistance: true
+          
+          # Noms conviviaux des périodes
+          period_names:
+            1: "1 heure"
+            4: "4 heures"
+            24: "1 jour"
+            168: "1 semaine"
+            720: "1 mois"
+        
+        # ===== BLOC PRÉDICTION IA =====
+        prediction_block:
+          enabled: true
+          title: "🔮 Prédiction Intelligence Artificielle"
+          show_prediction_type: true
+          show_confidence: true
+          show_explanation: true
+          min_confidence_to_show: 50  # Ne pas afficher si < 50% de confiance
+          
+          # Messages personnalisés
+          message_haussier: "🚀 L'IA pense que le prix va monter"
+          message_baissier: "⬇️ L'IA pense que le prix va baisser"
+          message_neutre: "🤷 L'IA ne voit pas de tendance claire"
+        
+        # ===== BLOC OPPORTUNITÉ =====
+        opportunity_block:
+          enabled: true
+          title: "⭐ Score d'opportunité"
+          show_score: true
+          show_recommendation: true
+          show_reasons: true
+          min_score_to_show: 0  # Toujours afficher
+          
+          # Messages par niveau
+          message_excellent: "🌟 Excellente opportunité ! À surveiller de très près."
+          message_bon: "👍 Bonne opportunité, ça vaut le coup de s'y intéresser."
+          message_moyen: "⚖️ Opportunité moyenne, reste prudent."
+          message_faible: "⚠️ Opportunité faible, attends peut-être un meilleur moment."
+        
+        # ===== BLOC COURTIERS =====
+        brokers_block:
+          enabled: true
+          title: "💱 Où acheter le moins cher"
+          show_best_price: true
+          show_all_brokers: true
+          show_fees: true
+          max_brokers_displayed: 3
+          explanation: "Compare les prix sur différentes plateformes pour trouver la meilleure offre !"
+        
+        # ===== BLOC FEAR & GREED =====
+        fear_greed_block:
+          enabled: true
+          title: "😨😁 Humeur du marché"
+          show_index: true
+          show_interpretation: true
+          
+          # Messages selon niveau
+          message_extreme_fear: "😱 Peur extrême ! Les gens vendent beaucoup. Parfois c'est le moment d'acheter."
+          message_fear: "😟 Le marché a peur. Les prix baissent souvent."
+          message_neutral: "😐 Le marché est calme, ni peur ni avidité."
+          message_greed: "😊 Le marché est optimiste. Les prix montent souvent."
+          message_extreme_greed: "🤑 Avidité extrême ! Attention, les prix peuvent bientôt chuter."
+        
+        # ===== BLOC GAIN/PERTE =====
+        gain_loss_block:
+          enabled: true
+          title: "💵 Si tu avais investi"
+          show_gain_loss: true
+          show_percentage: true
+          investment_amount: 100.0  # Montant de référence en euros
+          
+          message_gain: "✅ Tu aurais gagné {amount}€ (+{percent}%)"
+          message_perte: "❌ Tu aurais perdu {amount}€ ({percent}%)"
+        
+        # ===== 🆕 BLOC SUGGESTIONS D'INVESTISSEMENT =====
+        investment_suggestions_block:
+          enabled: true
+          title: "💡 Autres cryptos intéressantes"
+          max_suggestions: 3  # Suggérer jusqu'à 3 cryptos
+          min_opportunity_score: 7  # Seulement si score >= 7/10
+          exclude_current: true  # Ne pas suggérer BTC
+          
+          # Critères de sélection
+          prefer_low_volatility: false  # Préférer cryptos stables
+          prefer_trending: true  # Préférer cryptos qui montent
+          prefer_undervalued: true  # Préférer prix attractifs
+          
+          intro_message: "🔍 D'autres cryptos qui pourraient t'intéresser :"
+          suggestion_template: "• {symbol} - Score {score}/10 - {reason}"
+          
+          # Messages selon type d'opportunité
+          reason_strong_trend: "forte tendance haussière"
+          reason_undervalued: "prix attractif"
+          reason_high_volume: "beaucoup d'activité"
+          reason_good_prediction: "prédiction IA positive"
+        
+        # ===== BLOC GLOSSAIRE =====
+        glossary_block:
+          enabled: true
+          title: "📚 Petit glossaire"
+          auto_detect_terms: true  # Détection automatique
+          
+          # Termes personnalisés (en plus du glossaire par défaut)
+          custom_terms:
+            "Satoshi": "La plus petite unité du Bitcoin (0.00000001 BTC)"
+            "Whale": "Grosse baleine = quelqu'un qui possède beaucoup de Bitcoin"
+            "HODL": "Garder ses cryptos longtemps au lieu de les vendre"
+      
+      # ---------- Notification du midi (12h) ----------
+      - name: "Check de midi"
+        description: "Notification rapide du midi"
+        enabled: true
+        hours: [12]
+        days_of_week: [0, 1, 2, 3, 4, 5, 6]  # Tous les jours
+        
+        blocks_order:
+          - header
+          - price
+          - opportunity
+          - investment_suggestions
+          - footer
+        
+        header_message: "☀️ Mise à jour de midi - Bitcoin"
+        footer_message: "Bon appétit ! 🍽️"
+        
+        # Configuration simplifiée (moins de détails qu'au matin)
+        price_block:
+          enabled: true
+          show_variation_24h: true
+          show_volume: true
+          add_price_comment: false
+        
+        opportunity_block:
+          enabled: true
+          show_score: true
+          show_recommendation: true
+          show_reasons: false  # Pas les raisons à midi
+          min_score_to_show: 6  # Seulement si >= 6
+        
+        investment_suggestions_block:
+          enabled: true
+          max_suggestions: 2  # Seulement 2 suggestions
+          min_opportunity_score: 8  # Seulement les excellentes
+      
+      # ---------- Notification du soir (18h) ----------
+      - name: "Résumé du soir"
+        description: "Notification complète du soir"
+        enabled: true
+        hours: [18]
+        days_of_week: [0, 1, 2, 3, 4, 5, 6]
+        
+        blocks_order:
+          - header
+          - price
+          - chart
+          - prediction
+          - opportunity
+          - brokers
+          - fear_greed
+          - gain_loss
+          - investment_suggestions
+          - glossary
+          - footer
+        
+        header_message: "🌆 Résumé de fin de journée - Bitcoin"
+        footer_message: "Bonne soirée ! À demain 🌙"
+        
+        # Tous les blocs activés avec détails complets
+        price_block:
+          enabled: true
+          show_price_eur: true
+          show_variation_24h: true
+          show_variation_7d: true
+          show_volume: true
+          show_market_cap: true
+          add_price_comment: true
+        
+        chart_block:
+          enabled: true
+          show_sparklines: true
+          send_full_chart: true  # Image complète le soir
+          timeframes: [1, 4, 24, 168]  # Toutes les périodes
+        
+        prediction_block:
+          enabled: true
+          min_confidence_to_show: 40  # Moins strict le soir
+        
+        opportunity_block:
+          enabled: true
+          show_reasons: true
+          min_score_to_show: 0
+        
+        brokers_block:
+          enabled: true
+          show_all_brokers: true
+          max_brokers_displayed: 5
+        
+        fear_greed_block:
+          enabled: true
+        
+        gain_loss_block:
+          enabled: true
+        
+        investment_suggestions_block:
+          enabled: true
+          max_suggestions: 5  # Plus de suggestions le soir
+          min_opportunity_score: 6
+          prefer_low_volatility: false
+          prefer_trending: true
+          prefer_undervalued: true
+        
+        glossary_block:
+          enabled: true
+          auto_detect_terms: true
+    
+    # Configuration par défaut si aucune notification planifiée ne correspond
+    default_config:
+      enabled: true
+      blocks_order:
+        - header
+        - price
+        - prediction
+        - opportunity
+        - investment_suggestions
+        - footer
+  
+  
+  # ========== ETHEREUM (ETH) ==========
+  ETH:
+    enabled: true
+    nickname: "Ethereum"
+    custom_emoji: "🦄"
+    
+    intro_message: "🦄 Ethereum Update !"
+    outro_message: "Stay tuned!"
+    
+    scheduled_notifications:
+      - name: "Notification standard ETH"
+        enabled: true
+        hours: [9, 18]
+        
+        blocks_order:
+          - header
+          - price
+          - prediction
+          - opportunity
+          - investment_suggestions
+          - footer
+        
+        price_block:
+          enabled: true
+          show_variation_24h: true
+          show_volume: true
+        
+        prediction_block:
+          enabled: true
+          min_confidence_to_show: 50
+        
+        opportunity_block:
+          enabled: true
+          min_score_to_show: 5
+        
+        investment_suggestions_block:
+          enabled: true
+          max_suggestions: 3
+          min_opportunity_score: 7
+          prefer_trending: true
+  
+  
+  # ========== SOLANA (SOL) ==========
+  SOL:
+    enabled: true
+    nickname: "Solana"
+    custom_emoji: "⚡"
+    
+    scheduled_notifications:
+      - name: "Notification SOL"
+        enabled: true
+        hours: [9, 21]  # Matin et soir tard
+        
+        blocks_order:
+          - header
+          - price
+          - opportunity
+          - investment_suggestions
+          - footer
+        
+        price_block:
+          enabled: true
+        
+        opportunity_block:
+          enabled: true
+          min_score_to_show: 7  # Seulement bonnes opportunités
+        
+        investment_suggestions_block:
+          enabled: true
+          max_suggestions: 2
+          min_opportunity_score: 8
+          prefer_low_volatility: true  # Focus stabilité pour SOL
+
+
+# ============================================================
+# EXEMPLES DE CONFIGURATIONS SPÉCIALES
+# ============================================================
+
+# Configuration "Alertes uniquement"
+# Décommenter pour activer
+# coins:
+#   BTC:
+#     scheduled_notifications:
+#       - name: "Alertes importantes"
+#         hours: [9, 12, 15, 18, 21]  # Plusieurs fois par jour
+#         send_only_if_change_above: 5.0  # Seulement si > 5% variation
+#         send_only_if_opportunity_above: 8  # Seulement si score > 8
+#         
+#         blocks_order:
+#           - header
+#           - price
+#           - opportunity
+#           - footer
+
+# Configuration "Weekend différent"
+# Décommenter pour activer
+# coins:
+#   BTC:
+#     scheduled_notifications:
+#       - name: "Semaine"
+#         hours: [9, 12, 18]
+#         days_of_week: [0, 1, 2, 3, 4]  # Lundi à Vendredi
+#         # ... configuration complète
+#       
+#       - name: "Weekend"
+#         hours: [10]  # Seulement 10h le weekend
+#         days_of_week: [5, 6]  # Samedi et Dimanche
+#         # ... configuration simplifiée

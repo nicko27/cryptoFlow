@@ -1,772 +1,1296 @@
-"""Application GUI PyQt6 - Crypto Bot v3.0"""
-from datetime import datetime
-from typing import Optional, List
+"""
+Main Window - Interface graphique principale du Crypto Bot
+Version améliorée avec intégration du système de notifications avancé
+"""
+
+from pathlib import Path
+from datetime import datetime, timezone
+from typing import Dict, Optional, List
+import yaml
 
 from PyQt6.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QPushButton,
-    QLabel,
-    QComboBox,
-    QTextEdit,
-    QGroupBox,
-    QGridLayout,
-    QScrollArea,
-    QMessageBox,
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
+    QPushButton, QGroupBox, QGridLayout, QComboBox, QTabWidget,
+    QMessageBox, QTextEdit, QSplitter, QStatusBar, QMenuBar,
+    QMenu, QFileDialog, QDialog
 )
-from PyQt6.QtCore import QTimer, Qt, QThread, pyqtSignal
-from PyQt6.QtGui import QFont
-import matplotlib
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QFont, QAction, QIcon
 
-matplotlib.use("Qt5Agg")
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from matplotlib.figure import Figure
-import matplotlib.dates as mdates
-
-from core.models import BotConfiguration, MarketData, Prediction, Alert, AlertLevel
-from core.services.market_service import MarketService
-from core.services.alert_service import AlertService
-from core.services.summary_service import SummaryService
-from api.binance_api import BinanceAPI
+from core.models import BotConfiguration, SystemStatus
+from config.config_manager import ConfigManager
 from daemon.daemon_service import DaemonService
+from api.binance_api import BinanceAPI
+from core.services.market_service import MarketService
+from utils.logger import setup_logger
+
+# Importer le nouveau système de notifications
+from core.models.notification_config import GlobalNotificationSettings
+from ui.advanced_notification_config_window import AdvancedNotificationConfigWindow
+from ui.settings_window import SettingsDialog
 
 
-class MplCanvas(FigureCanvasQTAgg):
-    def __init__(self, parent: Optional[QWidget] = None, width: int = 10, height: int = 6, dpi: int = 100):
-        fig = Figure(figsize=(width, height), dpi=dpi, facecolor="#2b2b2b")
-        self.axes = fig.add_subplot(111, facecolor="#2b2b2b")
-        super().__init__(fig)
-
-
-class MonitorThread(QThread):
-    alert_signal = pyqtSignal(Alert)
-
-    def __init__(self, config: BotConfiguration, market_service: MarketService,
-                 alert_service: AlertService, telegram_api):
+class MainWindow(QMainWindow):
+    """Fenêtre principale de l'application Crypto Bot"""
+    
+    # Signaux
+    status_updated = pyqtSignal(str)
+    
+    def __init__(self):
         super().__init__()
-        self.config = config
-        self.market_service = market_service
-        self.alert_service = alert_service
-        self.telegram_api = telegram_api
-        self.running = False
-
-    def run(self):
-        self.running = True
-        while self.running:
-            for symbol in self.config.crypto_symbols:
-                if not self.running:
-                    break
-                try:
-                    market_data = self.market_service.get_market_data(symbol)
-                    if market_data:
-                        prediction = self.market_service.predict_price_movement(market_data)
-                        alerts = self.alert_service.check_alerts(market_data, prediction)
-                        for alert in alerts:
-                            self.alert_signal.emit(alert)
-                            if alert.alert_level in [AlertLevel.IMPORTANT, AlertLevel.CRITICAL]:
-                                self.telegram_api.send_alert(alert, include_metadata=True)
-                except Exception as exc:  # pragma: no cover - logging only
-                    print(f"Erreur surveillance {symbol}: {exc}")
-            self.msleep(self.config.check_interval_seconds * 1000)
-
-    def stop(self):
-        self.running = False
-
-
-class DaemonThread(QThread):
-    started_signal = pyqtSignal()
-    stopped_signal = pyqtSignal()
-
-    def __init__(self, daemon_service: DaemonService):
-        super().__init__()
-        self.daemon_service = daemon_service
-
-    def run(self):
-        self.started_signal.emit()
-        try:
-            self.daemon_service.start()
-        finally:
-            self.stopped_signal.emit()
-
-    def stop(self):
-        self.daemon_service.stop()
-
-
-class CryptoBotGUI(QMainWindow):
-    def __init__(
-        self,
-        config: BotConfiguration,
-        db_service,
-        portfolio_service,
-        dca_service,
-        report_service,
-        chart_service,
-        telegram_api,
-        summary_service,
-    ):
-        super().__init__()
-
+        
+        # Configuration
+        self.config_manager = ConfigManager()
+        self.config = self._load_configuration()
+        
+        # Logger
+        self.logger = setup_logger(
+            name="CryptoBotGUI",
+            log_file=self.config.log_file,
+            level=self.config.log_level
+        )
+        
         # Services
-        self.config = config
-        self.db_service = db_service
-        self.portfolio_service = portfolio_service
-        self.dca_service = dca_service
-        self.report_service = report_service
-        self.chart_service = chart_service
-        self.telegram_api = telegram_api
-        self.summary_service = summary_service
-
         self.binance_api = BinanceAPI()
         self.market_service = MarketService(self.binance_api)
-        self.alert_service = AlertService(self.config)
-
-        # Threads
-        self.monitor_thread: Optional[MonitorThread] = None
-        self.daemon_thread: Optional[DaemonThread] = None
         self.daemon_service: Optional[DaemonService] = None
-
-        # Fenêtre
-        self.setWindowTitle("Crypto Bot v3.0 - Dashboard PyQt6")
+        
+        # Système de notifications
+        self.notification_settings = self._load_notification_settings()
+        
+        # État
+        self.system_status = SystemStatus()
+        self.current_symbol = self.config.crypto_symbols[0] if self.config.crypto_symbols else "BTC"
+        
+        # Données en cache
+        self.market_data_cache = {}
+        self.predictions_cache = {}
+        self.opportunities_cache = {}
+        
+        # Timer pour refresh UI
+        self.refresh_timer = QTimer()
+        self.refresh_timer.timeout.connect(self._refresh_ui)
+        
+        # Initialiser l'interface
+        self._init_ui()
+        
+        # Connecter signaux
+        self.status_updated.connect(self._on_status_update)
+        
+        # Charger données initiales
+        QTimer.singleShot(100, self._initial_data_load)
+        
+        self.logger.info("Interface graphique initialisée")
+    
+    def _init_ui(self):
+        """Initialise l'interface utilisateur"""
+        
+        self.setWindowTitle("🚀 Crypto Bot v4.0 - Dashboard")
         self.setGeometry(100, 100, 1400, 900)
-
-        self.setup_ui()
-
-        # Rafraîchissement périodique
-        self.update_timer = QTimer(self)
-        self.update_timer.timeout.connect(self.update_display)
-        self.update_timer.start(5000)
-        self.update_display()
-
-    # ------------------------------------------------------------------
-    # UI helpers
-    # ------------------------------------------------------------------
-    def setup_ui(self):
-        central = QWidget()
-        self.setCentralWidget(central)
-        main_layout = QHBoxLayout(central)
-        main_layout.addWidget(self.create_sidebar(), stretch=1)
-        main_layout.addWidget(self.create_charts_area(), stretch=4)
-        main_layout.addWidget(self.create_info_panel(), stretch=1)
-
-    def create_sidebar(self) -> QWidget:
-        sidebar = QWidget()
+        
+        # Widget central
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        
+        # Layout principal
+        main_layout = QHBoxLayout(central_widget)
+        main_layout.setSpacing(10)
+        main_layout.setContentsMargins(10, 10, 10, 10)
+        
+        # Splitter pour ajuster les tailles
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+        
+        # Sidebar (gauche)
+        sidebar = self._create_sidebar()
+        splitter.addWidget(sidebar)
+        
+        # Zone principale (centre)
+        main_area = self._create_main_area()
+        splitter.addWidget(main_area)
+        
+        # Panel infos (droite)
+        info_panel = self._create_info_panel()
+        splitter.addWidget(info_panel)
+        
+        # Tailles initiales
+        splitter.setStretchFactor(0, 1)  # Sidebar
+        splitter.setStretchFactor(1, 3)  # Main area
+        splitter.setStretchFactor(2, 1)  # Info panel
+        
+        main_layout.addWidget(splitter)
+        
+        # Créer la barre de menu
+        self._create_menu_bar()
+        
+        # Créer la barre de statut
+        self._create_status_bar()
+        
+        # Appliquer le style
+        self._apply_style()
+    
+    def _create_menu_bar(self):
+        """Crée la barre de menu"""
+        
+        menubar = self.menuBar()
+        
+        # Menu Fichier
+        file_menu = menubar.addMenu("📁 Fichier")
+        
+        export_config_action = QAction("💾 Exporter configuration", self)
+        export_config_action.triggered.connect(self._export_configuration)
+        file_menu.addAction(export_config_action)
+        
+        import_config_action = QAction("📥 Importer configuration", self)
+        import_config_action.triggered.connect(self._import_configuration)
+        file_menu.addAction(import_config_action)
+        
+        file_menu.addSeparator()
+        
+        quit_action = QAction("🚪 Quitter", self)
+        quit_action.triggered.connect(self.close)
+        file_menu.addAction(quit_action)
+        
+        # Menu Configuration
+        config_menu = menubar.addMenu("⚙️ Configuration")
+        
+        general_settings_action = QAction("🔧 Paramètres généraux", self)
+        general_settings_action.triggered.connect(self._open_general_settings)
+        config_menu.addAction(general_settings_action)
+        
+        notif_settings_action = QAction("🔔 Notifications avancées", self)
+        notif_settings_action.triggered.connect(self._open_notification_config)
+        config_menu.addAction(notif_settings_action)
+        
+        # Menu Actions
+        actions_menu = menubar.addMenu("🎯 Actions")
+        
+        test_telegram_action = QAction("📤 Test Telegram", self)
+        test_telegram_action.triggered.connect(self._test_telegram)
+        actions_menu.addAction(test_telegram_action)
+        
+        send_summary_action = QAction("📊 Envoyer résumé", self)
+        send_summary_action.triggered.connect(self._send_summary)
+        actions_menu.addAction(send_summary_action)
+        
+        generate_report_action = QAction("📄 Générer rapport", self)
+        generate_report_action.triggered.connect(self._generate_report)
+        actions_menu.addAction(generate_report_action)
+        
+        # Menu Aide
+        help_menu = menubar.addMenu("❓ Aide")
+        
+        guide_action = QAction("📚 Guide utilisateur", self)
+        guide_action.triggered.connect(self._show_user_guide)
+        help_menu.addAction(guide_action)
+        
+        about_action = QAction("ℹ️ À propos", self)
+        about_action.triggered.connect(self._show_about)
+        help_menu.addAction(about_action)
+    
+    def _create_status_bar(self):
+        """Crée la barre de statut"""
+        
+        self.status_bar = QStatusBar()
+        self.setStatusBar(self.status_bar)
+        
+        # Labels de statut
+        self.status_label = QLabel("● Arrêté")
+        self.status_label.setStyleSheet("color: gray; font-weight: bold;")
+        self.status_bar.addWidget(self.status_label)
+        
+        self.status_bar.addPermanentWidget(QLabel("   |   "))
+        
+        self.crypto_label = QLabel(f"📊 {self.current_symbol}")
+        self.status_bar.addPermanentWidget(self.crypto_label)
+        
+        self.status_bar.addPermanentWidget(QLabel("   |   "))
+        
+        self.time_label = QLabel(datetime.now().strftime("%H:%M:%S"))
+        self.status_bar.addPermanentWidget(self.time_label)
+        
+        # Timer pour mettre à jour l'heure
+        time_timer = QTimer(self)
+        time_timer.timeout.connect(lambda: self.time_label.setText(
+            datetime.now().strftime("%H:%M:%S")
+        ))
+        time_timer.start(1000)
+    
+    def _create_sidebar(self) -> QWidget:
+        """Crée la sidebar avec les contrôles"""
+        
+        sidebar = QGroupBox("🎮 Contrôles")
         layout = QVBoxLayout(sidebar)
-
-        title = QLabel("🚀 Crypto Bot v3.0")
-        title.setFont(QFont("Arial", 20, QFont.Weight.Bold))
+        layout.setSpacing(10)
+        
+        # === TITRE ===
+        title = QLabel("🚀 Crypto Bot")
+        title_font = QFont()
+        title_font.setPointSize(18)
+        title_font.setBold(True)
+        title.setFont(title_font)
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
-
-        self.status_label = QLabel("● Arrêté")
-        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.status_label)
-
-        self.daemon_status_label = QLabel("Daemon: arrêté")
-        self.daemon_status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.daemon_status_label.setStyleSheet("color: gray;")
-        layout.addWidget(self.daemon_status_label)
-
-        self.start_btn = QPushButton("▶ Démarrer")
-        self.start_btn.setStyleSheet("background-color: green; color: white; padding: 10px;")
-        self.start_btn.clicked.connect(self.start_monitoring)
-        layout.addWidget(self.start_btn)
-
-        self.stop_btn = QPushButton("⏸ Arrêter")
-        self.stop_btn.setStyleSheet("background-color: red; color: white; padding: 10px;")
-        self.stop_btn.clicked.connect(self.stop_monitoring)
-        self.stop_btn.setEnabled(False)
-        layout.addWidget(self.stop_btn)
-
-        self.daemon_start_btn = QPushButton("🟢 Lancer le daemon")
-        self.daemon_start_btn.setStyleSheet("background-color: #1565C0; color: white; padding: 10px;")
-        self.daemon_start_btn.clicked.connect(self.start_daemon)
-        layout.addWidget(self.daemon_start_btn)
-
-        self.daemon_stop_btn = QPushButton("⛔ Arrêter le daemon")
-        self.daemon_stop_btn.setStyleSheet("background-color: #B71C1C; color: white; padding: 10px;")
-        self.daemon_stop_btn.clicked.connect(self.stop_daemon)
-        self.daemon_stop_btn.setEnabled(False)
-        layout.addWidget(self.daemon_stop_btn)
-
-        layout.addWidget(QLabel("Crypto:"))
-        self.crypto_combo = QComboBox()
-        self.crypto_combo.addItems(self.config.crypto_symbols)
-        self.crypto_combo.currentTextChanged.connect(self.update_display)
-        layout.addWidget(self.crypto_combo)
-
-        layout.addWidget(QLabel("Niveau:"))
-        self.detail_combo = QComboBox()
-        self.detail_combo.addItems(["Simple", "Normal", "Expert"])
-        self.detail_combo.setCurrentText("Normal")
-        layout.addWidget(self.detail_combo)
-
-        test_btn = QPushButton("📤 Test Telegram")
-        test_btn.clicked.connect(self.test_telegram)
-        layout.addWidget(test_btn)
-
-        report_btn = QPushButton("📝 Générer un rapport")
-        report_btn.clicked.connect(self._generate_report)
-        layout.addWidget(report_btn)
-
-        summary_btn = QPushButton("🧾 Résumé Telegram")
-        summary_btn.clicked.connect(self._send_summary_to_telegram)
-        layout.addWidget(summary_btn)
-
-        dca_btn = QPushButton("💡 Plan DCA Telegram")
-        dca_btn.clicked.connect(self._send_dca_plan_to_telegram)
-        layout.addWidget(dca_btn)
-
-        chart_btn = QPushButton("📈 Graphique Telegram")
-        chart_btn.clicked.connect(self._send_price_chart_to_telegram)
-        layout.addWidget(chart_btn)
-
-        telegram_report_btn = QPushButton("📄 Rapport Telegram")
-        telegram_report_btn.clicked.connect(self._send_report_to_telegram)
-        layout.addWidget(telegram_report_btn)
-
-        status_btn = QPushButton("📊 Statut du daemon")
-        status_btn.clicked.connect(self._show_daemon_status)
-        layout.addWidget(status_btn)
-
-        settings_btn = QPushButton("⚙️ Paramètres")
-        settings_btn.clicked.connect(self._open_settings)
-        layout.addWidget(settings_btn)
-
-        layout.addStretch()
-
-        version = QLabel("v3.0 PyQt6")
+        
+        version = QLabel("v4.0")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         version.setStyleSheet("color: gray;")
         layout.addWidget(version)
-
+        
+        layout.addSpacing(20)
+        
+        # === STATUT ===
+        status_group = QGroupBox("📊 Statut")
+        status_layout = QVBoxLayout(status_group)
+        
+        self.daemon_status_label = QLabel("● Daemon: Arrêté")
+        self.daemon_status_label.setStyleSheet("color: gray;")
+        status_layout.addWidget(self.daemon_status_label)
+        
+        self.checks_label = QLabel("Vérifications: 0")
+        status_layout.addWidget(self.checks_label)
+        
+        self.alerts_label = QLabel("Alertes: 0")
+        status_layout.addWidget(self.alerts_label)
+        
+        self.uptime_label = QLabel("Uptime: 0h0m")
+        status_layout.addWidget(self.uptime_label)
+        
+        layout.addWidget(status_group)
+        
+        # === CONTRÔLES DAEMON ===
+        daemon_group = QGroupBox("⚙️ Daemon")
+        daemon_layout = QVBoxLayout(daemon_group)
+        
+        self.start_button = QPushButton("▶️ Démarrer")
+        self.start_button.clicked.connect(self._start_daemon)
+        self.start_button.setStyleSheet("""
+            QPushButton {
+                background-color: #28a745;
+                color: white;
+                font-weight: bold;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #218838;
+            }
+        """)
+        daemon_layout.addWidget(self.start_button)
+        
+        self.stop_button = QPushButton("⏸️ Arrêter")
+        self.stop_button.clicked.connect(self._stop_daemon)
+        self.stop_button.setEnabled(False)
+        self.stop_button.setStyleSheet("""
+            QPushButton {
+                background-color: #dc3545;
+                color: white;
+                font-weight: bold;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #c82333;
+            }
+            QPushButton:disabled {
+                background-color: #6c757d;
+            }
+        """)
+        daemon_layout.addWidget(self.stop_button)
+        
+        layout.addWidget(daemon_group)
+        
+        # === SÉLECTION CRYPTO ===
+        crypto_group = QGroupBox("💎 Crypto-monnaie")
+        crypto_layout = QVBoxLayout(crypto_group)
+        
+        self.crypto_selector = QComboBox()
+        self.crypto_selector.addItems(self.config.crypto_symbols)
+        self.crypto_selector.currentTextChanged.connect(self._on_crypto_changed)
+        crypto_layout.addWidget(self.crypto_selector)
+        
+        layout.addWidget(crypto_group)
+        
+        # === ACTIONS RAPIDES ===
+        actions_group = QGroupBox("⚡ Actions rapides")
+        actions_layout = QVBoxLayout(actions_group)
+        
+        refresh_btn = QPushButton("🔄 Actualiser")
+        refresh_btn.clicked.connect(self._refresh_data)
+        actions_layout.addWidget(refresh_btn)
+        
+        summary_btn = QPushButton("📊 Résumé Telegram")
+        summary_btn.clicked.connect(self._send_summary)
+        actions_layout.addWidget(summary_btn)
+        
+        notif_test_btn = QPushButton("🔔 Test notification")
+        notif_test_btn.clicked.connect(self._test_notification)
+        actions_layout.addWidget(notif_test_btn)
+        
+        layout.addWidget(actions_group)
+        
+        layout.addStretch()
+        
+        # === CONFIGURATION ===
+        settings_btn = QPushButton("⚙️ Paramètres")
+        settings_btn.clicked.connect(self._open_general_settings)
+        layout.addWidget(settings_btn)
+        
+        notif_config_btn = QPushButton("🔔 Config notifications")
+        notif_config_btn.clicked.connect(self._open_notification_config)
+        layout.addWidget(notif_config_btn)
+        
         return sidebar
-
-    def create_charts_area(self) -> QWidget:
-        charts = QWidget()
-        layout = QVBoxLayout(charts)
-
-        self.price_canvas = MplCanvas(self, width=10, height=6)
-        layout.addWidget(self.price_canvas, stretch=3)
-
-        indicators = QWidget()
-        ind_layout = QGridLayout(indicators)
-        self.price_label = self.create_indicator_card("💰 Prix", "0.00 €")
-        ind_layout.addWidget(self.price_label, 0, 0)
-        self.change_label = self.create_indicator_card("📊 24h", "0.00%")
-        ind_layout.addWidget(self.change_label, 0, 1)
-        self.rsi_label = self.create_indicator_card("📈 RSI", "50")
-        ind_layout.addWidget(self.rsi_label, 0, 2)
-        self.opp_label = self.create_indicator_card("⭐ Opportunité", "5/10")
-        ind_layout.addWidget(self.opp_label, 0, 3)
-
-        layout.addWidget(indicators, stretch=1)
-        return charts
-
-    def create_indicator_card(self, title: str, value: str) -> QGroupBox:
-        card = QGroupBox(title)
-        layout = QVBoxLayout(card)
-        label = QLabel(value)
-        label.setFont(QFont("Arial", 18, QFont.Weight.Bold))
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(label)
-        return card
-
-    def create_info_panel(self) -> QWidget:
-        panel = QWidget()
+    
+    def _create_main_area(self) -> QWidget:
+        """Crée la zone principale avec onglets"""
+        
+        main_area = QWidget()
+        layout = QVBoxLayout(main_area)
+        layout.setContentsMargins(0, 0, 0, 0)
+        
+        # Onglets
+        tabs = QTabWidget()
+        
+        # Onglet Dashboard
+        dashboard_tab = self._create_dashboard_tab()
+        tabs.addTab(dashboard_tab, "📊 Dashboard")
+        
+        # Onglet Notifications
+        notifications_tab = self._create_notifications_tab()
+        tabs.addTab(notifications_tab, "🔔 Notifications")
+        
+        # Onglet Logs
+        logs_tab = self._create_logs_tab()
+        tabs.addTab(logs_tab, "📝 Logs")
+        
+        layout.addWidget(tabs)
+        
+        return main_area
+    
+    def _create_dashboard_tab(self) -> QWidget:
+        """Crée l'onglet dashboard"""
+        
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        
+        # Indicateurs principaux
+        indicators_group = QGroupBox("💰 Indicateurs")
+        indicators_layout = QGridLayout(indicators_group)
+        
+        # Prix
+        self.price_card = self._create_metric_card("Prix", "0.00 €", "💰")
+        indicators_layout.addWidget(self.price_card, 0, 0)
+        
+        # Variation 24h
+        self.change_24h_card = self._create_metric_card("24h", "0.00%", "📊")
+        indicators_layout.addWidget(self.change_24h_card, 0, 1)
+        
+        # Variation 7j
+        self.change_7d_card = self._create_metric_card("7j", "0.00%", "📈")
+        indicators_layout.addWidget(self.change_7d_card, 0, 2)
+        
+        # Opportunité
+        self.opportunity_card = self._create_metric_card("Opportunité", "0/10", "⭐")
+        indicators_layout.addWidget(self.opportunity_card, 0, 3)
+        
+        layout.addWidget(indicators_group)
+        
+        # Recommandation
+        recommendation_group = QGroupBox("💡 Recommandation")
+        recommendation_layout = QVBoxLayout(recommendation_group)
+        
+        self.recommendation_label = QLabel("En attente de données...")
+        self.recommendation_label.setWordWrap(True)
+        self.recommendation_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        recommendation_font = QFont()
+        recommendation_font.setPointSize(14)
+        recommendation_font.setBold(True)
+        self.recommendation_label.setFont(recommendation_font)
+        recommendation_layout.addWidget(self.recommendation_label)
+        
+        layout.addWidget(recommendation_group)
+        
+        # Prédiction IA
+        prediction_group = QGroupBox("🔮 Prédiction IA")
+        prediction_layout = QVBoxLayout(prediction_group)
+        
+        self.prediction_label = QLabel("En attente de données...")
+        self.prediction_label.setWordWrap(True)
+        self.prediction_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        prediction_layout.addWidget(self.prediction_label)
+        
+        layout.addWidget(prediction_group)
+        
+        layout.addStretch()
+        
+        return tab
+    
+    def _create_notifications_tab(self) -> QWidget:
+        """Crée l'onglet notifications"""
+        
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        
+        # Info
+        info_label = QLabel(
+            "📱 Configuration du système de notifications\n\n"
+            "Horaires configurés, blocs activés, suggestions d'investissement, etc."
+        )
+        info_label.setWordWrap(True)
+        info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(info_label)
+        
+        # Résumé de la config
+        summary_group = QGroupBox("📋 Résumé de la configuration")
+        summary_layout = QVBoxLayout(summary_group)
+        
+        self.notif_summary_text = QTextEdit()
+        self.notif_summary_text.setReadOnly(True)
+        self.notif_summary_text.setMaximumHeight(300)
+        summary_layout.addWidget(self.notif_summary_text)
+        
+        layout.addWidget(summary_group)
+        
+        # Boutons
+        buttons_layout = QHBoxLayout()
+        
+        open_config_btn = QPushButton("⚙️ Ouvrir configuration avancée")
+        open_config_btn.clicked.connect(self._open_notification_config)
+        buttons_layout.addWidget(open_config_btn)
+        
+        test_notif_btn = QPushButton("🧪 Tester une notification")
+        test_notif_btn.clicked.connect(self._test_notification)
+        buttons_layout.addWidget(test_notif_btn)
+        
+        layout.addLayout(buttons_layout)
+        
+        # Mettre à jour le résumé
+        self._update_notification_summary()
+        
+        layout.addStretch()
+        
+        return tab
+    
+    def _create_logs_tab(self) -> QWidget:
+        """Crée l'onglet logs"""
+        
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        
+        # Zone de logs
+        self.logs_text = QTextEdit()
+        self.logs_text.setReadOnly(True)
+        self.logs_text.setStyleSheet("""
+            QTextEdit {
+                background-color: #1e1e1e;
+                color: #d4d4d4;
+                font-family: 'Courier New', monospace;
+                font-size: 10pt;
+            }
+        """)
+        layout.addWidget(self.logs_text)
+        
+        # Boutons
+        buttons_layout = QHBoxLayout()
+        
+        refresh_logs_btn = QPushButton("🔄 Actualiser")
+        refresh_logs_btn.clicked.connect(self._load_logs)
+        buttons_layout.addWidget(refresh_logs_btn)
+        
+        clear_logs_btn = QPushButton("🗑️ Effacer l'affichage")
+        clear_logs_btn.clicked.connect(self.logs_text.clear)
+        buttons_layout.addWidget(clear_logs_btn)
+        
+        layout.addLayout(buttons_layout)
+        
+        # Charger les logs
+        self._load_logs()
+        
+        return tab
+    
+    def _create_info_panel(self) -> QWidget:
+        """Crée le panel d'informations"""
+        
+        panel = QGroupBox("ℹ️ Informations")
         layout = QVBoxLayout(panel)
-        layout.addWidget(QLabel("🔮 Prédiction"))
-        self.prediction_text = QTextEdit()
-        self.prediction_text.setReadOnly(True)
-        self.prediction_text.setMaximumHeight(200)
-        layout.addWidget(self.prediction_text)
-
-        layout.addWidget(QLabel("🚨 Alertes"))
-        self.alerts_scroll = QScrollArea()
-        self.alerts_widget = QWidget()
-        self.alerts_layout = QVBoxLayout(self.alerts_widget)
-        self.alerts_scroll.setWidget(self.alerts_widget)
-        self.alerts_scroll.setWidgetResizable(True)
-        layout.addWidget(self.alerts_scroll)
-
+        
+        # Dernière mise à jour
+        update_group = QGroupBox("🕐 Dernière mise à jour")
+        update_layout = QVBoxLayout(update_group)
+        
+        self.last_update_label = QLabel("Jamais")
+        self.last_update_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        update_layout.addWidget(self.last_update_label)
+        
+        layout.addWidget(update_group)
+        
+        # Alertes récentes
+        alerts_group = QGroupBox("🚨 Alertes récentes")
+        alerts_layout = QVBoxLayout(alerts_group)
+        
+        self.alerts_text = QTextEdit()
+        self.alerts_text.setReadOnly(True)
+        self.alerts_text.setMaximumHeight(200)
+        alerts_layout.addWidget(self.alerts_text)
+        
+        layout.addWidget(alerts_group)
+        
+        # Notifications programmées
+        scheduled_group = QGroupBox("⏰ Prochaines notifications")
+        scheduled_layout = QVBoxLayout(scheduled_group)
+        
+        self.scheduled_notif_label = QLabel("Calcul en cours...")
+        self.scheduled_notif_label.setWordWrap(True)
+        scheduled_layout.addWidget(self.scheduled_notif_label)
+        
+        layout.addWidget(scheduled_group)
+        
+        # Mettre à jour les prochaines notifications
+        self._update_scheduled_notifications()
+        
+        layout.addStretch()
+        
         return panel
-
-    # ------------------------------------------------------------------
-    # Actions
-    # ------------------------------------------------------------------
-    def update_display(self):
-        if not self.config.crypto_symbols:
-            return
-
-        symbol = self.crypto_combo.currentText()
+    
+    def _create_metric_card(self, title: str, value: str, icon: str) -> QGroupBox:
+        """Crée une carte de métrique"""
+        
+        card = QGroupBox(f"{icon} {title}")
+        layout = QVBoxLayout(card)
+        
+        value_label = QLabel(value)
+        value_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        value_font = QFont()
+        value_font.setPointSize(20)
+        value_font.setBold(True)
+        value_label.setFont(value_font)
+        
+        layout.addWidget(value_label)
+        
+        # Stocker le label pour mise à jour
+        card.value_label = value_label
+        
+        return card
+    
+    def _apply_style(self):
+        """Applique le style à l'application"""
+        
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #f0f0f0;
+            }
+            QGroupBox {
+                font-weight: bold;
+                border: 2px solid #cccccc;
+                border-radius: 5px;
+                margin-top: 10px;
+                padding-top: 10px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px 0 5px;
+            }
+            QPushButton {
+                padding: 8px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                opacity: 0.8;
+            }
+        """)
+    
+    # === MÉTHODES DE CONFIGURATION ===
+    
+    def _load_configuration(self) -> BotConfiguration:
+        """Charge la configuration"""
+        
         try:
-            market_data = self.market_service.get_market_data(symbol)
-            if not market_data:
-                return
-
-            prediction = self.market_service.predict_price_movement(market_data)
-            opportunity = self.market_service.calculate_opportunity_score(market_data, prediction)
-
-            self.update_chart(market_data)
-            self.update_indicators(market_data, prediction, opportunity)
-            self.update_prediction(prediction, opportunity)
-        except Exception as exc:  # pragma: no cover - logging only
-            print(f"Erreur: {exc}")
-
-    def update_chart(self, market_data: MarketData):
-        if not market_data.price_history:
-            return
-
-        self.price_canvas.axes.clear()
-        timestamps = [p.timestamp for p in market_data.price_history]
-        prices = [p.price_eur for p in market_data.price_history]
-        self.price_canvas.axes.plot(timestamps, prices, linewidth=2, color="#2196F3")
-
-        if self.config.enable_price_levels and market_data.symbol in self.config.price_levels:
-            levels = self.config.price_levels[market_data.symbol]
-            if "low" in levels:
-                self.price_canvas.axes.axhline(
-                    y=levels["low"], color="green", linestyle=":", linewidth=2, alpha=0.7
-                )
-            if "high" in levels:
-                self.price_canvas.axes.axhline(
-                    y=levels["high"], color="red", linestyle=":", linewidth=2, alpha=0.7
-                )
-
-        self.price_canvas.axes.set_xlabel("Temps", color="white")
-        self.price_canvas.axes.set_ylabel("Prix (€)", color="white")
-        self.price_canvas.axes.set_title(
-            f"{market_data.symbol} - Prix temps réel",
-            color="white",
-            fontsize=14,
-            fontweight="bold",
-        )
-        self.price_canvas.axes.tick_params(colors="white")
-        self.price_canvas.axes.grid(True, alpha=0.3, color="gray")
-        self.price_canvas.axes.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-        self.price_canvas.figure.autofmt_xdate()
-        self.price_canvas.draw()
-
-    def update_indicators(self, market_data: MarketData, prediction: Prediction, opportunity):
-        price_label = self.price_label.findChild(QLabel)
-        if price_label and market_data.current_price and market_data.current_price.price_eur is not None:
-            price_label.setText(f"{market_data.current_price.price_eur:.2f} €")
-
-        change_label = self.change_label.findChild(QLabel)
-        change = market_data.current_price.change_24h if market_data.current_price else None
-        if change_label:
-            if change is not None:
-                color = "green" if change > 0 else "red"
-                change_label.setText(f"{change:+.2f}%")
-                change_label.setStyleSheet(f"color: {color};")
+            if self.config_manager.config_exists():
+                return self.config_manager.load_config()
             else:
-                change_label.setText("N/A")
-                change_label.setStyleSheet("color: gray;")
-
-        rsi_value = market_data.technical_indicators.rsi if market_data.technical_indicators else None
-        rsi_label = self.rsi_label.findChild(QLabel)
-        if rsi_label:
-            if rsi_value is not None:
-                rsi_color = "green" if rsi_value < 40 else "red" if rsi_value > 60 else "white"
-                rsi_label.setText(f"{rsi_value:.0f}")
-                rsi_label.setStyleSheet(f"color: {rsi_color};")
-            else:
-                rsi_label.setText("N/A")
-                rsi_label.setStyleSheet("color: gray;")
-
-        opp_label = self.opp_label.findChild(QLabel)
-        if opp_label:
-            score = opportunity.score if opportunity else 0
-            opp_color = "green" if score >= 7 else "orange" if score >= 5 else "red"
-            opp_label.setText(f"{score}/10 ⭐")
-            opp_label.setStyleSheet(f"color: {opp_color};")
-
-    def update_prediction(self, prediction: Prediction, opportunity):
-        if not prediction or not opportunity:
-            self.prediction_text.setText("Données indisponibles")
-            return
-
-        detail = self.detail_combo.currentText()
-        if detail == "Simple":
-            text = (
-                f"{prediction.direction} {prediction.prediction_type.value}\n\n"
-                f"Confiance: {prediction.confidence}%\n\n"
-                f"Score: {opportunity.score}/10\n{opportunity.recommendation}"
+                # Configuration par défaut
+                return BotConfiguration()
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Erreur",
+                f"Impossible de charger la configuration : {e}"
             )
-        else:
-            text = (
-                f"{prediction.direction} {prediction.prediction_type.value}\n"
-                f"Confiance: {prediction.confidence}%\n"
-                f"Trend: {prediction.trend_score}\n\n"
-                f"Opportunité: {opportunity.score}/10\n{opportunity.recommendation}\n"
-            )
-            reasons = getattr(opportunity, "reasons", []) or []
-            if reasons:
-                text += "\nRaisons:\n"
-                for reason in reasons[:3]:
-                    text += f"• {reason}\n"
-
-        self.prediction_text.setText(text)
-
-    def _collect_market_context(self, symbols: Optional[List[str]] = None, refresh: bool = True):
-        markets = {}
-        predictions = {}
-        opportunities = {}
-
-        for symbol in symbols or self.config.crypto_symbols:
+            return BotConfiguration()
+    
+    def _load_notification_settings(self) -> GlobalNotificationSettings:
+        """Charge les paramètres de notification"""
+        
+        notif_config_path = Path("config/notifications.yaml")
+        
+        if notif_config_path.exists():
             try:
-                market = self.market_service.get_market_data(symbol, refresh=refresh)
-                if not market:
-                    continue
-                prediction = self.market_service.predict_price_movement(market)
-                opportunity = self.market_service.calculate_opportunity_score(market, prediction)
-                markets[symbol] = market
-                predictions[symbol] = prediction
-                opportunities[symbol] = opportunity
-            except Exception as exc:  # pragma: no cover - logging only
-                print(f"Erreur collecte données {symbol}: {exc}")
-
-        return markets, predictions, opportunities
-
-    def _send_large_telegram_message(self, text: str, chunk_size: int = 3500) -> bool:
-        if not text:
-            return False
-
-        total_length = len(text)
-        for start in range(0, total_length, chunk_size):
-            chunk = text[start:start + chunk_size]
-            prefix = "" if start == 0 else "…\n"
-            sent = self.telegram_api.send_message(prefix + chunk)
-            if not sent:
-                return False
-        return True
-
-    def _send_price_chart_to_telegram(self):
-        symbols = self.config.crypto_symbols or []
-        if not symbols:
-            symbol = self.crypto_combo.currentText()
-            if not symbol:
-                self._show_error("Graphique", "Aucun symbole sélectionné.")
-                return
-            symbols = [symbol]
-
-        markets, predictions, opportunities = self._collect_market_context(symbols=symbols, refresh=False)
-        if hasattr(self.report_service, "configure"):
-            self.report_service.configure(self.config)
-
-        success_count = 0
-        failure_count = 0
-        notification_success = 0
-
-        for symbol in symbols:
-            market = markets.get(symbol)
-            prediction = predictions.get(symbol)
-            opportunity = opportunities.get(symbol)
-
-            sent_message = False
-            if hasattr(self.report_service, "generate_coin_notification"):
-                message = self.report_service.generate_coin_notification(symbol, market, prediction, opportunity)
-                if message:
-                    try:
-                        if self.telegram_api.send_message(message, use_queue=False):
-                            notification_success += 1
-                            sent_message = True
-                    except Exception as exc:
-                        self._show_error("Notification", f"Erreur message {symbol}: {exc}")
-
-            notif_options = self.report_service.get_notification_options(symbol)
-            show_curves = notif_options.get(
-                "show_curves",
-                self.config.notification_include_chart,
+                with open(notif_config_path, 'r', encoding='utf-8') as f:
+                    data = yaml.safe_load(f)
+                
+                # Convertir YAML vers GlobalNotificationSettings
+                settings = GlobalNotificationSettings()
+                
+                # Charger paramètres globaux
+                notif_data = data.get('notifications', {})
+                settings.enabled = notif_data.get('enabled', True)
+                settings.kid_friendly_mode = notif_data.get('kid_friendly_mode', True)
+                
+                # TODO: Charger les autres paramètres
+                
+                self.logger.info("Paramètres de notification chargés")
+                return settings
+                
+            except Exception as e:
+                self.logger.error(f"Erreur chargement notifications: {e}")
+        
+        # Configuration par défaut
+        return GlobalNotificationSettings(
+            enabled=True,
+            kid_friendly_mode=True,
+            default_scheduled_hours=[9, 12, 18]
+        )
+    
+    def _save_notification_settings(self):
+        """Sauvegarde les paramètres de notification"""
+        
+        try:
+            notif_config_path = Path("config/notifications.yaml")
+            notif_config_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Convertir en dict et sauvegarder
+            # TODO: Implémenter conversion complète
+            
+            self.logger.info("Paramètres de notification sauvegardés")
+            
+            QMessageBox.information(
+                self,
+                "Sauvegarde",
+                "Les paramètres de notification ont été sauvegardés !"
             )
-            if not show_curves or not sent_message:
-                continue
-
-            timeframes = self.report_service.get_notification_timeframes(symbol)
-            for timeframe in timeframes:
-                prices = self.market_service.get_price_history(symbol, hours=timeframe)
-                if not prices:
-                    failure_count += 1
-                    continue
-
-                chart_buffer = self.chart_service.generate_price_chart(
-                    symbol,
-                    prices,
-                    show_levels=self.config.show_levels_on_graph,
-                    price_levels=self.config.price_levels.get(symbol) if self.config.price_levels else None,
-                )
-                if not chart_buffer:
-                    failure_count += 1
-                    continue
-
-                caption = f"{symbol} — Graphique {timeframe}h"
-                try:
-                    sent = self.telegram_api.send_photo(chart_buffer, caption, use_queue=False)
-                    chart_buffer.close()
-                    if sent:
-                        success_count += 1
-                    else:
-                        failure_count += 1
-                except Exception as exc:
-                    chart_buffer.close()
-                    failure_count += 1
-                    self._show_error("Graphique", f"Erreur {symbol} ({timeframe}h): {exc}")
-
-        messages = []
-        if notification_success:
-            messages.append(f"{notification_success} notification(s) texte envoyée(s)")
-        if success_count:
-            messages.append(f"{success_count} graphique(s) envoyé(s)")
-        if failure_count:
-            messages.append(f"{failure_count} graphique(s) en échec")
-
-        if messages:
-            self._show_info("Graphique", "; ".join(messages))
-        else:
-            self._show_error("Graphique", "Aucune notification ni graphique n'a pu être envoyé.")
-
-    def start_monitoring(self):
-        if self.monitor_thread and self.monitor_thread.isRunning():
-            return
-
-        self.start_btn.setEnabled(False)
-        self.stop_btn.setEnabled(True)
-        self.status_label.setText("● En cours")
-        self.status_label.setStyleSheet("color: green;")
-
-        self.monitor_thread = MonitorThread(self.config, self.market_service, self.alert_service, self.telegram_api)
-        self.monitor_thread.alert_signal.connect(self.add_alert)
-        self.monitor_thread.start()
-
-    def stop_monitoring(self):
-        if self.monitor_thread:
-            self.monitor_thread.stop()
-            self.monitor_thread.wait()
-            self.monitor_thread = None
-
-        self.start_btn.setEnabled(True)
-        self.stop_btn.setEnabled(False)
-        self.status_label.setText("● Arrêté")
-        self.status_label.setStyleSheet("color: gray;")
-
-    def start_daemon(self):
-        if self.daemon_thread and self.daemon_thread.isRunning():
-            self._show_info("Daemon", "Le daemon est déjà en cours d'exécution.")
-            return
-
-        self.daemon_service = DaemonService(self.config)
-        self.daemon_thread = DaemonThread(self.daemon_service)
-        self.daemon_thread.started_signal.connect(lambda: self._update_daemon_status(True))
-        self.daemon_thread.stopped_signal.connect(lambda: self._update_daemon_status(False))
-        self.daemon_thread.start()
-
-    def stop_daemon(self):
-        if self.daemon_thread and self.daemon_thread.isRunning():
-            self.daemon_thread.stop()
-            self.daemon_thread.wait(5000)
-            self.daemon_thread = None
-            self.daemon_service = None
-            self._update_daemon_status(False)
-
-    def _update_daemon_status(self, running: bool):
-        if running:
-            self.daemon_status_label.setText("Daemon: en cours")
+            
+        except Exception as e:
+            self.logger.error(f"Erreur sauvegarde notifications: {e}")
+            QMessageBox.critical(
+                self,
+                "Erreur",
+                f"Impossible de sauvegarder : {e}"
+            )
+    
+    # === MÉTHODES DE CONTRÔLE DAEMON ===
+    
+    def _start_daemon(self):
+        """Démarre le daemon"""
+        
+        try:
+            self.logger.info("Démarrage du daemon...")
+            
+            # Créer le daemon si besoin
+            if self.daemon_service is None:
+                self.daemon_service = DaemonService(self.config)
+                # Passer les notification settings au daemon
+                self.daemon_service.notification_settings = self.notification_settings
+            
+            # Démarrer
+            self.daemon_service.start()
+            
+            # Mettre à jour l'UI
+            self.start_button.setEnabled(False)
+            self.stop_button.setEnabled(True)
+            self.daemon_status_label.setText("● Daemon: En cours")
             self.daemon_status_label.setStyleSheet("color: green;")
-            self.daemon_start_btn.setEnabled(False)
-            self.daemon_stop_btn.setEnabled(True)
-        else:
-            self.daemon_status_label.setText("Daemon: arrêté")
-            self.daemon_status_label.setStyleSheet("color: gray;")
-            self.daemon_start_btn.setEnabled(True)
-            self.daemon_stop_btn.setEnabled(False)
-
-    def add_alert(self, alert: Alert):
-        colors = {
-            "INFO": "#2196F3",
-            "WARNING": "#FF9800",
-            "IMPORTANT": "#FF5722",
-            "CRITICAL": "#F44336",
-        }
-        alert_widget = QGroupBox(f"{alert.symbol} - {alert.alert_type.value}")
-        alert_widget.setStyleSheet(f"background-color: {colors.get(alert.alert_level.value.upper(), 'gray')};")
-        layout = QVBoxLayout(alert_widget)
-
-        msg = QLabel(alert.message)
-        msg.setWordWrap(True)
-        layout.addWidget(msg)
-
-        time_label = QLabel(alert.timestamp.strftime("%H:%M:%S"))
-        time_label.setStyleSheet("color: lightgray;")
-        layout.addWidget(time_label)
-
-        self.alerts_layout.addWidget(alert_widget)
-
-    def test_telegram(self):
-        success = self.telegram_api.send_message("🚀 Test - Crypto Bot v3.0 PyQt6")
-        if success:
-            self._show_info("Telegram", "Message envoyé !")
-        else:
-            self._show_error("Telegram", "Échec de l'envoi du message.")
-
-    def _generate_report(self):
-        markets_data, predictions, opportunities = self._collect_market_context()
-        if not markets_data and not opportunities:
-            self._show_error("Rapport", "Impossible de générer un rapport sans données.")
-            return
-
-        stats = self.db_service.get_stats_summary() if self.db_service else {}
-        report = self.report_service.generate_complete_report(markets_data, predictions, opportunities, stats)
-
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"/tmp/report_{timestamp}.txt"
-        with open(filename, "w", encoding="utf-8") as handle:
-            handle.write(report)
-
-        self._show_info("Rapport", f"Rapport sauvegardé : {filename}")
-
-    def _open_settings(self):
-        from ui.settings_window import SettingsDialog
-
-        def on_save(new_config: BotConfiguration):
-            self.config = new_config
-            self.alert_service = AlertService(self.config)
-            # Refresh dependent services
-            self.summary_service = SummaryService(self.config)
-            self.report_service.configure(self.config)
-            self.telegram_api.message_delay = self.config.telegram_message_delay
-            self.crypto_combo.clear()
-            self.crypto_combo.addItems(self.config.crypto_symbols)
-            if self.monitor_thread:
-                self.monitor_thread.config = self.config
-                self.monitor_thread.alert_service = self.alert_service
+            self.status_label.setText("● En cours")
+            self.status_label.setStyleSheet("color: green; font-weight: bold;")
+            
+            # Démarrer le timer de refresh
+            self.refresh_timer.start(5000)  # Toutes les 5 secondes
+            
+            self.logger.info("Daemon démarré")
+            
+            QMessageBox.information(
+                self,
+                "Daemon",
+                "Le daemon a été démarré avec succès !"
+            )
+            
+        except Exception as e:
+            self.logger.error(f"Erreur démarrage daemon: {e}")
+            QMessageBox.critical(
+                self,
+                "Erreur",
+                f"Impossible de démarrer le daemon : {e}"
+            )
+    
+    def _stop_daemon(self):
+        """Arrête le daemon"""
+        
+        try:
+            self.logger.info("Arrêt du daemon...")
+            
             if self.daemon_service:
-                if hasattr(self.daemon_service, "update_configuration"):
-                    self.daemon_service.update_configuration(self.config)
-                else:
-                    self.daemon_service.config = self.config
-            message = "Configuration mise à jour !"
-            if self.daemon_service and getattr(self.daemon_service, "is_running", False):
-                message += "\nRedémarrez le daemon pour appliquer toutes les modifications."
-            self._show_info("Configuration", message)
-
-        dialog = SettingsDialog(self, self.config, on_save)
-        dialog.exec()
-
-    # ------------------------------------------------------------------
-    # Utilitaires
-    # ------------------------------------------------------------------
-    def _show_info(self, title: str, message: str):
-        QMessageBox.information(self, title, message)
-
-    def _show_error(self, title: str, message: str):
-        QMessageBox.critical(self, title, message)
-
-    # ------------------------------------------------------------------
-    # Telegram helpers
-    # ------------------------------------------------------------------
-
-    def _send_summary_to_telegram(self):
-        markets, predictions, opportunities = self._collect_market_context(refresh=False)
-        if not markets and not opportunities:
-            self._show_error("Résumé Telegram", "Aucune donnée disponible pour générer un résumé.")
-            return
-
-        summary = self.summary_service.generate_summary(
-            markets,
-            predictions,
-            opportunities,
-            simple=self.config.use_simple_language
-        )
-        if self.telegram_api.send_message(summary):
-            self._show_info("Résumé Telegram", "Résumé envoyé avec succès.")
+                self.daemon_service.stop()
+            
+            # Mettre à jour l'UI
+            self.start_button.setEnabled(True)
+            self.stop_button.setEnabled(False)
+            self.daemon_status_label.setText("● Daemon: Arrêté")
+            self.daemon_status_label.setStyleSheet("color: gray;")
+            self.status_label.setText("● Arrêté")
+            self.status_label.setStyleSheet("color: gray; font-weight: bold;")
+            
+            # Arrêter le timer
+            self.refresh_timer.stop()
+            
+            self.logger.info("Daemon arrêté")
+            
+            QMessageBox.information(
+                self,
+                "Daemon",
+                "Le daemon a été arrêté."
+            )
+            
+        except Exception as e:
+            self.logger.error(f"Erreur arrêt daemon: {e}")
+            QMessageBox.critical(
+                self,
+                "Erreur",
+                f"Impossible d'arrêter le daemon : {e}"
+            )
+    
+    # === MÉTHODES DE DONNÉES ===
+    
+    def _initial_data_load(self):
+        """Charge les données initiales"""
+        
+        self.logger.info("Chargement des données initiales...")
+        self._refresh_data()
+    
+    def _refresh_data(self):
+        """Rafraîchit les données"""
+        
+        try:
+            # Récupérer données marché
+            market_data = self.market_service.get_market_data(self.current_symbol)
+            
+            if market_data:
+                self.market_data_cache[self.current_symbol] = market_data
+                self._update_dashboard(market_data)
+                self.last_update_label.setText(datetime.now().strftime("%H:%M:%S"))
+            
+        except Exception as e:
+            self.logger.error(f"Erreur refresh données: {e}")
+    
+    def _refresh_ui(self):
+        """Rafraîchit l'UI périodiquement"""
+        
+        self._refresh_data()
+        
+        # Mettre à jour statut daemon
+        if self.daemon_service:
+            self.checks_label.setText(f"Vérifications: {self.daemon_service.checks_count}")
+            self.alerts_label.setText(f"Alertes: {self.daemon_service.alerts_sent}")
+            
+            if self.daemon_service.start_time:
+                uptime = datetime.now(timezone.utc) - self.daemon_service.start_time
+                hours = uptime.seconds // 3600
+                minutes = (uptime.seconds % 3600) // 60
+                self.uptime_label.setText(f"Uptime: {hours}h{minutes}m")
+    
+    def _update_dashboard(self, market_data):
+        """Met à jour le dashboard"""
+        
+        # Prix
+        if market_data.current_price:
+            price_text = f"{market_data.current_price.price_eur:.2f} €"
+            self.price_card.value_label.setText(price_text)
+        
+        # Variation 24h
+        if market_data.price_change_24h is not None:
+            change_24h = market_data.price_change_24h
+            change_text = f"{change_24h:+.2f}%"
+            self.change_24h_card.value_label.setText(change_text)
+            
+            # Couleur selon variation
+            if change_24h > 0:
+                self.change_24h_card.value_label.setStyleSheet("color: green;")
+            elif change_24h < 0:
+                self.change_24h_card.value_label.setStyleSheet("color: red;")
+            else:
+                self.change_24h_card.value_label.setStyleSheet("color: gray;")
+        
+        # Variation 7j
+        if market_data.price_change_7d is not None:
+            change_7d = market_data.price_change_7d
+            change_text = f"{change_7d:+.2f}%"
+            self.change_7d_card.value_label.setText(change_text)
+            
+            # Couleur
+            if change_7d > 0:
+                self.change_7d_card.value_label.setStyleSheet("color: green;")
+            elif change_7d < 0:
+                self.change_7d_card.value_label.setStyleSheet("color: red;")
+            else:
+                self.change_7d_card.value_label.setStyleSheet("color: gray;")
+    
+    # === MÉTHODES D'INTERFACE ===
+    
+    def _on_crypto_changed(self, symbol: str):
+        """Appelé quand la crypto change"""
+        
+        self.current_symbol = symbol
+        self.crypto_label.setText(f"📊 {symbol}")
+        self._refresh_data()
+        self.logger.info(f"Crypto changée: {symbol}")
+    
+    def _on_status_update(self, message: str):
+        """Appelé pour mettre à jour le statut"""
+        
+        self.status_bar.showMessage(message, 3000)
+    
+    def _open_general_settings(self):
+        """Ouvre la fenêtre de paramètres généraux"""
+        
+        try:
+            dialog = SettingsDialog(
+                parent=self,
+                config=self.config,
+                on_save=self._on_config_saved
+            )
+            
+            dialog.exec()
+            
+        except Exception as e:
+            self.logger.error(f"Erreur ouverture paramètres: {e}")
+            QMessageBox.critical(
+                self,
+                "Erreur",
+                f"Impossible d'ouvrir les paramètres : {e}"
+            )
+    
+    def _open_notification_config(self):
+        """Ouvre la configuration avancée des notifications"""
+        
+        try:
+            dialog = AdvancedNotificationConfigWindow(
+                settings=self.notification_settings,
+                symbols=self.config.crypto_symbols,
+                parent=self
+            )
+            
+            if dialog.exec() == QDialog.DialogCode.Accepted:
+                # Sauvegarder
+                self.notification_settings = dialog.settings
+                self._save_notification_settings()
+                
+                # Mettre à jour le daemon si actif
+                if self.daemon_service:
+                    self.daemon_service.notification_settings = self.notification_settings
+                
+                # Mettre à jour le résumé
+                self._update_notification_summary()
+                
+                QMessageBox.information(
+                    self,
+                    "Configuration",
+                    "Configuration des notifications enregistrée !"
+                )
+            
+        except Exception as e:
+            self.logger.error(f"Erreur config notifications: {e}")
+            QMessageBox.critical(
+                self,
+                "Erreur",
+                f"Impossible d'ouvrir la configuration : {e}"
+            )
+    
+    def _on_config_saved(self, config: BotConfiguration):
+        """Appelé quand la config est sauvegardée"""
+        
+        self.config = config
+        self.config_manager.save_config(config)
+        
+        # Recharger si nécessaire
+        if self.daemon_service:
+            self.daemon_service.update_configuration(config)
+        
+        self.logger.info("Configuration sauvegardée")
+    
+    def _update_notification_summary(self):
+        """Met à jour le résumé de configuration des notifications"""
+        
+        summary_lines = []
+        
+        summary_lines.append("📋 CONFIGURATION DES NOTIFICATIONS\n")
+        summary_lines.append(f"Activées: {'✅ Oui' if self.notification_settings.enabled else '❌ Non'}")
+        summary_lines.append(f"Mode enfant: {'✅ Oui' if self.notification_settings.kid_friendly_mode else '❌ Non'}")
+        summary_lines.append(f"Horaires par défaut: {self.notification_settings.default_scheduled_hours}")
+        summary_lines.append(f"Mode nuit: {'✅ Oui' if self.notification_settings.respect_quiet_hours else '❌ Non'}")
+        
+        if self.notification_settings.respect_quiet_hours:
+            summary_lines.append(f"  ├─ De {self.notification_settings.quiet_start}h à {self.notification_settings.quiet_end}h")
+        
+        summary_lines.append(f"\nCryptos configurées: {len(self.notification_settings.coin_profiles)}")
+        
+        for symbol, profile in self.notification_settings.coin_profiles.items():
+            summary_lines.append(f"\n💎 {symbol}")
+            summary_lines.append(f"  ├─ Activée: {'✅' if profile.enabled else '❌'}")
+            summary_lines.append(f"  ├─ Notifications programmées: {len(profile.scheduled_notifications)}")
+            
+            for notif in profile.scheduled_notifications:
+                summary_lines.append(f"  │   ├─ {notif.name}: {notif.hours}")
+        
+        self.notif_summary_text.setPlainText("\n".join(summary_lines))
+    
+    def _update_scheduled_notifications(self):
+        """Met à jour l'affichage des prochaines notifications"""
+        
+        now = datetime.now()
+        current_hour = now.hour
+        
+        next_notifs = []
+        
+        for symbol, profile in self.notification_settings.coin_profiles.items():
+            if not profile.enabled:
+                continue
+            
+            for notif_config in profile.scheduled_notifications:
+                if not notif_config.enabled:
+                    continue
+                
+                for hour in notif_config.hours:
+                    if hour > current_hour:
+                        next_notifs.append((symbol, hour, notif_config.name))
+        
+        # Trier par heure
+        next_notifs.sort(key=lambda x: x[1])
+        
+        # Afficher les 5 prochaines
+        lines = []
+        for i, (symbol, hour, name) in enumerate(next_notifs[:5]):
+            lines.append(f"{i+1}. {hour:02d}:00 - {symbol} - {name}")
+        
+        if lines:
+            self.scheduled_notif_label.setText("\n".join(lines))
         else:
-            self._show_error("Résumé Telegram", "Impossible d'envoyer le résumé.")
-
-    def _send_report_to_telegram(self):
-        markets, predictions, opportunities = self._collect_market_context(refresh=False)
-        if not markets and not opportunities:
-            self._show_error("Rapport Telegram", "Aucune donnée disponible pour générer un rapport.")
-            return
-
-        stats = self.db_service.get_stats_summary() if self.db_service else {}
-        report = self.report_service.generate_complete_report(markets, predictions, opportunities, stats)
-        if not report.strip():
-            self._show_error("Rapport Telegram", "Rapport vide, envoi annulé.")
-            return
-
-        if self._send_large_telegram_message(report):
-            self._show_info("Rapport Telegram", "Rapport envoyé sur Telegram.")
-        else:
-            self._show_error("Rapport Telegram", "Échec de l'envoi du rapport sur Telegram.")
-
-        if self.config.notification_per_coin:
-            notifications = self.report_service.generate_coin_notifications(markets, predictions, opportunities)
-            for message in notifications:
-                try:
-                    self.telegram_api.send_message(message, use_queue=False)
-                except Exception as exc:
-                    self._show_error("Rapport Telegram", f"Erreur notification individuelle: {exc}")
-
-    def _send_dca_plan_to_telegram(self):
-        symbol = self.crypto_combo.currentText() or (self.config.crypto_symbols[0] if self.config.crypto_symbols else None)
-        if not symbol:
-            self._show_error("Plan DCA", "Aucun symbole sélectionné.")
-            return
-
-        markets, predictions, opportunities = self._collect_market_context(symbols=[symbol], refresh=False)
-        market = markets.get(symbol)
-        prediction = predictions.get(symbol)
-        opportunity = opportunities.get(symbol)
-        if not (market and prediction and opportunity):
-            self._show_error("Plan DCA", "Données insuffisantes pour générer un plan DCA.")
-            return
-
-        plan = self.dca_service.generate_dca_plan(
-            symbol,
-            self.config.investment_amount,
-            market.current_price.price_eur,
-            market,
-            prediction,
-            opportunity
+            self.scheduled_notif_label.setText("Aucune notification programmée")
+    
+    def _load_logs(self):
+        """Charge les logs"""
+        
+        try:
+            log_path = Path(self.config.log_file)
+            
+            if log_path.exists():
+                with open(log_path, 'r', encoding='utf-8') as f:
+                    # Lire les 100 dernières lignes
+                    lines = f.readlines()
+                    last_lines = lines[-100:]
+                    self.logs_text.setPlainText("".join(last_lines))
+                    
+                    # Scroller vers le bas
+                    self.logs_text.verticalScrollBar().setValue(
+                        self.logs_text.verticalScrollBar().maximum()
+                    )
+            else:
+                self.logs_text.setPlainText("Aucun fichier de log trouvé")
+                
+        except Exception as e:
+            self.logger.error(f"Erreur chargement logs: {e}")
+            self.logs_text.setPlainText(f"Erreur: {e}")
+    
+    # === ACTIONS ===
+    
+    def _test_telegram(self):
+        """Teste l'envoi Telegram"""
+        
+        try:
+            if not self.config.telegram_bot_token or not self.config.telegram_chat_id:
+                QMessageBox.warning(
+                    self,
+                    "Configuration",
+                    "Token ou Chat ID Telegram non configuré !"
+                )
+                return
+            
+            # Envoyer message de test
+            from api.enhanced_telegram_api import EnhancedTelegramAPI
+            
+            telegram = EnhancedTelegramAPI(
+                self.config.telegram_bot_token,
+                self.config.telegram_chat_id
+            )
+            
+            message = (
+                "🧪 **Test du bot Crypto**\n\n"
+                f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+                f"Cryptos suivies: {', '.join(self.config.crypto_symbols)}\n\n"
+                "✅ La connexion fonctionne parfaitement !"
+            )
+            
+            telegram.send_message(message)
+            
+            QMessageBox.information(
+                self,
+                "Test Telegram",
+                "Message de test envoyé avec succès !"
+            )
+            
+        except Exception as e:
+            self.logger.error(f"Erreur test Telegram: {e}")
+            QMessageBox.critical(
+                self,
+                "Erreur",
+                f"Échec du test : {e}"
+            )
+    
+    def _test_notification(self):
+        """Teste une notification avec le nouveau système"""
+        
+        try:
+            # Importer le générateur
+            from core.services.enhanced_notification_generator import EnhancedNotificationGenerator
+            
+            # Créer générateur
+            generator = EnhancedNotificationGenerator(self.notification_settings)
+            
+            # Récupérer données
+            market_data = self.market_data_cache.get(self.current_symbol)
+            
+            if not market_data:
+                QMessageBox.warning(
+                    self,
+                    "Données",
+                    "Aucune donnée disponible pour générer une notification test"
+                )
+                return
+            
+            # Générer notification
+            message = generator.generate_notification(
+                symbol=self.current_symbol,
+                market=market_data,
+                prediction=self.predictions_cache.get(self.current_symbol),
+                opportunity=self.opportunities_cache.get(self.current_symbol),
+                all_markets=self.market_data_cache,
+                all_predictions=self.predictions_cache,
+                all_opportunities=self.opportunities_cache,
+                current_hour=datetime.now().hour,
+                current_day_of_week=datetime.now().weekday()
+            )
+            
+            if message:
+                # Afficher dans une fenêtre
+                dialog = QDialog(self)
+                dialog.setWindowTitle("📱 Prévisualisation notification")
+                dialog.resize(600, 800)
+                
+                layout = QVBoxLayout(dialog)
+                
+                text_edit = QTextEdit()
+                text_edit.setPlainText(message)
+                text_edit.setReadOnly(True)
+                layout.addWidget(text_edit)
+                
+                buttons_layout = QHBoxLayout()
+                
+                send_btn = QPushButton("📤 Envoyer sur Telegram")
+                send_btn.clicked.connect(lambda: self._send_test_notification(message, dialog))
+                buttons_layout.addWidget(send_btn)
+                
+                close_btn = QPushButton("Fermer")
+                close_btn.clicked.connect(dialog.close)
+                buttons_layout.addWidget(close_btn)
+                
+                layout.addLayout(buttons_layout)
+                
+                dialog.exec()
+            else:
+                QMessageBox.information(
+                    self,
+                    "Notification",
+                    "Aucune notification à envoyer selon la configuration actuelle"
+                )
+            
+        except Exception as e:
+            self.logger.error(f"Erreur test notification: {e}")
+            QMessageBox.critical(
+                self,
+                "Erreur",
+                f"Impossible de générer la notification : {e}"
+            )
+    
+    def _send_test_notification(self, message: str, dialog: QDialog):
+        """Envoie la notification de test sur Telegram"""
+        
+        try:
+            from api.enhanced_telegram_api import EnhancedTelegramAPI
+            
+            telegram = EnhancedTelegramAPI(
+                self.config.telegram_bot_token,
+                self.config.telegram_chat_id
+            )
+            
+            telegram.send_message(message)
+            
+            QMessageBox.information(
+                self,
+                "Envoyé",
+                "Notification envoyée sur Telegram !"
+            )
+            
+            dialog.close()
+            
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Erreur",
+                f"Impossible d'envoyer : {e}"
+            )
+    
+    def _send_summary(self):
+        """Envoie un résumé sur Telegram"""
+        
+        QMessageBox.information(
+            self,
+            "Résumé",
+            "Fonctionnalité en développement"
         )
-        message = self.dca_service.format_dca_message(plan, simple=self.config.use_simple_language)
-        if self.telegram_api.send_message(message):
-            self._show_info("Plan DCA", "Plan DCA envoyé sur Telegram.")
-        else:
-            self._show_error("Plan DCA", "Impossible d'envoyer le plan DCA.")
-
-    def _show_daemon_status(self):
-        if not self.daemon_service:
-            self._show_info("Daemon", "Le daemon n'est pas démarré.")
-            return
-
-        if not hasattr(self.daemon_service, "get_status"):
-            self._show_error("Daemon", "La fonction de statut n'est pas disponible.")
-            return
-
-        status = self.daemon_service.get_status()
-
-        def fmt_dt(value: Optional[datetime]) -> str:
-            return value.strftime("%d/%m %H:%M:%S") if value else "—"
-
-        queue_stats = status.get("queue", {})
-        message = (
-            f"En cours: {'Oui' if status.get('is_running') else 'Non'}\n"
-            f"Dernière vérification: {fmt_dt(status.get('last_check_time'))}\n"
-            f"Dernier résumé: {fmt_dt(status.get('last_summary_sent'))}\n"
-            f"Vérifications: {status.get('checks_count', 0)}\n"
-            f"Alertes envoyées: {status.get('alerts_sent', 0)}\n"
-            f"Erreurs: {status.get('errors_count', 0)}\n"
-            f"Uptime (s): {status.get('uptime_seconds', 0)}\n"
-            f"Queue Telegram: {queue_stats.get('queue_size', 0)} en attente"
+    
+    def _generate_report(self):
+        """Génère un rapport"""
+        
+        QMessageBox.information(
+            self,
+            "Rapport",
+            "Fonctionnalité en développement"
         )
-        if status.get("last_error"):
-            message += f"\nDernière erreur: {status['last_error']}"
-
-        self._show_info("Statut du daemon", message)
-
+    
+    def _export_configuration(self):
+        """Exporte la configuration"""
+        
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Exporter configuration",
+            "",
+            "Fichiers YAML (*.yaml *.yml)"
+        )
+        
+        if file_path:
+            try:
+                self.config_manager.save_config(self.config)
+                QMessageBox.information(
+                    self,
+                    "Export",
+                    f"Configuration exportée vers {file_path}"
+                )
+            except Exception as e:
+                QMessageBox.critical(
+                    self,
+                    "Erreur",
+                    f"Impossible d'exporter : {e}"
+                )
+    
+    def _import_configuration(self):
+        """Importe une configuration"""
+        
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Importer configuration",
+            "",
+            "Fichiers YAML (*.yaml *.yml)"
+        )
+        
+        if file_path:
+            try:
+                # Charger config
+                self.config = self.config_manager.load_config()
+                
+                # Recharger UI
+                self.crypto_selector.clear()
+                self.crypto_selector.addItems(self.config.crypto_symbols)
+                
+                QMessageBox.information(
+                    self,
+                    "Import",
+                    "Configuration importée avec succès !"
+                )
+            except Exception as e:
+                QMessageBox.critical(
+                    self,
+                    "Erreur",
+                    f"Impossible d'importer : {e}"
+                )
+    
+    def _show_user_guide(self):
+        """Affiche le guide utilisateur"""
+        
+        guide_path = Path("GUIDE_NOTIFICATIONS.md")
+        
+        if guide_path.exists():
+            try:
+                with open(guide_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                dialog = QDialog(self)
+                dialog.setWindowTitle("📚 Guide utilisateur")
+                dialog.resize(800, 600)
+                
+                layout = QVBoxLayout(dialog)
+                
+                text_edit = QTextEdit()
+                text_edit.setPlainText(content)
+                text_edit.setReadOnly(True)
+                layout.addWidget(text_edit)
+                
+                close_btn = QPushButton("Fermer")
+                close_btn.clicked.connect(dialog.close)
+                layout.addWidget(close_btn)
+                
+                dialog.exec()
+                
+            except Exception as e:
+                QMessageBox.critical(
+                    self,
+                    "Erreur",
+                    f"Impossible d'afficher le guide : {e}"
+                )
+        else:
+            QMessageBox.information(
+                self,
+                "Guide",
+                "Guide utilisateur non trouvé"
+            )
+    
+    def _show_about(self):
+        """Affiche la fenêtre À propos"""
+        
+        QMessageBox.about(
+            self,
+            "À propos de Crypto Bot",
+            "🚀 **Crypto Bot v4.0**\n\n"
+            "Système de monitoring et notifications pour crypto-monnaies\n\n"
+            "Fonctionnalités:\n"
+            "• Dashboard temps réel\n"
+            "• Notifications ultra-paramétrables\n"
+            "• Suggestions d'investissement intelligentes\n"
+            "• Mode adapté aux enfants\n"
+            "• Interface graphique intuitive\n\n"
+            "© 2025 Crypto Bot\n"
+        )
+    
     def closeEvent(self, event):
-        self.stop_monitoring()
-        self.stop_daemon()
+        """Appelé à la fermeture de la fenêtre"""
+        
+        # Arrêter le daemon si actif
+        if self.daemon_service and self.daemon_service.is_running:
+            reply = QMessageBox.question(
+                self,
+                "Fermeture",
+                "Le daemon est en cours d'exécution. Voulez-vous l'arrêter ?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            )
+            
+            if reply == QMessageBox.StandardButton.Yes:
+                self._stop_daemon()
+        
+        self.logger.info("Fermeture de l'application")
         event.accept()

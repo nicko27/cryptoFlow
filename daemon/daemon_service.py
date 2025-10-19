@@ -16,8 +16,9 @@ from utils.logger import setup_logger
 from core.services.database_service import DatabaseService
 from core.services.chart_service import ChartService
 from api.enhanced_telegram_api import EnhancedTelegramAPI
-from core.services.report_service import ReportService
 from core.services.dca_service import DCAService
+from core.services.enhanced_notification_generator import EnhancedNotificationGenerator
+from core.models.notification_config import GlobalNotificationSettings
 
 
 class DaemonService:
@@ -49,17 +50,37 @@ class DaemonService:
         self.alert_service = AlertService(config)
         self.db_service = DatabaseService(config.database_path)
         self.chart_service = ChartService()
-        self.report_service = ReportService(config)
         self.dca_service = DCAService()
         self.telegram_api = EnhancedTelegramAPI(
             config.telegram_bot_token,
             config.telegram_chat_id,
             message_delay=config.telegram_message_delay
         )
+        self.notification_settings = self._load_notification_settings()
+        self.notification_generator = EnhancedNotificationGenerator(self.notification_settings)
+
 
         # Gestion des signaux système
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
+
+    def _load_notification_settings(self) -> GlobalNotificationSettings:
+        """Charge les paramètres de notification depuis YAML"""
+        notif_config_path = "config/notifications.yaml"
+        
+        if Path(notif_config_path).exists():
+            with open(notif_config_path, 'r', encoding='utf-8') as f:
+                data = yaml.safe_load(f)
+            # Convertir YAML vers GlobalNotificationSettings
+            # (utiliser le code du config_manager)
+            return self._dict_to_notification_settings(data)
+        else:
+            # Créer config par défaut
+            return GlobalNotificationSettings(
+                enabled=True,
+                kid_friendly_mode=True,
+                default_scheduled_hours=[9, 12, 18]
+            )
 
     def update_configuration(self, config: BotConfiguration) -> None:
         """Met à jour les services internes avec une nouvelle configuration."""
@@ -232,8 +253,16 @@ class DaemonService:
         # Notification individuelle par monnaie
         if self.config.notification_per_coin and not quiet_mode:
             try:
-                notification = self.report_service.generate_coin_notification(
-                    symbol, market_data, prediction, opportunity
+                notification = self.notification_generator.generate_notification(
+                    symbol=symbol,
+                    market=market,
+                    prediction=prediction,
+                    opportunity=opportunity,
+                    all_markets=markets,  # Toutes les données marché
+                    all_predictions=predictions,  # Toutes les prédictions
+                    all_opportunities=opportunities,  # Toutes les opportunités
+                    current_hour=datetime.now().hour,
+                    current_day_of_week=datetime.now().weekday()
                 )
                 if notification:
                     sent = self.telegram_api.send_message(notification, use_queue=True)
