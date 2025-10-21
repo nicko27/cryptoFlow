@@ -9910,3 +9910,179 @@ TypeError: __init__() got an unexpected keyword argument 'open_interest'
 2025-10-21 20:03:29 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
 2025-10-21 20:03:31 | INFO     | CryptoBotGUI | Interface graphique initialisée
 2025-10-21 20:03:31 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-21 20:13:49 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:16:11 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:17:33 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:17:34 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-21 20:17:34 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-21 20:17:53 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-21 20:17:53 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-21 20:17:53 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-21 20:17:53 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:17:53 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-21 20:17:53 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-21 20:17:53 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-21 20:17:53 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:17:53 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-21 20:17:53 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-21 20:17:53 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-21 20:17:57 | INFO     | CryptoBotDaemon |   • BTC: 96008.53€ - ACHETER MAINTENANT
+2025-10-21 20:17:58 | INFO     | CryptoBotDaemon |   • ETH: 3422.42€ - ACHETER MAINTENANT
+2025-10-21 20:18:00 | INFO     | CryptoBotDaemon |   • SOL: 166.47€ - ACHETER MAINTENANT
+2025-10-21 20:18:01 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-21 20:18:08 | INFO     | CryptoBotDaemon | ✓ Notification BTC envoyée
+2025-10-21 20:18:16 | INFO     | CryptoBotDaemon | ✓ Notification ETH envoyée
+2025-10-21 20:18:24 | INFO     | CryptoBotDaemon | ✓ Notification SOL envoyée
+2025-10-21 20:19:32 | INFO     | CryptoBotDaemon | Signal 2 (SIGINT) reçu, arrêt du démon...
+2025-10-21 20:19:32 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-21 20:19:32 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-21 20:19:32 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:19:32 | INFO     | CryptoBotDaemon | Uptime : 0h 1m
+2025-10-21 20:19:32 | INFO     | CryptoBotDaemon | Vérifications : 0
+2025-10-21 20:19:32 | INFO     | CryptoBotDaemon | Alertes envoyées : 5
+2025-10-21 20:19:32 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-21 20:19:32 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-21 20:19:32 | INFO     | CryptoBotGUI | Daemon démarré
+2025-10-21 20:20:23 | INFO     | CryptoBotGUI | Arrêt du daemon...
+2025-10-21 20:20:23 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-21 20:20:23 | INFO     | CryptoBotGUI | Daemon arrêté
+2025-10-21 20:20:26 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-21 20:20:26 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-21 20:20:26 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-21 20:20:26 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:20:26 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-21 20:20:26 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-21 20:20:26 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-21 20:20:26 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:20:26 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-21 20:20:26 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-21 20:20:26 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-21 20:20:28 | INFO     | CryptoBotDaemon |   • BTC: 95974.16€ - ATTENDRE UN PEU
+2025-10-21 20:20:29 | INFO     | CryptoBotDaemon |   • ETH: 3417.23€ - ACHETER MAINTENANT
+2025-10-21 20:20:31 | INFO     | CryptoBotDaemon |   • SOL: 166.56€ - ATTENDRE UN PEU
+2025-10-21 20:20:31 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-21 20:20:31 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-21 20:20:31 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-21 20:20:31 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:20:31 | INFO     | CryptoBotDaemon | Uptime : 0h 0m
+2025-10-21 20:20:31 | INFO     | CryptoBotDaemon | Vérifications : 0
+2025-10-21 20:20:31 | INFO     | CryptoBotDaemon | Alertes envoyées : 5
+2025-10-21 20:20:31 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-21 20:20:31 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-21 20:20:31 | INFO     | CryptoBotGUI | Daemon démarré
+2025-10-21 20:20:35 | INFO     | CryptoBotGUI | Arrêt du daemon...
+2025-10-21 20:20:35 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-21 20:20:35 | INFO     | CryptoBotGUI | Daemon arrêté
+2025-10-21 20:28:37 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:29:41 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:29:42 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-21 20:29:42 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-21 20:29:54 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-21 20:29:54 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-21 20:29:54 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-21 20:29:54 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:29:54 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-21 20:29:54 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-21 20:29:54 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-21 20:29:54 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:29:54 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-21 20:29:54 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-21 20:29:54 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-21 20:29:56 | INFO     | CryptoBotDaemon |   • BTC: 95954.86€ - ATTENDRE UN PEU
+2025-10-21 20:29:58 | INFO     | CryptoBotDaemon |   • ETH: 3423.42€ - ACHETER MAINTENANT
+2025-10-21 20:30:00 | INFO     | CryptoBotDaemon |   • SOL: 166.74€ - ATTENDRE UN PEU
+2025-10-21 20:30:00 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-21 20:30:08 | INFO     | CryptoBotDaemon | ✓ Notification BTC envoyée (avec 2 alerte(s))
+2025-10-21 20:30:14 | INFO     | CryptoBotDaemon | ✓ Notification ETH envoyée (avec 1 alerte(s))
+2025-10-21 20:30:20 | INFO     | CryptoBotDaemon | ✓ Notification SOL envoyée (avec 2 alerte(s))
+2025-10-21 20:31:05 | INFO     | CryptoBotDaemon | Signal 15 (SIGTERM) reçu, arrêt du démon...
+2025-10-21 20:31:05 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-21 20:31:05 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-21 20:31:05 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:31:05 | INFO     | CryptoBotDaemon | Uptime : 0h 1m
+2025-10-21 20:31:05 | INFO     | CryptoBotDaemon | Vérifications : 0
+2025-10-21 20:31:05 | INFO     | CryptoBotDaemon | Alertes envoyées : 5
+2025-10-21 20:31:05 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-21 20:31:05 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-21 20:31:05 | INFO     | CryptoBotGUI | Daemon démarré
+2025-10-21 20:34:53 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:35:45 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:35:46 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-21 20:35:46 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-21 20:35:49 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-21 20:35:49 | ERROR    | CryptoBotGUI | Erreur démarrage daemon: name 'Thread' is not defined
+2025-10-21 20:36:16 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:36:17 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-21 20:36:17 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-21 20:36:21 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-21 20:36:21 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-21 20:36:21 | INFO     | CryptoBotGUI | Daemon démarré
+2025-10-21 20:36:21 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-21 20:36:21 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:36:21 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-21 20:36:21 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-21 20:36:21 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-21 20:36:21 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:36:21 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-21 20:36:22 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-21 20:36:22 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-21 20:36:24 | INFO     | CryptoBotDaemon |   • BTC: 95901.23€ - ACHETER MAINTENANT
+2025-10-21 20:36:26 | INFO     | CryptoBotDaemon |   • ETH: 3423.75€ - ACHETER MAINTENANT
+2025-10-21 20:36:27 | INFO     | CryptoBotDaemon |   • SOL: 166.74€ - ATTENDRE UN PEU
+2025-10-21 20:36:27 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-21 20:36:34 | INFO     | CryptoBotDaemon | ✓ Notification BTC envoyée (avec 2 alerte(s))
+2025-10-21 20:36:40 | INFO     | CryptoBotDaemon | ✓ Notification ETH envoyée (avec 1 alerte(s))
+2025-10-21 20:36:47 | INFO     | CryptoBotDaemon | ✓ Notification SOL envoyée (avec 2 alerte(s))
+2025-10-21 20:39:31 | INFO     | CryptoBotGUI | Arrêt du daemon...
+2025-10-21 20:39:31 | INFO     | CryptoBotDaemon | 
+🛑 Arrêt du démon demandé...
+2025-10-21 20:39:31 | INFO     | CryptoBotGUI | Daemon arrêté
+2025-10-21 20:39:31 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-21 20:39:31 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-21 20:39:31 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:39:31 | INFO     | CryptoBotDaemon | Uptime : 0h 3m
+2025-10-21 20:39:31 | INFO     | CryptoBotDaemon | Vérifications : 0
+2025-10-21 20:39:31 | INFO     | CryptoBotDaemon | Alertes envoyées : 5
+2025-10-21 20:39:31 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-21 20:39:31 | INFO     | CryptoBotDaemon | ============================================================
+
+2025-10-21 20:39:34 | INFO     | CryptoBotGUI | Démarrage du daemon...
+2025-10-21 20:39:34 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-21 20:39:34 | INFO     | CryptoBotGUI | Daemon démarré
+2025-10-21 20:39:34 | INFO     | CryptoBotDaemon | 🚀 CRYPTO BOT DAEMON DÉMARRÉ
+2025-10-21 20:39:34 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:39:34 | INFO     | CryptoBotDaemon | Cryptos surveillées : BTC, ETH, SOL
+2025-10-21 20:39:34 | INFO     | CryptoBotDaemon | Intervalle : 900s
+2025-10-21 20:39:34 | INFO     | CryptoBotDaemon | Mode nuit : Désactivé
+2025-10-21 20:39:34 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:39:34 | INFO     | CryptoBotDaemon | 🔍 Test de connexion Telegram...
+2025-10-21 20:39:34 | INFO     | CryptoBotDaemon | ✓ Connecté au bot: @Crypto_Nicko_Bot
+2025-10-21 20:39:34 | INFO     | CryptoBotDaemon | 📊 Récupération état initial du marché...
+2025-10-21 20:39:36 | INFO     | CryptoBotDaemon |   • BTC: 95767.00€ - ATTENDRE UN PEU
+2025-10-21 20:39:37 | INFO     | CryptoBotDaemon |   • ETH: 3425.55€ - ACHETER MAINTENANT
+2025-10-21 20:39:39 | INFO     | CryptoBotDaemon |   • SOL: 166.60€ - ATTENDRE UN PEU
+2025-10-21 20:39:39 | INFO     | CryptoBotDaemon | ✓ Message de démarrage envoyé sur Telegram
+2025-10-21 20:39:39 | INFO     | CryptoBotDaemon | 
+============================================================
+2025-10-21 20:39:39 | INFO     | CryptoBotDaemon | 👋 CRYPTO BOT DAEMON ARRÊTÉ
+2025-10-21 20:39:39 | INFO     | CryptoBotDaemon | ============================================================
+2025-10-21 20:39:39 | INFO     | CryptoBotDaemon | Uptime : 0h 0m
+2025-10-21 20:39:39 | INFO     | CryptoBotDaemon | Vérifications : 0
+2025-10-21 20:39:39 | INFO     | CryptoBotDaemon | Alertes envoyées : 5
+2025-10-21 20:39:39 | INFO     | CryptoBotDaemon | Erreurs : 0
+2025-10-21 20:39:39 | INFO     | CryptoBotDaemon | ============================================================
+

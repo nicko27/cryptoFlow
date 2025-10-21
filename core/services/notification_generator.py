@@ -26,10 +26,10 @@ from utils.formatters import (
 logger = logging.getLogger(__name__)
 
 
-class FixedNotificationGenerator:
+class NotificationGenerator:
     """
     Générateur de notifications CORRIGÉ
-    FIXED: Tous les problèmes majeurs résolus
+    Générateur de notifications avec tous les blocs configurables
     """
     
     def __init__(self, settings: GlobalNotificationSettings, tracked_symbols: Optional[List[str]] = None):

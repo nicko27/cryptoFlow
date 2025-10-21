@@ -8,6 +8,7 @@ from datetime import datetime, timezone  # FIXED: Problème 1 - Import timezone 
 from typing import Dict, Optional, List
 import yaml
 import json
+from threading import Thread
 
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
@@ -533,7 +534,10 @@ class CryptoBotGUI(QMainWindow):  # FIXED: Problème 13 - Nom de classe sans esp
                 self.daemon_service = DaemonService(self.config)
                 self.daemon_service.notification_settings = self.notification_settings
             
-            self.daemon_service.start()
+                # Lancer le daemon dans un thread séparé pour ne pas bloquer le GUI
+            self.daemon_thread = Thread(target=self.daemon_service.start, daemon=True)
+            self.daemon_thread.start()
+            print("✓ Daemon démarré dans un thread séparé")
             
             # Mettre à jour l'UI
             self.start_button.setEnabled(False)

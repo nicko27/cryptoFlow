@@ -20,7 +20,7 @@ from core.services.database_service import DatabaseService
 from core.services.chart_service import ChartService
 from api.enhanced_telegram_api import EnhancedTelegramAPI
 from core.services.dca_service import DCAService
-from core.services.enhanced_notification_generator import EnhancedNotificationGenerator
+from core.services.notification_generator import NotificationGenerator
 from core.models.notification_config import GlobalNotificationSettings
 
 
@@ -36,6 +36,7 @@ class DaemonService:
         self.last_summary_sent: Optional[datetime] = None
         self.checks_count = 0
         self.alerts_sent = 0
+        self.notifications_sent = 0  # Compteur de notifications
         self.errors_count = 0
         self.consecutive_errors = 0
         self.last_error: Optional[str] = None
@@ -136,7 +137,7 @@ class DaemonService:
         """Met à jour les paramètres de notification et régénère le générateur associé."""
         with self._state_lock:
             self.notification_settings = settings
-            self.notification_generator = EnhancedNotificationGenerator(
+            self.notification_generator = NotificationGenerator(
                 settings,
                 self.config.crypto_symbols,
             )
@@ -147,7 +148,7 @@ class DaemonService:
             self.config = config
             # Recréer les services si nécessaire
             self.alert_service = AlertService(config)
-            self.notification_generator = EnhancedNotificationGenerator(
+            self.notification_generator = NotificationGenerator(
                 self.notification_settings,
                 config.crypto_symbols,
             )
@@ -300,47 +301,92 @@ class DaemonService:
                 )
     
     def _check_cycle(self):
-        """Effectue un cycle de vérification"""
-        
-        with self._state_lock:
-            self.checks_count += 1
-            check_num = self.checks_count
-        
-        self.logger.info(f"\n{'='*60}")
-        self.logger.info(f"🔍 VÉRIFICATION #{check_num}")
-        self.logger.info(f"{'='*60}")
-        
-        # Mode silencieux la nuit
-        quiet_mode = self._is_night_mode()
-        if quiet_mode:
-            self.logger.debug("🌙 Mode nuit activé")
-        
-        # Vérifier chaque crypto
-        for symbol in self.config.crypto_symbols:
-            try:
-                self._process_symbol(symbol, quiet_mode)
-                
-                # Reset erreurs consécutives si succès
-                with self._state_lock:
-                    self.consecutive_errors = 0
-                
-            except Exception as e:
-                # FIXED: Problème 15 - Logging contextualisé
-                self.logger.error(
-                    f"❌ Erreur vérification {symbol} : {e}",
-                    exc_info=True,
-                    extra={
-                        'symbol': symbol,
-                        'timestamp': datetime.now(timezone.utc).isoformat()
-                    }
-                )
-                with self._state_lock:
-                    self.errors_count += 1
+            """Effectue un cycle de vérification avec notifications ET alertes intégrées"""
+            current_hour = datetime.now(timezone.utc).hour
+            current_day = datetime.now(timezone.utc).weekday()
+            
+            for symbol in self.config.crypto_symbols:
+                try:
+                    # Récupérer données marché
+                    market_data = self.market_service.get_market_data(symbol)
+                    if not market_data:
+                        self.logger.warning(f"Pas de données pour {symbol}")
+                        continue
+                    
+                    # Prédictions et opportunités
+                    prediction = self.market_service.predict_price_movement(market_data)
+                    opportunity = self.market_service.calculate_opportunity_score(market_data, prediction)
+                    
+                    # Collecter données contextuelles
+                    all_markets = {}
+                    all_predictions = {}
+                    all_opportunities = {}
+                    
+                    for s in self.config.crypto_symbols:
+                        m = self.market_service.get_market_data(s)
+                        if m:
+                            all_markets[s] = m
+                            all_predictions[s] = self.market_service.predict_price_movement(m)
+                            all_opportunities[s] = self.market_service.calculate_opportunity_score(m, all_predictions[s])
+                    
+                    # Générer la notification principale
+                    notification_message = self.notification_generator.generate_notification(
+                        symbol=symbol,
+                        market=market_data,
+                        prediction=prediction,
+                        opportunity=opportunity,
+                        all_markets=all_markets,
+                        all_predictions=all_predictions,
+                        all_opportunities=all_opportunities,
+                        current_hour=current_hour,
+                        current_day_of_week=current_day,
+                    )
+                    
+                    # Vérifier les alertes
+                    alerts = self.alert_service.check_alerts(market_data, prediction)
+                    
+                    # INTÉGRER LES ALERTES DANS LE MESSAGE au lieu de les envoyer séparément
+                    if alerts and notification_message:
+                        alert_section = "\n\n" + "─"*40 + "\n"
+                        alert_section += "<b>🚨 ALERTES</b>\n\n"
+                        
+                        for alert in alerts:
+                            emoji_map = {
+                                "INFO": "ℹ️",
+                                "WARNING": "⚠️",
+                                "IMPORTANT": "🔔",
+                                "CRITICAL": "🚨"
+                            }
+                            emoji = emoji_map.get(alert.alert_level.value.upper(), "📢")
+                            alert_section += f"{emoji} <b>{alert.alert_type.value.upper()}</b>\n"
+                            alert_section += f"{alert.message}\n\n"
+                            self.alerts_sent += 1
+                        
+                        # Ajouter les alertes au message principal
+                        notification_message += alert_section
+                    elif alerts and not notification_message:
+                        # Si pas de notification mais des alertes, les envoyer normalement
+                        for alert in alerts:
+                            self.telegram_api.send_alert(alert)
+                            self.alerts_sent += 1
+                    
+                    # Envoyer le message complet (notification + alertes intégrées)
+                    if notification_message:
+                        success = self.telegram_api.send_message(notification_message, parse_mode="HTML")
+                        if success:
+                            alert_count = len(alerts) if alerts else 0
+                            if alert_count > 0:
+                                self.logger.info(f"✓ Notification {symbol} envoyée (avec {alert_count} alerte(s))")
+                            else:
+                                self.logger.info(f"✓ Notification {symbol} envoyée")
+                            self.notifications_sent += 1
+                        else:
+                            self.logger.error(f"✗ Échec envoi notification {symbol}")
+                    
+                except Exception as e:
+                    self.logger.error(f"Erreur cycle {symbol}: {e}")
                     self.consecutive_errors += 1
-        
-        # Sauvegarder stats
-        self._save_stats()
-    
+
     def _is_night_mode(self) -> bool:
         """Détermine si on est en mode nuit"""
         if not self.config.enable_night_mode:
