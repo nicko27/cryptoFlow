@@ -1071,7 +1071,7 @@ class AdvancedNotificationConfigWindow(QDialog):
         except ValueError as err:
             QMessageBox.critical(self, "Erreur de validation", str(err))
             return
-        
+        self._save_to_file()
         super().accept()
     
     def _preview_notification(self):

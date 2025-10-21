@@ -1,5 +1,5 @@
 # Configuration des notifications
-# Activez/désactivez les blocs selon vos besoins
+# Restauré après écrasement par le GUI
 
 notifications:
   enabled: true
@@ -24,47 +24,53 @@ coins:
         hours: [9, 12, 18]
         days_of_week: [0, 1, 2, 3, 4, 5, 6]
         
-        # Ordre d'affichage des blocs
+        # Ordre d'affichage des blocs - TOUS ACTIVÉS
         blocks_order:
           - header
           - price
+          - chart
           - prediction
           - opportunity
-          - brokers      # ← ACTIVÉ
+          - brokers
+          - fear_greed
+          - gain_loss
+          - investment_suggestions
+          - glossary
           - footer
         
-        header_message: "🔔 {symbol} - Mise à jour"
+        header_message: "🔔 {symbol} - Mise à jour complète"
         footer_message: "ℹ️ Ceci n'est pas un conseil financier"
         
-        # Configuration de chaque bloc
+        # Configuration de chaque bloc - TOUS ACTIVÉS
         price_block:
           enabled: true
           show_price_eur: true
           show_variation_24h: true
-          show_variation_7d: false
+          show_variation_7d: true
           show_volume: true
-          show_market_cap: false
-          add_price_comment: false
+          show_market_cap: true
+          add_price_comment: true
         
         chart_block:
-          enabled: true  # ← DÉSACTIVÉ
+          enabled: true
         
         prediction_block:
           enabled: true
           show_prediction_type: true
           show_confidence: true
+          show_explanation: true
           min_confidence_to_show: 0
         
         opportunity_block:
           enabled: true
           show_score: true
           show_recommendation: true
-          show_reasons: false
+          show_reasons: true
           min_score_to_show: 0
         
         brokers_block:
-          enabled: true              # ← ACTIVÉ ICI
-          title: "💱 Prix sur les brokers"
+          enabled: true
+          title: "💱 Où acheter le moins cher"
           show_best_price: true
           show_all_brokers: true
           show_fees: true
@@ -72,16 +78,30 @@ coins:
           explanation: "Comparaison des prix sur différentes plateformes"
         
         fear_greed_block:
-          enabled: false  # ← DÉSACTIVÉ
+          enabled: true
+          title: "😱 Indice Fear & Greed"
+          show_value: true
+          show_interpretation: true
+          show_chart: true
         
         gain_loss_block:
-          enabled: false  # ← DÉSACTIVÉ
+          enabled: true
+          title: "💵 Si tu avais investi"
+          show_24h: true
+          show_7d: true
+          show_30d: true
+          investment_amount: 100
         
         investment_suggestions_block:
-          enabled: false  # ← DÉSACTIVÉ
+          enabled: true
+          title: "💡 Autres cryptos intéressantes"
+          max_suggestions: 3
+          min_score: 6
         
         glossary_block:
-          enabled: false  # ← DÉSACTIVÉ
+          enabled: true
+          title: "📚 Petit glossaire"
+          auto_detect_terms: true
   
   ETH:
     enabled: true
@@ -92,18 +112,85 @@ coins:
       - name: "Notification ETH"
         enabled: true
         hours: [9, 12, 18]
+        days_of_week: [0, 1, 2, 3, 4, 5, 6]
         
+        # Ordre d'affichage des blocs - TOUS ACTIVÉS
         blocks_order:
           - header
           - price
+          - chart
+          - prediction
+          - opportunity
           - brokers
+          - fear_greed
+          - gain_loss
+          - investment_suggestions
+          - glossary
           - footer
         
+        header_message: "🔔 {symbol} - Mise à jour complète"
+        footer_message: "ℹ️ Ceci n'est pas un conseil financier"
+        
+        # Configuration de chaque bloc - TOUS ACTIVÉS
         price_block:
           enabled: true
+          show_price_eur: true
+          show_variation_24h: true
+          show_variation_7d: true
+          show_volume: true
+          show_market_cap: true
+          add_price_comment: true
+        
+        chart_block:
+          enabled: true
+        
+        prediction_block:
+          enabled: true
+          show_prediction_type: true
+          show_confidence: true
+          show_explanation: true
+          min_confidence_to_show: 0
+        
+        opportunity_block:
+          enabled: true
+          show_score: true
+          show_recommendation: true
+          show_reasons: true
+          min_score_to_show: 0
         
         brokers_block:
           enabled: true
+          title: "💱 Où acheter le moins cher"
+          show_best_price: true
+          show_all_brokers: true
+          show_fees: true
+          max_brokers_displayed: 5
+        
+        fear_greed_block:
+          enabled: true
+          title: "😱 Indice Fear & Greed"
+          show_value: true
+          show_interpretation: true
+          show_chart: true
+        
+        gain_loss_block:
+          enabled: true
+          title: "💵 Si tu avais investi"
+          show_24h: true
+          show_7d: true
+          show_30d: true
+          investment_amount: 100
+        
+        investment_suggestions_block:
+          enabled: true
+          title: "💡 Autres cryptos intéressantes"
+          max_suggestions: 3
+          min_score: 6
+        
+        glossary_block:
+          enabled: true
+          title: "📚 Petit glossaire"
+          auto_detect_terms: true
   
   SOL:
     enabled: true
@@ -113,16 +200,83 @@ coins:
     scheduled_notifications:
       - name: "Notification SOL"
         enabled: true
-        hours: [9,12, 18]
+        hours: [9, 12, 18]
+        days_of_week: [0, 1, 2, 3, 4, 5, 6]
         
+        # Ordre d'affichage des blocs - TOUS ACTIVÉS
         blocks_order:
           - header
           - price
+          - chart
+          - prediction
+          - opportunity
           - brokers
+          - fear_greed
+          - gain_loss
+          - investment_suggestions
+          - glossary
           - footer
         
+        header_message: "🔔 {symbol} - Mise à jour complète"
+        footer_message: "ℹ️ Ceci n'est pas un conseil financier"
+        
+        # Configuration de chaque bloc - TOUS ACTIVÉS
         price_block:
           enabled: true
+          show_price_eur: true
+          show_variation_24h: true
+          show_variation_7d: true
+          show_volume: true
+          show_market_cap: true
+          add_price_comment: true
+        
+        chart_block:
+          enabled: true
+        
+        prediction_block:
+          enabled: true
+          show_prediction_type: true
+          show_confidence: true
+          show_explanation: true
+          min_confidence_to_show: 0
+        
+        opportunity_block:
+          enabled: true
+          show_score: true
+          show_recommendation: true
+          show_reasons: true
+          min_score_to_show: 0
         
         brokers_block:
           enabled: true
+          title: "💱 Où acheter le moins cher"
+          show_best_price: true
+          show_all_brokers: true
+          show_fees: true
+          max_brokers_displayed: 5
+        
+        fear_greed_block:
+          enabled: true
+          title: "😱 Indice Fear & Greed"
+          show_value: true
+          show_interpretation: true
+          show_chart: true
+        
+        gain_loss_block:
+          enabled: true
+          title: "💵 Si tu avais investi"
+          show_24h: true
+          show_7d: true
+          show_30d: true
+          investment_amount: 100
+        
+        investment_suggestions_block:
+          enabled: true
+          title: "💡 Autres cryptos intéressantes"
+          max_suggestions: 3
+          min_score: 6
+        
+        glossary_block:
+          enabled: true
+          title: "📚 Petit glossaire"
+          auto_detect_terms: true

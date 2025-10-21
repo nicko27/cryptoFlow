@@ -1013,30 +1013,104 @@ class AdvancedNotificationConfigWindow(QDialog):
     
 
     def _save_to_file(self):
-        """Sauvegarde les paramètres dans config/notifications.yaml"""
+        """Sauvegarde le format COMPLET dans config/notifications.yaml"""
         import yaml
         from pathlib import Path
         
         notif_config_path = Path("config/notifications.yaml")
         notif_config_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Préparer les données à sauvegarder
+        # Structure complète (pas seulement les paramètres globaux !)
         data = {
-            'enabled': self.settings.enabled,
-            'kid_friendly_mode': self.settings.kid_friendly_mode,
-            'use_emojis_everywhere': self.settings.use_emojis_everywhere,
-            'explain_everything': self.settings.explain_everything,
-            'respect_quiet_hours': self.settings.respect_quiet_hours,
-            'quiet_start': self.settings.quiet_start,
-            'quiet_end': self.settings.quiet_end,
-            'default_scheduled_hours': self.settings.default_scheduled_hours
+            'notifications': {
+                'enabled': self.settings.enabled,
+                'kid_friendly_mode': self.settings.kid_friendly_mode,
+                'use_emojis_everywhere': self.settings.use_emojis_everywhere,
+                'explain_everything': self.settings.explain_everything,
+                'respect_quiet_hours': self.settings.respect_quiet_hours,
+                'quiet_start': self.settings.quiet_start,
+                'quiet_end': self.settings.quiet_end,
+                'default_scheduled_hours': self.settings.default_scheduled_hours
+            },
+            'coins': {}
         }
+        
+        # IMPORTANT: Sauvegarder aussi les configurations par crypto !
+        for symbol, profile in self.settings.coin_profiles.items():
+            coin_data = {
+                'enabled': profile.enabled,
+                'nickname': profile.nickname or symbol,
+                'custom_emoji': profile.custom_emoji or "💎",
+                'scheduled_notifications': []
+            }
+            
+            # Sauvegarder chaque notification programmée
+            for notif in profile.scheduled_notifications:
+                notif_data = {
+                    'name': notif.name,
+                    'enabled': notif.enabled,
+                    'hours': notif.hours,
+                    'days_of_week': notif.days_of_week,
+                    'blocks_order': notif.blocks_order,
+                    'header_message': notif.header_message,
+                    'footer_message': notif.footer_message,
+                    
+                    # Blocs individuels
+                    'price_block': {
+                        'enabled': notif.price_block.enabled,
+                        'show_price_eur': notif.price_block.show_price_eur,
+                        'show_variation_24h': notif.price_block.show_variation_24h,
+                        'show_variation_7d': notif.price_block.show_variation_7d,
+                        'show_volume': notif.price_block.show_volume,
+                        'show_market_cap': notif.price_block.show_market_cap,
+                    },
+                    'chart_block': {
+                        'enabled': notif.chart_block.enabled,
+                    },
+                    'prediction_block': {
+                        'enabled': notif.prediction_block.enabled,
+                        'show_prediction_type': notif.prediction_block.show_prediction_type,
+                        'show_confidence': notif.prediction_block.show_confidence,
+                        'min_confidence_to_show': notif.prediction_block.min_confidence_to_show,
+                    },
+                    'opportunity_block': {
+                        'enabled': notif.opportunity_block.enabled,
+                        'show_score': notif.opportunity_block.show_score,
+                        'show_recommendation': notif.opportunity_block.show_recommendation,
+                        'show_reasons': notif.opportunity_block.show_reasons,
+                        'min_score_to_show': notif.opportunity_block.min_score_to_show,
+                    },
+                    'brokers_block': {
+                        'enabled': notif.brokers_block.enabled,
+                        'title': notif.brokers_block.title,
+                        'show_best_price': notif.brokers_block.show_best_price,
+                        'show_all_brokers': notif.brokers_block.show_all_brokers,
+                        'show_fees': notif.brokers_block.show_fees,
+                        'max_brokers_displayed': notif.brokers_block.max_brokers_displayed,
+                    },
+                    'fear_greed_block': {
+                        'enabled': notif.fear_greed_block.enabled,
+                    },
+                    'gain_loss_block': {
+                        'enabled': notif.gain_loss_block.enabled,
+                    },
+                    'investment_suggestions_block': {
+                        'enabled': notif.investment_suggestions_block.enabled,
+                    },
+                    'glossary_block': {
+                        'enabled': notif.glossary_block.enabled,
+                    }
+                }
+                
+                coin_data['scheduled_notifications'].append(notif_data)
+            
+            data['coins'][symbol] = coin_data
         
         # Sauvegarder dans le fichier
         with open(notif_config_path, 'w', encoding='utf-8') as f:
             yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
         
-        print(f"✅ Configuration des notifications sauvegardée dans {notif_config_path}")
+        print(f"✅ Configuration COMPLÈTE sauvegardée dans {notif_config_path}")
 
 
     def _save_to_yaml(self):
@@ -1071,7 +1145,7 @@ class AdvancedNotificationConfigWindow(QDialog):
         except ValueError as err:
             QMessageBox.critical(self, "Erreur de validation", str(err))
             return
-        
+        self._save_to_file()
         super().accept()
     
     def _preview_notification(self):
