@@ -117,14 +117,10 @@ class SettingsDialog(QDialog):
         """Crée la section des cryptos"""
         group = QGroupBox("💰 Cryptomonnaies")
         layout = QFormLayout(group)
-        
-        manage_btn = QPushButton("💰 Gérer les cryptomonnaies")
-        manage_btn.clicked.connect(self._open_crypto_manager)
-        layout.addRow("", manage_btn)
 
         self._line_edits["crypto_symbols"] = QLineEdit()
-        self._line_edits["crypto_symbols"].setReadOnly(True)
-        layout.addRow("Cryptos suivies:", self._line_edits["crypto_symbols"])
+        self._line_edits["crypto_symbols"].setPlaceholderText("Ex: BTC, ETH, SOL")
+        layout.addRow("Symboles (séparés par virgule):", self._line_edits["crypto_symbols"])
 
         self._spin_boxes["check_interval"] = QSpinBox()
         self._spin_boxes["check_interval"].setMinimum(60)

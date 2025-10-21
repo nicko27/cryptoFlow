@@ -21,7 +21,6 @@ from core.services.chart_service import ChartService
 from api.enhanced_telegram_api import EnhancedTelegramAPI
 from core.services.dca_service import DCAService
 from core.services.notification_generator import NotificationGenerator
-from core.services.summary_service import SummaryService
 from core.models.notification_config import GlobalNotificationSettings
 
 
@@ -59,7 +58,6 @@ class DaemonService:
         self.db_service = DatabaseService(config.database_path)
         self.chart_service = ChartService()
         self.dca_service = DCAService()
-        self.summary_service = SummaryService(config)
         self.telegram_api = EnhancedTelegramAPI(
             config.telegram_bot_token,
             config.telegram_chat_id,
@@ -303,98 +301,91 @@ class DaemonService:
                 )
     
     def _check_cycle(self):
-        """Effectue un cycle avec résumés complets"""
-        try:
+            """Effectue un cycle de vérification avec notifications ET alertes intégrées"""
             current_hour = datetime.now(timezone.utc).hour
-            markets_data = {}
-            predictions = {}
-            opportunities = {}
+            current_day = datetime.now(timezone.utc).weekday()
             
-            self.logger.info("\n" + "="*60)
-            self.logger.info(f"🔍 VÉRIFICATION #{self.checks_count + 1}")
-            self.logger.info("="*60)
-            
-            # Récupérer données
             for symbol in self.config.crypto_symbols:
                 try:
-                    self.logger.info(f"\n📊 {symbol}:")
-                    self.logger.info("-"*60)
-                    
+                    # Récupérer données marché
                     market_data = self.market_service.get_market_data(symbol)
-                    if market_data:
-                        markets_data[symbol] = market_data
-                        
-                        prediction = self.market_service.predict_price_movement(market_data)
-                        if prediction:
-                            predictions[symbol] = prediction
-                            self.logger.info(f"🔮 Prédiction: {prediction.prediction_type.value} ({prediction.confidence:.0f}%)")
-                        
-                        opportunity = self.market_service.calculate_opportunity_score(market_data, prediction)
-                        if opportunity:
-                            opportunities[symbol] = opportunity
-                            self.logger.info(f"⭐ Opportunité: {opportunity.score}/10")
-                        
-                        self.db_service.save_market_data(market_data)
-                        if prediction:
-                            self.db_service.save_prediction(symbol, prediction)
-                except Exception as e:
-                    self.logger.error(f"Erreur {symbol}: {e}")
-                    self.consecutive_errors += 1
-            
-            self.checks_count += 1
-            
-            # Envoyer résumé si heure programmée
-            if current_hour in self.config.summary_hours and markets_data:
-                if self.last_summary_sent is None or (datetime.now(timezone.utc) - self.last_summary_sent).total_seconds() > 3000:
-                    try:
-                        self.logger.info(f"\n⏰ Heure programmée: {current_hour}h")
-                        self.logger.info("📤 Envoi du résumé...")
-                        
-                        summary = self.summary_service.generate_summary(
-                            markets_data, predictions, opportunities,
-                            simple=self.config.use_simple_language
-                        )
-                        
-                        if summary and self.telegram_api.send_message(summary, parse_mode="HTML"):
-                            self.notifications_sent += 1
-                            self.last_summary_sent = datetime.now(timezone.utc)
-                            self.logger.info("✅ Résumé envoyé")
-                        else:
-                            self.logger.error("❌ Échec envoi résumé")
-                    except Exception as e:
-                        self.logger.error(f"Erreur résumé: {e}")
-            
-            # Alertes
-            for symbol, market_data in markets_data.items():
-                try:
-                    prediction = predictions.get(symbol)
+                    if not market_data:
+                        self.logger.warning(f"Pas de données pour {symbol}")
+                        continue
+                    
+                    # Prédictions et opportunités
+                    prediction = self.market_service.predict_price_movement(market_data)
+                    opportunity = self.market_service.calculate_opportunity_score(market_data, prediction)
+                    
+                    # Collecter données contextuelles
+                    all_markets = {}
+                    all_predictions = {}
+                    all_opportunities = {}
+                    
+                    for s in self.config.crypto_symbols:
+                        m = self.market_service.get_market_data(s)
+                        if m:
+                            all_markets[s] = m
+                            all_predictions[s] = self.market_service.predict_price_movement(m)
+                            all_opportunities[s] = self.market_service.calculate_opportunity_score(m, all_predictions[s])
+                    
+                    # Générer la notification principale
+                    notification_message = self.notification_generator.generate_notification(
+                        symbol=symbol,
+                        market=market_data,
+                        prediction=prediction,
+                        opportunity=opportunity,
+                        all_markets=all_markets,
+                        all_predictions=all_predictions,
+                        all_opportunities=all_opportunities,
+                        current_hour=current_hour,
+                        current_day_of_week=current_day,
+                    )
+                    
+                    # Vérifier les alertes
                     alerts = self.alert_service.check_alerts(market_data, prediction)
-                    if alerts:
-                        self.logger.info(f"\n🚨 {len(alerts)} alerte(s) pour {symbol}")
+                    
+                    # INTÉGRER LES ALERTES DANS LE MESSAGE au lieu de les envoyer séparément
+                    if alerts and notification_message:
+                        alert_section = "\n\n" + "─"*40 + "\n"
+                        alert_section += "<b>🚨 ALERTES</b>\n\n"
+                        
+                        for alert in alerts:
+                            emoji_map = {
+                                "INFO": "ℹ️",
+                                "WARNING": "⚠️",
+                                "IMPORTANT": "🔔",
+                                "CRITICAL": "🚨"
+                            }
+                            emoji = emoji_map.get(alert.alert_level.value.upper(), "📢")
+                            alert_section += f"{emoji} <b>{alert.alert_type.value.upper()}</b>\n"
+                            alert_section += f"{alert.message}\n\n"
+                            self.alerts_sent += 1
+                        
+                        # Ajouter les alertes au message principal
+                        notification_message += alert_section
+                    elif alerts and not notification_message:
+                        # Si pas de notification mais des alertes, les envoyer normalement
                         for alert in alerts:
                             self.telegram_api.send_alert(alert)
                             self.alerts_sent += 1
+                    
+                    # Envoyer le message complet (notification + alertes intégrées)
+                    if notification_message:
+                        success = self.telegram_api.send_message(notification_message, parse_mode="HTML")
+                        if success:
+                            alert_count = len(alerts) if alerts else 0
+                            if alert_count > 0:
+                                self.logger.info(f"✓ Notification {symbol} envoyée (avec {alert_count} alerte(s))")
+                            else:
+                                self.logger.info(f"✓ Notification {symbol} envoyée")
+                            self.notifications_sent += 1
+                        else:
+                            self.logger.error(f"✗ Échec envoi notification {symbol}")
+                    
                 except Exception as e:
-                    self.logger.error(f"Erreur alertes {symbol}: {e}")
-            
-            # Stats
-            if self.start_time:
-                uptime = datetime.now(timezone.utc) - self.start_time
-                hours = uptime.seconds // 3600
-                minutes = (uptime.seconds % 3600) // 60
-                self.logger.info(
-                    f"\n📊 Stats: {self.checks_count} checks, {self.alerts_sent} alertes, "
-                    f"{self.notifications_sent} notifs, {self.errors_count} erreurs, "
-                    f"Uptime: {hours}h{minutes}m"
-                )
-            
-            if markets_data:
-                self.consecutive_errors = 0
-        
-        except Exception as e:
-            self.logger.error(f"Erreur cycle: {e}", exc_info=True)
-            self.errors_count += 1
-            self.consecutive_errors += 1
+                    self.logger.error(f"Erreur cycle {symbol}: {e}")
+                    self.consecutive_errors += 1
 
     def _is_night_mode(self) -> bool:
         """Détermine si on est en mode nuit"""
@@ -480,45 +471,45 @@ class DaemonService:
             self.logger.error(f"❌ Erreur vérification alertes {symbol}: {exc}")
     
     def _send_startup_message(self):
-        """Envoie un résumé complet au démarrage"""
+        """Envoie un message de démarrage sur Telegram"""
         try:
-            self.logger.info("📊 Génération du résumé de démarrage...")
+            self.logger.info("📊 Récupération état initial du marché...")
             
-            markets_data = {}
-            predictions = {}
-            opportunities = {}
+            message_lines = [
+                "🚀 <b>CRYPTO BOT DÉMARRÉ</b>\n",
+                f"📅 {datetime.now(timezone.utc).strftime('%d/%m/%Y %H:%M:%S')} UTC\n"
+            ]
             
             for symbol in self.config.crypto_symbols:
                 try:
                     market_data = self.market_service.get_market_data(symbol)
                     if market_data:
-                        markets_data[symbol] = market_data
                         prediction = self.market_service.predict_price_movement(market_data)
-                        if prediction:
-                            predictions[symbol] = prediction
-                        opportunity = self.market_service.calculate_opportunity_score(market_data, prediction)
-                        if opportunity:
-                            opportunities[symbol] = opportunity
-                        self.logger.info(f"  ✓ {symbol}: {market_data.current_price.price_eur:.2f}€")
+                        opportunity = self.market_service.calculate_opportunity_score(
+                            market_data, prediction
+                        )
+                        
+                        recommendation = "ACHETER MAINTENANT" if opportunity and opportunity.score >= 7 else "ATTENDRE UN PEU"
+                        
+                        message_lines.append(
+                            f"  • {symbol}: {market_data.current_price.price_eur:.2f}€ - "
+                            f"{recommendation}"
+                        )
+                        
+                        self.logger.info(
+                            f"  • {symbol}: {market_data.current_price.price_eur:.2f}€ - "
+                            f"{recommendation}"
+                        )
                 except Exception as e:
-                    self.logger.error(f"Erreur {symbol}: {e}")
+                    self.logger.error(f"Erreur récupération {symbol}: {e}")
             
-            if markets_data:
-                summary = self.summary_service.generate_summary(
-                    markets_data, predictions, opportunities,
-                    simple=self.config.use_simple_language
-                )
-                startup_header = (
-                    "🚀 <b>CRYPTO BOT DÉMARRÉ</b>\n"
-                    f"📅 {datetime.now(timezone.utc).strftime('%d/%m/%Y %H:%M:%S')} UTC\n\n"
-                )
-                if self.telegram_api.send_message(startup_header + summary, parse_mode="HTML"):
-                    self.logger.info("✅ Résumé de démarrage envoyé")
-            else:
-                self.telegram_api.send_message("🚀 CRYPTO BOT DÉMARRÉ\n⚠️ Aucune donnée disponible")
+            message = "\n".join(message_lines)
+            self.telegram_api.send_message(message)
+            self.logger.info("✓ Message de démarrage envoyé sur Telegram")
+            
         except Exception as e:
-            self.logger.error(f"Erreur démarrage: {e}")
-
+            self.logger.error(f"❌ Erreur envoi message démarrage: {e}")
+    
     def _save_stats(self):
         """Sauvegarde les statistiques"""
         try:

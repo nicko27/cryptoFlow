@@ -659,118 +659,82 @@ class CryptoBotGUI(QMainWindow):  # FIXED: Problème 13 - Nom de classe sans esp
     # === MÉTHODES D'ACTION ===
     
     def _send_summary(self):
-        """Envoie un résumé complet sur Telegram via SummaryService"""
+        """Envoie un résumé complet sur Telegram (utilise NotificationGenerator)"""
         try:
-            # Importer SummaryService
-            from core.services.summary_service import SummaryService
-            from api.enhanced_telegram_api import EnhancedTelegramAPI
+            if not self.daemon_service or not self.daemon_service.notification_generator:
+                QMessageBox.warning(
+                    self,
+                    "Service non initialisé",
+                    "Démarre d'abord le daemon pour initialiser le système de notifications."
+                )
+                return
             
-            # Créer le service de résumé
-            summary_service = SummaryService(self.config)
+            current_hour = datetime.now(timezone.utc).hour
+            current_day = datetime.now(timezone.utc).weekday()
             
-            # Collecter les données pour toutes les cryptos
+            # Collecter les données
             markets_data = {}
             predictions = {}
             opportunities = {}
             
-            self.logger.info("Collecte des données de marché...")
-            
             for symbol in self.config.crypto_symbols:
-                try:
-                    # Utiliser le cache ou récupérer les données
-                    if symbol in self.market_data_cache:
-                        market = self.market_data_cache[symbol]
-                    else:
-                        market = self.market_service.get_market_data(symbol)
-                        self.market_data_cache[symbol] = market
+                if symbol in self.market_data_cache:
+                    market = self.market_data_cache[symbol]
+                    markets_data[symbol] = market
                     
-                    if market:
-                        markets_data[symbol] = market
-                        
-                        # Prédictions
-                        if symbol in self.predictions_cache:
-                            pred = self.predictions_cache[symbol]
-                        else:
-                            pred = self.market_service.predict_price_movement(market)
-                            if pred:
-                                self.predictions_cache[symbol] = pred
-                        
-                        if pred:
-                            predictions[symbol] = pred
-                        
-                        # Opportunités
-                        if symbol in self.opportunities_cache:
-                            opp = self.opportunities_cache[symbol]
-                        else:
-                            opp = self.market_service.calculate_opportunity_score(market, pred)
-                            if opp:
-                                self.opportunities_cache[symbol] = opp
-                        
-                        if opp:
-                            opportunities[symbol] = opp
-                        
-                        self.logger.info(f"  ✓ {symbol}: {market.current_price.price_eur:.2f}€")
-                
-                except Exception as e:
-                    self.logger.error(f"Erreur récupération {symbol}: {e}")
+                    prediction = self.predictions_cache.get(symbol) or \
+                                self.market_service.predict_price_movement(market)
+                    opportunity = self.opportunities_cache.get(symbol) or \
+                                 self.market_service.calculate_opportunity_score(market, prediction)
+                    
+                    if prediction:
+                        predictions[symbol] = prediction
+                        self.predictions_cache[symbol] = prediction
+                    if opportunity:
+                        opportunities[symbol] = opportunity
+                        self.opportunities_cache[symbol] = opportunity
             
             if not markets_data:
-                QMessageBox.warning(
-                    self,
-                    "Aucune donnée",
-                    "Aucune donnée de marché disponible. Rafraîchis d'abord les données."
-                )
+                QMessageBox.warning(self, "Aucune donnée", "Rafraîchis d'abord les données")
                 return
             
-            # Générer le résumé via SummaryService
-            self.logger.info("Génération du résumé...")
-            summary = summary_service.generate_summary(
-                markets_data,
-                predictions,
-                opportunities,
-                simple=self.config.use_simple_language
-            )
-            
-            if not summary:
-                QMessageBox.warning(
-                    self,
-                    "Erreur",
-                    "Impossible de générer le résumé"
+            # Générer et envoyer les notifications
+            sent_count = 0
+            for symbol in self.config.crypto_symbols:
+                if symbol not in markets_data:
+                    continue
+                
+                notification = self.daemon_service.notification_generator.generate_notification(
+                    symbol=symbol,
+                    market=markets_data[symbol],
+                    prediction=predictions.get(symbol),
+                    opportunity=opportunities.get(symbol),
+                    all_markets=markets_data,
+                    all_predictions=predictions,
+                    all_opportunities=opportunities,
+                    current_hour=current_hour,
+                    current_day_of_week=current_day
                 )
-                return
+                
+                if notification:
+                    success = self.telegram_api.send_message(notification, parse_mode="HTML")
+                    if success:
+                        sent_count += 1
             
-            # Envoyer le résumé sur Telegram
-            self.logger.info("Envoi du résumé sur Telegram...")
-            telegram = EnhancedTelegramAPI(
-                self.config.telegram_bot_token,
-                self.config.telegram_chat_id
-            )
-            
-            success = telegram.send_message(summary, parse_mode="HTML")
-            
-            if success:
-                self.logger.info("✓ Résumé envoyé avec succès")
+            if sent_count > 0:
                 QMessageBox.information(
                     self,
                     "Résumé envoyé",
-                    "✅ Résumé envoyé sur Telegram avec succès !"
+                    f"✅ {sent_count} notification(s) envoyée(s) sur Telegram !"
                 )
             else:
-                self.logger.error("✗ Échec envoi résumé")
-                QMessageBox.warning(
-                    self,
-                    "Erreur",
-                    "Échec de l'envoi du résumé sur Telegram"
-                )
+                QMessageBox.warning(self, "Erreur", "Aucune notification n'a pu être envoyée")
         
         except Exception as e:
-            self.logger.error(f"Erreur envoi résumé: {e}", exc_info=True)
-            QMessageBox.critical(
-                self,
-                "Erreur",
-                f"Erreur lors de l'envoi du résumé :\n{e}"
-            )
-
+            self.logger.error(f"Erreur envoi résumé: {e}")
+            QMessageBox.critical(self, "Erreur", f"Impossible d'envoyer le résumé : {e}")
+    
+    
     def _generate_report(self):
         """Génère un rapport complet"""
         # FIXED: Problème 22 - Implémentation complète
