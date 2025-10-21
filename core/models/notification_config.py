@@ -322,6 +322,8 @@ class GlobalNotificationSettings:
     
     # Mode enfant global
     kid_friendly_mode: bool = True
+    use_emojis_everywhere: bool = True
+    explain_everything: bool = True
     max_message_length: int = 4096  # Limite Telegram
     
     # Gestion des horaires

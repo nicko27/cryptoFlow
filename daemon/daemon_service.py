@@ -85,6 +85,11 @@ class DaemonService:
         return GlobalNotificationSettings(
             enabled=True,
             kid_friendly_mode=True,
+            use_emojis_everywhere=True,
+            explain_everything=True,
+            respect_quiet_hours=True,
+            quiet_start=23,
+            quiet_end=7,
             default_scheduled_hours=[9, 12, 18]
         )
     
@@ -93,10 +98,38 @@ class DaemonService:
         FIXED: Problème 8 - Méthode implémentée
         Convertit un dictionnaire YAML en GlobalNotificationSettings
         """
+        def _normalize_hours(value):
+            hours: List[int] = []
+            if isinstance(value, (int, float)):
+                hours.append(int(value))
+            elif isinstance(value, str):
+                for part in value.replace(";", ",").split(","):
+                    part = part.strip()
+                    if part.isdigit():
+                        hours.append(int(part))
+            elif isinstance(value, list):
+                for item in value:
+                    if isinstance(item, (int, float)):
+                        hours.append(int(item))
+                    elif isinstance(item, str) and item.strip().isdigit():
+                        hours.append(int(item.strip()))
+            return sorted({h for h in hours if 0 <= h <= 23})
+
+        hours = _normalize_hours(data.get('default_scheduled_hours', [9, 12, 18])) or [9, 12, 18]
+        quiet_start = int(data.get('quiet_start', 23) or 0)
+        quiet_end = int(data.get('quiet_end', 7) or 0)
+        quiet_start = max(0, min(23, quiet_start))
+        quiet_end = max(0, min(23, quiet_end))
+
         return GlobalNotificationSettings(
             enabled=data.get('enabled', True),
             kid_friendly_mode=data.get('kid_friendly_mode', True),
-            default_scheduled_hours=data.get('default_scheduled_hours', [9, 12, 18])
+            use_emojis_everywhere=data.get('use_emojis_everywhere', True),
+            explain_everything=data.get('explain_everything', True),
+            respect_quiet_hours=data.get('respect_quiet_hours', True),
+            quiet_start=quiet_start,
+            quiet_end=quiet_end,
+            default_scheduled_hours=hours
         )
 
     def update_notification_settings(self, settings: GlobalNotificationSettings) -> None:

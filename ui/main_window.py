@@ -440,17 +440,49 @@ class CryptoBotGUI(QMainWindow):  # FIXED: Problème 13 - Nom de classe sans esp
         return GlobalNotificationSettings(
             enabled=True,
             kid_friendly_mode=True,
+            use_emojis_everywhere=True,
+            explain_everything=True,
+            respect_quiet_hours=True,
+            quiet_start=23,
+            quiet_end=7,
             default_scheduled_hours=[9, 12, 18]
         )
     
     def _dict_to_notification_settings(self, data: dict) -> GlobalNotificationSettings:
         """Convertit un dict en GlobalNotificationSettings"""
         # FIXED: Problème 8 - Méthode implémentée
-        
+        def _normalize_hours(value) -> List[int]:
+            hours: List[int] = []
+            if isinstance(value, (int, float)):
+                hours.append(int(value))
+            elif isinstance(value, str):
+                parts = [p.strip() for p in value.replace(";", ",").split(",")]
+                for part in parts:
+                    if part.isdigit():
+                        hours.append(int(part))
+            elif isinstance(value, list):
+                for item in value:
+                    if isinstance(item, (int, float)):
+                        hours.append(int(item))
+                    elif isinstance(item, str) and item.strip().isdigit():
+                        hours.append(int(item.strip()))
+            return sorted({h for h in hours if 0 <= h <= 23})
+
+        hours = _normalize_hours(data.get('default_scheduled_hours', [9, 12, 18])) or [9, 12, 18]
+        quiet_start = int(data.get('quiet_start', 23) or 0)
+        quiet_end = int(data.get('quiet_end', 7) or 0)
+        quiet_start = max(0, min(23, quiet_start))
+        quiet_end = max(0, min(23, quiet_end))
+
         return GlobalNotificationSettings(
             enabled=data.get('enabled', True),
             kid_friendly_mode=data.get('kid_friendly_mode', True),
-            default_scheduled_hours=data.get('default_scheduled_hours', [9, 12, 18])
+            use_emojis_everywhere=data.get('use_emojis_everywhere', True),
+            explain_everything=data.get('explain_everything', True),
+            respect_quiet_hours=data.get('respect_quiet_hours', True),
+            quiet_start=quiet_start,
+            quiet_end=quiet_end,
+            default_scheduled_hours=hours
         )
     
     def _save_notification_settings(self):
@@ -464,8 +496,13 @@ class CryptoBotGUI(QMainWindow):  # FIXED: Problème 13 - Nom de classe sans esp
                 yaml.dump({
                     'enabled': self.notification_settings.enabled,
                     'kid_friendly_mode': self.notification_settings.kid_friendly_mode,
-                    'default_scheduled_hours': self.notification_settings.default_scheduled_hours
-                }, f, default_flow_style=False)
+                    'use_emojis_everywhere': self.notification_settings.use_emojis_everywhere,
+                    'explain_everything': self.notification_settings.explain_everything,
+                    'respect_quiet_hours': self.notification_settings.respect_quiet_hours,
+                    'quiet_start': int(self.notification_settings.quiet_start),
+                    'quiet_end': int(self.notification_settings.quiet_end),
+                    'default_scheduled_hours': sorted(self.notification_settings.default_scheduled_hours),
+                }, f, default_flow_style=False, sort_keys=False)
             
         except Exception as e:
             self.logger.error(f"Erreur sauvegarde notifications: {e}")

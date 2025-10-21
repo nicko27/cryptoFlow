@@ -238,6 +238,7 @@ class MarketService:
             long_mult = 1.0
         
         return Prediction(
+            symbol=market_data.symbol,
             prediction_type=prediction_type,
             confidence=confidence,
             direction=direction,
@@ -338,8 +339,13 @@ class MarketService:
         else:
             recommendation = "Pas un bon moment ❌"
         
+        confidence_adjustment = (score - 5) * 5
+        confidence_score = max(30, min(95, prediction.confidence + confidence_adjustment))
+        
         return OpportunityScore(
+            symbol=market_data.symbol,
             score=score,
-            reasons=reasons[:5],
-            recommendation=recommendation
+            recommendation=recommendation,
+            confidence=int(confidence_score),
+            reasons=reasons[:5]
         )

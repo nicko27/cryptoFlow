@@ -1,6 +1,11 @@
+enabled: true
+kid_friendly_mode: true
+use_emojis_everywhere: true
+explain_everything: true
+respect_quiet_hours: true
+quiet_start: 23
+quiet_end: 7
 default_scheduled_hours:
 - 9
 - 12
 - 18
-enabled: true
-kid_friendly_mode: true

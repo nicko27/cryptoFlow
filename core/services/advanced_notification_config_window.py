@@ -3,6 +3,8 @@ Interface de configuration avancée des notifications
 Interface ultra-intuitive adaptée pour être comprise par un enfant
 """
 
+import copy
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QCheckBox, QSpinBox, QLineEdit, QTextEdit, QGroupBox,
@@ -12,7 +14,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QTime
 from PyQt6.QtGui import QFont, QColor, QPalette
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from core.models.notification_config import (
     ScheduledNotificationConfig,
@@ -266,6 +268,26 @@ class BlockConfigWidget(QGroupBox):
             return self.enabled_checkbox.isChecked()
         return True
     
+    def set_enabled(self, enabled: bool):
+        """Active/désactive la case principale du bloc"""
+        if self.enabled_checkbox:
+            self.enabled_checkbox.setChecked(bool(enabled))
+    
+    def set_option_value(self, key: str, value: Any):
+        """Affecte une valeur à une option si le widget associé existe"""
+        if key not in self.options or value is None:
+            return
+        
+        widget = self.options[key]
+        if isinstance(widget, QCheckBox):
+            widget.setChecked(bool(value))
+        elif isinstance(widget, QSlider):
+            widget.setValue(int(value))
+        elif isinstance(widget, QLineEdit):
+            widget.setText(str(value))
+        elif isinstance(widget, QTextEdit):
+            widget.setPlainText(str(value))
+
     def get_option_value(self, key: str):
         """Récupère la valeur d'une option"""
         widget = self.options.get(key)
@@ -361,6 +383,92 @@ class SimpleCoinNotificationEditor(QWidget):
         
         scroll.setWidget(scroll_content)
         layout.addWidget(scroll)
+    
+    def load_from_profile(self, profile: CoinNotificationProfile):
+        """Charge les paramètres existants pour ce profil."""
+        if profile and profile.scheduled_notifications:
+            base_config = profile.scheduled_notifications[0]
+        elif profile and profile.default_config:
+            base_config = profile.default_config
+        else:
+            base_config = ScheduledNotificationConfig()
+        
+        # Bloc prix
+        price_widget = self.block_widgets.get("price")
+        if price_widget:
+            price_widget.set_enabled(base_config.price_block.enabled)
+            price_widget.set_option_value("show_price_eur", base_config.price_block.show_price_eur)
+            price_widget.set_option_value("show_variation_24h", base_config.price_block.show_variation_24h)
+            price_widget.set_option_value("show_variation_7d", base_config.price_block.show_variation_7d)
+            price_widget.set_option_value("show_volume", base_config.price_block.show_volume)
+            price_widget.set_option_value("add_price_comment", base_config.price_block.add_price_comment)
+            price_widget.set_option_value("message_prix_monte", base_config.price_block.message_prix_monte)
+        
+        chart_widget = self.block_widgets.get("chart")
+        if chart_widget:
+            chart_widget.set_enabled(base_config.chart_block.enabled)
+            chart_widget.set_option_value("show_sparklines", base_config.chart_block.show_sparklines)
+            chart_widget.set_option_value("send_full_chart", base_config.chart_block.send_full_chart)
+            timeframes_text = ", ".join(str(tf) for tf in base_config.chart_block.timeframes)
+            chart_widget.set_option_value("timeframes", timeframes_text)
+        
+        prediction_widget = self.block_widgets.get("prediction")
+        if prediction_widget:
+            prediction_widget.set_enabled(base_config.prediction_block.enabled)
+            prediction_widget.set_option_value("show_prediction_type", base_config.prediction_block.show_prediction_type)
+            prediction_widget.set_option_value("show_confidence", base_config.prediction_block.show_confidence)
+            prediction_widget.set_option_value("show_explanation", base_config.prediction_block.show_explanation)
+            prediction_widget.set_option_value("min_confidence", base_config.prediction_block.min_confidence_to_show)
+        
+        opportunity_widget = self.block_widgets.get("opportunity")
+        if opportunity_widget:
+            opportunity_widget.set_enabled(base_config.opportunity_block.enabled)
+            opportunity_widget.set_option_value("show_score", base_config.opportunity_block.show_score)
+            opportunity_widget.set_option_value("show_recommendation", base_config.opportunity_block.show_recommendation)
+            opportunity_widget.set_option_value("show_reasons", base_config.opportunity_block.show_reasons)
+            opportunity_widget.set_option_value("min_score", base_config.opportunity_block.min_score_to_show)
+        
+        brokers_widget = self.block_widgets.get("brokers")
+        if brokers_widget:
+            brokers_widget.set_enabled(base_config.brokers_block.enabled)
+            brokers_widget.set_option_value("show_best_price", base_config.brokers_block.show_best_price)
+            brokers_widget.set_option_value("show_all_brokers", base_config.brokers_block.show_all_brokers)
+            brokers_widget.set_option_value("show_fees", base_config.brokers_block.show_fees)
+            brokers_widget.set_option_value("max_brokers", base_config.brokers_block.max_brokers_displayed)
+        
+        fg_widget = self.block_widgets.get("fear_greed")
+        if fg_widget:
+            fg_widget.set_enabled(base_config.fear_greed_block.enabled)
+            fg_widget.set_option_value("show_index", base_config.fear_greed_block.show_index)
+            fg_widget.set_option_value("show_interpretation", base_config.fear_greed_block.show_interpretation)
+        
+        gain_widget = self.block_widgets.get("gain_loss")
+        if gain_widget:
+            gain_widget.set_enabled(base_config.gain_loss_block.enabled)
+            gain_widget.set_option_value("show_gain_loss", base_config.gain_loss_block.show_gain_loss)
+            gain_widget.set_option_value("show_percentage", base_config.gain_loss_block.show_percentage)
+            gain_widget.set_option_value("investment_amount", f"{base_config.gain_loss_block.investment_amount:.2f}")
+        
+        suggestion_widget = self.block_widgets.get("investment_suggestions")
+        if suggestion_widget:
+            suggestion_widget.set_enabled(base_config.investment_suggestions_block.enabled)
+            suggestion_widget.set_option_value("max_suggestions", base_config.investment_suggestions_block.max_suggestions)
+            suggestion_widget.set_option_value("min_opportunity_score", base_config.investment_suggestions_block.min_opportunity_score)
+            suggestion_widget.set_option_value("exclude_current", base_config.investment_suggestions_block.exclude_current)
+            suggestion_widget.set_option_value("prefer_low_volatility", base_config.investment_suggestions_block.prefer_low_volatility)
+            suggestion_widget.set_option_value("prefer_trending", base_config.investment_suggestions_block.prefer_trending)
+            suggestion_widget.set_option_value("prefer_undervalued", base_config.investment_suggestions_block.prefer_undervalued)
+            suggestion_widget.set_option_value("intro_message", base_config.investment_suggestions_block.intro_message)
+        
+        glossary_widget = self.block_widgets.get("glossary")
+        if glossary_widget:
+            glossary_widget.set_enabled(base_config.glossary_block.enabled)
+            glossary_widget.set_option_value("auto_detect", base_config.glossary_block.auto_detect_terms)
+            if base_config.glossary_block.custom_terms:
+                lines = [f"{term}={definition}" for term, definition in base_config.glossary_block.custom_terms.items()]
+                glossary_widget.set_option_value("custom_terms", "\n".join(lines))
+            else:
+                glossary_widget.set_option_value("custom_terms", "")
     
     def _create_price_block(self) -> BlockConfigWidget:
         """Crée le widget de configuration du bloc prix"""
@@ -577,15 +685,122 @@ class SimpleCoinNotificationEditor(QWidget):
     def get_config(self) -> ScheduledNotificationConfig:
         """Génère la configuration à partir des widgets"""
         config = ScheduledNotificationConfig()
+        config.hours = []
         
         # Configuration de chaque bloc
         if "price" in self.block_widgets:
             price_widget = self.block_widgets["price"]
             config.price_block.enabled = price_widget.is_enabled()
             config.price_block.show_price_eur = price_widget.get_option_value("show_price_eur")
-            # ... etc pour toutes les options
+            config.price_block.show_variation_24h = price_widget.get_option_value("show_variation_24h")
+            config.price_block.show_variation_7d = price_widget.get_option_value("show_variation_7d")
+            config.price_block.show_volume = price_widget.get_option_value("show_volume")
+            config.price_block.add_price_comment = price_widget.get_option_value("add_price_comment")
+            message_up = price_widget.get_option_value("message_prix_monte") or ""
+            config.price_block.message_prix_monte = message_up.strip() or config.price_block.message_prix_monte
+        
+        if "chart" in self.block_widgets:
+            chart_widget = self.block_widgets["chart"]
+            config.chart_block.enabled = chart_widget.is_enabled()
+            config.chart_block.show_sparklines = chart_widget.get_option_value("show_sparklines")
+            config.chart_block.send_full_chart = chart_widget.get_option_value("send_full_chart")
+            raw_timeframes = chart_widget.get_option_value("timeframes") or ""
+            timeframes: List[int] = []
+            for part in raw_timeframes.replace(";", ",").split(","):
+                part = part.strip()
+                if part.isdigit():
+                    value = int(part)
+                    if value > 0:
+                        timeframes.append(value)
+            config.chart_block.timeframes = timeframes or config.chart_block.timeframes
+        
+        if "prediction" in self.block_widgets:
+            prediction_widget = self.block_widgets["prediction"]
+            config.prediction_block.enabled = prediction_widget.is_enabled()
+            config.prediction_block.show_prediction_type = prediction_widget.get_option_value("show_prediction_type")
+            config.prediction_block.show_confidence = prediction_widget.get_option_value("show_confidence")
+            config.prediction_block.show_explanation = prediction_widget.get_option_value("show_explanation")
+            config.prediction_block.min_confidence_to_show = int(prediction_widget.get_option_value("min_confidence") or 0)
+        
+        if "opportunity" in self.block_widgets:
+            opportunity_widget = self.block_widgets["opportunity"]
+            config.opportunity_block.enabled = opportunity_widget.is_enabled()
+            config.opportunity_block.show_score = opportunity_widget.get_option_value("show_score")
+            config.opportunity_block.show_recommendation = opportunity_widget.get_option_value("show_recommendation")
+            config.opportunity_block.show_reasons = opportunity_widget.get_option_value("show_reasons")
+            config.opportunity_block.min_score_to_show = int(opportunity_widget.get_option_value("min_score") or 0)
+        
+        if "brokers" in self.block_widgets:
+            brokers_widget = self.block_widgets["brokers"]
+            config.brokers_block.enabled = brokers_widget.is_enabled()
+            config.brokers_block.show_best_price = brokers_widget.get_option_value("show_best_price")
+            config.brokers_block.show_all_brokers = brokers_widget.get_option_value("show_all_brokers")
+            config.brokers_block.show_fees = brokers_widget.get_option_value("show_fees")
+            config.brokers_block.max_brokers_displayed = int(brokers_widget.get_option_value("max_brokers") or 3)
+        
+        if "fear_greed" in self.block_widgets:
+            fg_widget = self.block_widgets["fear_greed"]
+            config.fear_greed_block.enabled = fg_widget.is_enabled()
+            config.fear_greed_block.show_index = fg_widget.get_option_value("show_index")
+            config.fear_greed_block.show_interpretation = fg_widget.get_option_value("show_interpretation")
+        
+        if "gain_loss" in self.block_widgets:
+            gain_widget = self.block_widgets["gain_loss"]
+            config.gain_loss_block.enabled = gain_widget.is_enabled()
+            config.gain_loss_block.show_gain_loss = gain_widget.get_option_value("show_gain_loss")
+            config.gain_loss_block.show_percentage = gain_widget.get_option_value("show_percentage")
+            investment_amount = gain_widget.get_option_value("investment_amount") or "0"
+            try:
+                config.gain_loss_block.investment_amount = float(investment_amount.replace(",", "."))
+            except ValueError:
+                pass
+        
+        if "investment_suggestions" in self.block_widgets:
+            suggestion_widget = self.block_widgets["investment_suggestions"]
+            config.investment_suggestions_block.enabled = suggestion_widget.is_enabled()
+            config.investment_suggestions_block.max_suggestions = int(suggestion_widget.get_option_value("max_suggestions") or 3)
+            config.investment_suggestions_block.min_opportunity_score = int(suggestion_widget.get_option_value("min_opportunity_score") or 7)
+            config.investment_suggestions_block.exclude_current = suggestion_widget.get_option_value("exclude_current")
+            config.investment_suggestions_block.prefer_low_volatility = suggestion_widget.get_option_value("prefer_low_volatility")
+            config.investment_suggestions_block.prefer_trending = suggestion_widget.get_option_value("prefer_trending")
+            config.investment_suggestions_block.prefer_undervalued = suggestion_widget.get_option_value("prefer_undervalued")
+            intro_message = suggestion_widget.get_option_value("intro_message")
+            if isinstance(intro_message, str) and intro_message.strip():
+                config.investment_suggestions_block.intro_message = intro_message.strip()
+        
+        if "glossary" in self.block_widgets:
+            glossary_widget = self.block_widgets["glossary"]
+            config.glossary_block.enabled = glossary_widget.is_enabled()
+            config.glossary_block.auto_detect_terms = glossary_widget.get_option_value("auto_detect")
+            custom_terms_text = glossary_widget.get_option_value("custom_terms") or ""
+            custom_terms: Dict[str, str] = {}
+            for line in custom_terms_text.splitlines():
+                if "=" not in line:
+                    continue
+                term, definition = line.split("=", 1)
+                term = term.strip()
+                definition = definition.strip()
+                if term and definition:
+                    custom_terms[term] = definition
+            if custom_terms:
+                config.glossary_block.custom_terms = custom_terms
         
         return config
+    
+    def apply_to_profile(self, profile: CoinNotificationProfile, default_hours: List[int]):
+        """Applique la configuration actuelle aux notifications du profil."""
+        default_hours = sorted({int(h) for h in default_hours if isinstance(h, int) and 0 <= h <= 23}) or [9]
+        base_config = self.get_config()
+        base_config.hours = list(default_hours)
+        
+        profile.default_config = copy.deepcopy(base_config)
+        profile.scheduled_notifications = []
+        
+        for hour in default_hours:
+            notif_config = copy.deepcopy(base_config)
+            notif_config.hours = [hour]
+            notif_config.name = f"Notification {hour}h"
+            profile.scheduled_notifications.append(notif_config)
 
 
 class AdvancedNotificationConfigWindow(QDialog):
@@ -593,11 +808,18 @@ class AdvancedNotificationConfigWindow(QDialog):
     
     def __init__(self, settings: GlobalNotificationSettings, symbols: List[str], parent=None):
         super().__init__(parent)
-        self.settings = settings
+        self.settings = copy.deepcopy(settings)
         self.symbols = symbols
         self.coin_editors: Dict[str, SimpleCoinNotificationEditor] = {}
         self.coins_tab: Optional[QTabWidget] = None
         self.schedule_widget: Optional[SimpleNotificationScheduleWidget] = None
+        self.global_enabled_checkbox: Optional[QCheckBox] = None
+        self.global_kid_mode_checkbox: Optional[QCheckBox] = None
+        self.global_emoji_checkbox: Optional[QCheckBox] = None
+        self.global_explain_checkbox: Optional[QCheckBox] = None
+        self.global_quiet_enable_checkbox: Optional[QCheckBox] = None
+        self.global_quiet_start_time: Optional[QTimeEdit] = None
+        self.global_quiet_end_time: Optional[QTimeEdit] = None
         self.setWindowTitle("⚙️ Configuration avancée des notifications")
         self.resize(1000, 700)
         self._init_ui()
@@ -653,11 +875,17 @@ class AdvancedNotificationConfigWindow(QDialog):
         buttons_layout.addWidget(btn_cancel)
         
         layout.addLayout(buttons_layout)
+        
+        self._load_settings_into_ui()
     
     def _create_global_settings_tab(self) -> QWidget:
         """Crée l'onglet des paramètres globaux"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
+        
+        self.global_enabled_checkbox = QCheckBox("✅ Activer les notifications")
+        self.global_enabled_checkbox.setChecked(True)
+        layout.addWidget(self.global_enabled_checkbox)
         
         # Mode enfant
         kid_mode_group = QGroupBox("👶 Mode adapté aux enfants")
@@ -667,14 +895,17 @@ class AdvancedNotificationConfigWindow(QDialog):
         kid_check.setChecked(True)
         kid_check.setToolTip("Utilise des mots simples et beaucoup d'explications")
         kid_layout.addWidget(kid_check)
+        self.global_kid_mode_checkbox = kid_check
         
         emoji_check = QCheckBox("😀 Utiliser plein d'emojis")
         emoji_check.setChecked(True)
         kid_layout.addWidget(emoji_check)
+        self.global_emoji_checkbox = emoji_check
         
         explain_check = QCheckBox("💡 Tout expliquer en détail")
         explain_check.setChecked(True)
         kid_layout.addWidget(explain_check)
+        self.global_explain_checkbox = explain_check
         
         kid_mode_group.setLayout(kid_layout)
         layout.addWidget(kid_mode_group)
@@ -686,16 +917,19 @@ class AdvancedNotificationConfigWindow(QDialog):
         quiet_enable = QCheckBox("Activer le mode nuit (pas de notifications)")
         quiet_enable.setChecked(True)
         quiet_layout.addWidget(quiet_enable)
+        self.global_quiet_enable_checkbox = quiet_enable
         
         quiet_time_layout = QHBoxLayout()
         quiet_time_layout.addWidget(QLabel("De :"))
         quiet_start = QTimeEdit()
         quiet_start.setTime(QTime(23, 0))
         quiet_time_layout.addWidget(quiet_start)
+        self.global_quiet_start_time = quiet_start
         quiet_time_layout.addWidget(QLabel("à :"))
         quiet_end = QTimeEdit()
         quiet_end.setTime(QTime(7, 0))
         quiet_time_layout.addWidget(quiet_end)
+        self.global_quiet_end_time = quiet_end
         quiet_layout.addLayout(quiet_time_layout)
         
         quiet_group.setLayout(quiet_layout)
@@ -704,6 +938,89 @@ class AdvancedNotificationConfigWindow(QDialog):
         layout.addStretch()
         
         return tab
+    
+    def _load_settings_into_ui(self):
+        """Initialise l'UI avec les valeurs de configuration existantes"""
+        if self.schedule_widget and self.settings.default_scheduled_hours:
+            self.schedule_widget.set_hours(self.settings.default_scheduled_hours)
+        
+        if self.global_enabled_checkbox is not None:
+            self.global_enabled_checkbox.setChecked(self.settings.enabled)
+        
+        if self.global_kid_mode_checkbox is not None:
+            self.global_kid_mode_checkbox.setChecked(self.settings.kid_friendly_mode)
+        
+        if self.global_emoji_checkbox is not None:
+            self.global_emoji_checkbox.setChecked(getattr(self.settings, "use_emojis_everywhere", True))
+        
+        if self.global_explain_checkbox is not None:
+            self.global_explain_checkbox.setChecked(getattr(self.settings, "explain_everything", True))
+        
+        if self.global_quiet_enable_checkbox is not None:
+            self.global_quiet_enable_checkbox.setChecked(getattr(self.settings, "respect_quiet_hours", True))
+        
+        if self.global_quiet_start_time is not None:
+            start_hour = int(getattr(self.settings, "quiet_start", 23) or 0)
+            start_hour = max(0, min(23, start_hour))
+            self.global_quiet_start_time.setTime(QTime(start_hour, 0))
+        
+        if self.global_quiet_end_time is not None:
+            end_hour = int(getattr(self.settings, "quiet_end", 7) or 0)
+            end_hour = max(0, min(23, end_hour))
+            self.global_quiet_end_time.setTime(QTime(end_hour, 0))
+        
+        for symbol, editor in self.coin_editors.items():
+            profile = self.settings.get_coin_profile(symbol)
+            editor.load_from_profile(profile)
+    
+    def _collect_settings_from_ui(self):
+        """Valide et applique les valeurs saisies aux paramètres"""
+        if not self.schedule_widget:
+            return
+        
+        hours = sorted(set(self.schedule_widget.get_hours()))
+        if not hours:
+            raise ValueError("Veuillez sélectionner au moins une heure de notification.")
+        self.settings.default_scheduled_hours = hours
+        
+        if self.global_enabled_checkbox is not None:
+            self.settings.enabled = self.global_enabled_checkbox.isChecked()
+        
+        if self.global_kid_mode_checkbox is not None:
+            self.settings.kid_friendly_mode = self.global_kid_mode_checkbox.isChecked()
+        
+        if self.global_emoji_checkbox is not None:
+            self.settings.use_emojis_everywhere = self.global_emoji_checkbox.isChecked()
+        
+        if self.global_explain_checkbox is not None:
+            self.settings.explain_everything = self.global_explain_checkbox.isChecked()
+        
+        if self.global_quiet_enable_checkbox is not None:
+            self.settings.respect_quiet_hours = self.global_quiet_enable_checkbox.isChecked()
+        
+        if self.global_quiet_start_time is not None:
+            self.settings.quiet_start = self.global_quiet_start_time.time().hour()
+        
+        if self.global_quiet_end_time is not None:
+            self.settings.quiet_end = self.global_quiet_end_time.time().hour()
+    
+    def _collect_coin_settings_from_ui(self):
+        """Met à jour les profils de notifications à partir des éditeurs."""
+        hours = self.settings.default_scheduled_hours or [9]
+        for symbol, editor in self.coin_editors.items():
+            profile = self.settings.get_coin_profile(symbol)
+            editor.apply_to_profile(profile, hours)
+    
+    def accept(self):
+        """Valide la saisie avant de fermer la fenêtre"""
+        try:
+            self._collect_settings_from_ui()
+            self._collect_coin_settings_from_ui()
+        except ValueError as err:
+            QMessageBox.critical(self, "Erreur de validation", str(err))
+            return
+        
+        super().accept()
     
     def _preview_notification(self):
         """Prévisualise une notification"""

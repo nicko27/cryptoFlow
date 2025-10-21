@@ -1,0 +1,85 @@
+.
+├── analysis
+│   ├── __init__.py
+│   ├── multi_crypto.py
+│   └── smart_alerts.py
+├── api
+│   ├── __init__.py
+│   ├── binance_api.py
+│   ├── binance_api.py.backup.20251019_214853
+│   ├── enhanced_telegram_api.py
+│   ├── revolut_api.py
+│   └── telegram_api.py
+├── brokers
+│   ├── __init__.py
+│   ├── base.py
+│   ├── binance_broker.py
+│   └── revolut_broker.py
+├── config
+│   ├── __init__.py
+│   ├── config_manager.py
+│   ├── config.yaml
+│   ├── config.yaml.backup
+│   ├── config.yaml.example
+│   ├── notifications.yaml
+│   └── setup_wizard.py
+├── core
+│   ├── __init__.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   └── notification_config.py
+│   ├── portfolio_risk.py
+│   └── services
+│       ├── __init__.py
+│       ├── advanced_notification_config_window.py
+│       ├── alert_service.py
+│       ├── broker_service.py
+│       ├── chart_service.py
+│       ├── database_service.py
+│       ├── dca_service.py
+│       ├── enhanced_notification_generator.py
+│       ├── investment_suggestion_service.py
+│       ├── market_service_backup_20251019_213833.py
+│       ├── market_service.py
+│       ├── market_service.py.backup
+│       ├── portfolio_service.py
+│       ├── report_service.py
+│       └── summary_service.py
+├── daemon
+│   ├── __init__.py
+│   └── daemon_service.py
+├── data
+│   └── crypto_bot.db
+├── database
+│   ├── __init__.py
+│   ├── models.py
+│   └── repository.py
+├── logs
+│   └── crypto_bot.log
+├── main.py
+├── ml
+│   ├── __init__.py
+│   └── ml_predictor.py
+├── optimizations
+│   └── __init__.py
+├── reports
+├── requirements.txt
+├── strategies
+│   ├── __init__.py
+│   └── backtest_engine.py
+├── tree.txt
+├── ui
+│   ├── __init__.py
+│   ├── advanced_charts.py
+│   ├── advanced_notification_config_window.py
+│   ├── main_window.py
+│   ├── settings_window.py
+│   ├── settings_window.py.backup.20251019_214853
+│   └── unified_notification_dialog.py
+└── utils
+    ├── __init__.py
+    ├── chart_generator.py
+    ├── exchange_rate_monitor.py
+    └── logger.py
+
+18 directories, 65 files
