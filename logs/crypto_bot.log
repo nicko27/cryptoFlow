@@ -9907,3 +9907,6 @@ TypeError: __init__() got an unexpected keyword argument 'open_interest'
 2025-10-20 08:46:59 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
 2025-10-20 08:47:00 | INFO     | CryptoBotGUI | Interface graphique initialisée
 2025-10-20 08:47:00 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-21 20:03:29 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:03:31 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-21 20:03:31 | INFO     | CryptoBotGUI | Chargement des données initiales...
