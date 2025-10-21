@@ -303,98 +303,107 @@ class DaemonService:
                 )
     
     def _check_cycle(self):
-        """Effectue un cycle avec résumés complets"""
+        """Effectue un cycle de vérification - N'ENVOIE QUE LES NOTIFICATIONS CONFIGURÉES"""
         try:
             current_hour = datetime.now(timezone.utc).hour
+            current_day = datetime.now(timezone.utc).weekday()
+            
+            # Vérifier si c'est l'heure d'envoyer un résumé
+            should_send_summary = False
+            if current_hour in self.config.summary_hours:
+                if self.last_summary_sent is None or \
+                   (datetime.now(timezone.utc) - self.last_summary_sent).total_seconds() > 3000:
+                    should_send_summary = True
+            
+            if not should_send_summary:
+                # Pas l'heure programmée, ne rien envoyer
+                return
+            
+            self.logger.info(f"\n⏰ Heure programmée: {current_hour}h - Génération des notifications...")
+            
+            # Collecter TOUTES les données en une seule fois
             markets_data = {}
             predictions = {}
             opportunities = {}
             
-            self.logger.info("\n" + "="*60)
-            self.logger.info(f"🔍 VÉRIFICATION #{self.checks_count + 1}")
-            self.logger.info("="*60)
-            
-            # Récupérer données
             for symbol in self.config.crypto_symbols:
                 try:
-                    self.logger.info(f"\n📊 {symbol}:")
-                    self.logger.info("-"*60)
-                    
-                    market_data = self.market_service.get_market_data(symbol)
-                    if market_data:
-                        markets_data[symbol] = market_data
-                        
-                        prediction = self.market_service.predict_price_movement(market_data)
-                        if prediction:
-                            predictions[symbol] = prediction
-                            self.logger.info(f"🔮 Prédiction: {prediction.prediction_type.value} ({prediction.confidence:.0f}%)")
-                        
-                        opportunity = self.market_service.calculate_opportunity_score(market_data, prediction)
-                        if opportunity:
-                            opportunities[symbol] = opportunity
-                            self.logger.info(f"⭐ Opportunité: {opportunity.score}/10")
-                        
-                        self.db_service.save_market_data(market_data)
-                        if prediction:
-                            self.db_service.save_prediction(symbol, prediction)
+                    market = self.market_service.get_market_data(symbol)
+                    if market:
+                        markets_data[symbol] = market
+                        predictions[symbol] = self.market_service.predict_price_movement(market)
+                        opportunities[symbol] = self.market_service.calculate_opportunity_score(
+                            market, predictions[symbol]
+                        )
                 except Exception as e:
-                    self.logger.error(f"Erreur {symbol}: {e}")
-                    self.consecutive_errors += 1
+                    self.logger.error(f"Erreur récupération {symbol}: {e}")
             
-            self.checks_count += 1
+            if not markets_data:
+                self.logger.warning("Aucune donnée de marché disponible")
+                return
             
-            # Envoyer résumé si heure programmée
-            if current_hour in self.config.summary_hours and markets_data:
-                if self.last_summary_sent is None or (datetime.now(timezone.utc) - self.last_summary_sent).total_seconds() > 3000:
-                    try:
-                        self.logger.info(f"\n⏰ Heure programmée: {current_hour}h")
-                        self.logger.info("📤 Envoi du résumé...")
-                        
-                        summary = self.summary_service.generate_summary(
-                            markets_data, predictions, opportunities,
-                            simple=self.config.use_simple_language
+            with self._state_lock:
+                self.checks_count += 1
+            
+            # ENVOYER UNE NOTIFICATION PAR CRYPTO (selon configuration)
+            for symbol in self.config.crypto_symbols:
+                if symbol not in markets_data:
+                    continue
+                
+                try:
+                    market = markets_data[symbol]
+                    prediction = predictions.get(symbol)
+                    opportunity = opportunities.get(symbol)
+                    
+                    # GÉNÉRER LA NOTIFICATION AVEC LE GÉNÉRATEUR
+                    # Celui-ci respecte AUTOMATIQUEMENT la config YAML
+                    notification_message = self.notification_generator.generate_notification(
+                        symbol=symbol,
+                        market=market,
+                        prediction=prediction,
+                        opportunity=opportunity,
+                        all_markets=markets_data,
+                        all_predictions=predictions,
+                        all_opportunities=opportunities,
+                        current_hour=current_hour,
+                        current_day_of_week=current_day
+                    )
+                    
+                    # ENVOYER SI MESSAGE GÉNÉRÉ
+                    if notification_message:
+                        success = self.telegram_api.send_message(
+                            notification_message,
+                            parse_mode="HTML"
                         )
                         
-                        if summary and self.telegram_api.send_message(summary, parse_mode="HTML"):
-                            self.notifications_sent += 1
-                            self.last_summary_sent = datetime.now(timezone.utc)
-                            self.logger.info("✅ Résumé envoyé")
+                        if success:
+                            with self._state_lock:
+                                self.notifications_sent += 1
+                            self.logger.info(f"✓ Notification {symbol} envoyée")
                         else:
-                            self.logger.error("❌ Échec envoi résumé")
-                    except Exception as e:
-                        self.logger.error(f"Erreur résumé: {e}")
-            
-            # Alertes
-            for symbol, market_data in markets_data.items():
-                try:
-                    prediction = predictions.get(symbol)
-                    alerts = self.alert_service.check_alerts(market_data, prediction)
-                    if alerts:
-                        self.logger.info(f"\n🚨 {len(alerts)} alerte(s) pour {symbol}")
-                        for alert in alerts:
-                            self.telegram_api.send_alert(alert)
-                            self.alerts_sent += 1
+                            self.logger.error(f"✗ Échec envoi {symbol}")
+                    else:
+                        self.logger.info(f"⊗ Pas de notification pour {symbol} (heures/seuils)")
+                
                 except Exception as e:
-                    self.logger.error(f"Erreur alertes {symbol}: {e}")
+                    self.logger.error(f"Erreur notification {symbol}: {e}", exc_info=True)
+                    with self._state_lock:
+                        self.errors_count += 1
             
-            # Stats
-            if self.start_time:
-                uptime = datetime.now(timezone.utc) - self.start_time
-                hours = uptime.seconds // 3600
-                minutes = (uptime.seconds % 3600) // 60
-                self.logger.info(
-                    f"\n📊 Stats: {self.checks_count} checks, {self.alerts_sent} alertes, "
-                    f"{self.notifications_sent} notifs, {self.errors_count} erreurs, "
-                    f"Uptime: {hours}h{minutes}m"
-                )
+            # Marquer comme envoyé
+            with self._state_lock:
+                self.last_summary_sent = datetime.now(timezone.utc)
             
+            # Reset erreurs consécutives si succès
             if markets_data:
-                self.consecutive_errors = 0
+                with self._state_lock:
+                    self.consecutive_errors = 0
         
         except Exception as e:
-            self.logger.error(f"Erreur cycle: {e}", exc_info=True)
-            self.errors_count += 1
-            self.consecutive_errors += 1
+            self.logger.error(f"❌ Erreur cycle : {e}", exc_info=True)
+            with self._state_lock:
+                self.errors_count += 1
+                self.consecutive_errors += 1
 
     def _is_night_mode(self) -> bool:
         """Détermine si on est en mode nuit"""

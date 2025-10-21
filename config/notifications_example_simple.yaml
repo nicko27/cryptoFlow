@@ -47,13 +47,13 @@ coins:
           add_price_comment: false
         
         chart_block:
-          enabled: true  # ← DÉSACTIVÉ
+          enabled: false  # ← DÉSACTIVÉ
         
         prediction_block:
           enabled: true
           show_prediction_type: true
           show_confidence: true
-          min_confidence_to_show: 0
+          min_confidence_to_show: 50
         
         opportunity_block:
           enabled: true
@@ -91,7 +91,7 @@ coins:
     scheduled_notifications:
       - name: "Notification ETH"
         enabled: true
-        hours: [9, 12, 18]
+        hours: [9, 18]
         
         blocks_order:
           - header
@@ -113,7 +113,7 @@ coins:
     scheduled_notifications:
       - name: "Notification SOL"
         enabled: true
-        hours: [9,12, 18]
+        hours: [9, 18]
         
         blocks_order:
           - header
