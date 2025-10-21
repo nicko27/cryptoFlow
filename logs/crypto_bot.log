@@ -10086,3 +10086,19 @@ TypeError: __init__() got an unexpected keyword argument 'open_interest'
 2025-10-21 20:39:39 | INFO     | CryptoBotDaemon | Erreurs : 0
 2025-10-21 20:39:39 | INFO     | CryptoBotDaemon | ============================================================
 
+2025-10-21 20:40:35 | INFO     | CryptoBotDaemon | Signal 15 (SIGTERM) reçu, arrêt du démon...
+2025-10-21 20:49:50 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:50:25 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:51:49 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:51:50 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-21 20:51:50 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-21 20:52:42 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:52:43 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-21 20:52:43 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-21 20:56:20 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:57:36 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:57:37 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-21 20:57:37 | INFO     | CryptoBotGUI | Chargement des données initiales...
+2025-10-21 20:58:02 | INFO     | CryptoBotCLI | Configuration chargée depuis config/config.yaml
+2025-10-21 20:58:03 | INFO     | CryptoBotGUI | Interface graphique initialisée
+2025-10-21 20:58:03 | INFO     | CryptoBotGUI | Chargement des données initiales...

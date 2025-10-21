@@ -659,20 +659,20 @@ class CryptoBotGUI(QMainWindow):  # FIXED: Problème 13 - Nom de classe sans esp
     # === MÉTHODES D'ACTION ===
     
     def _send_summary(self):
-        """Envoie un résumé complet sur Telegram (utilise NotificationGenerator)"""
+        """Envoie un résumé complet sur Telegram (comme le daemon)"""
         try:
             if not self.daemon_service or not self.daemon_service.notification_generator:
                 QMessageBox.warning(
                     self,
-                    "Service non initialisé",
-                    "Démarre d'abord le daemon pour initialiser le système de notifications."
+                    "Erreur",
+                    "Service de notification non initialisé. Démarre d'abord le daemon."
                 )
                 return
             
             current_hour = datetime.now(timezone.utc).hour
             current_day = datetime.now(timezone.utc).weekday()
             
-            # Collecter les données
+            # Collecter les données pour toutes les cryptos
             markets_data = {}
             predictions = {}
             opportunities = {}
@@ -682,23 +682,33 @@ class CryptoBotGUI(QMainWindow):  # FIXED: Problème 13 - Nom de classe sans esp
                     market = self.market_data_cache[symbol]
                     markets_data[symbol] = market
                     
-                    prediction = self.predictions_cache.get(symbol) or \
-                                self.market_service.predict_price_movement(market)
-                    opportunity = self.opportunities_cache.get(symbol) or \
-                                 self.market_service.calculate_opportunity_score(market, prediction)
+                    # Calculer prédiction et opportunité si pas en cache
+                    if symbol in self.predictions_cache:
+                        prediction = self.predictions_cache[symbol]
+                    else:
+                        prediction = self.market_service.predict_price_movement(market)
+                        self.predictions_cache[symbol] = prediction
+                    
+                    if symbol in self.opportunities_cache:
+                        opportunity = self.opportunities_cache[symbol]
+                    else:
+                        opportunity = self.market_service.calculate_opportunity_score(market, prediction)
+                        self.opportunities_cache[symbol] = opportunity
                     
                     if prediction:
                         predictions[symbol] = prediction
-                        self.predictions_cache[symbol] = prediction
                     if opportunity:
                         opportunities[symbol] = opportunity
-                        self.opportunities_cache[symbol] = opportunity
             
             if not markets_data:
-                QMessageBox.warning(self, "Aucune donnée", "Rafraîchis d'abord les données")
+                QMessageBox.warning(
+                    self,
+                    "Aucune donnée",
+                    "Aucune donnée de marché disponible. Rafraîchis d'abord les données."
+                )
                 return
             
-            # Générer et envoyer les notifications
+            # Générer et envoyer les notifications (comme le daemon)
             sent_count = 0
             for symbol in self.config.crypto_symbols:
                 if symbol not in markets_data:
@@ -717,7 +727,12 @@ class CryptoBotGUI(QMainWindow):  # FIXED: Problème 13 - Nom de classe sans esp
                 )
                 
                 if notification:
-                    success = self.telegram_api.send_message(notification, parse_mode="HTML")
+                    from api.enhanced_telegram_api import EnhancedTelegramAPI
+                    telegram = EnhancedTelegramAPI(
+                        self.config.telegram_bot_token,
+                        self.config.telegram_chat_id
+                    )
+                    success = telegram.send_message(notification, parse_mode="HTML")
                     if success:
                         sent_count += 1
             
@@ -728,12 +743,20 @@ class CryptoBotGUI(QMainWindow):  # FIXED: Problème 13 - Nom de classe sans esp
                     f"✅ {sent_count} notification(s) envoyée(s) sur Telegram !"
                 )
             else:
-                QMessageBox.warning(self, "Erreur", "Aucune notification n'a pu être envoyée")
-        
+                QMessageBox.warning(
+                    self,
+                    "Erreur",
+                    "Aucune notification n'a pu être envoyée"
+                )
+            
+            
         except Exception as e:
             self.logger.error(f"Erreur envoi résumé: {e}")
-            QMessageBox.critical(self, "Erreur", f"Impossible d'envoyer le résumé : {e}")
-    
+            QMessageBox.critical(
+                self,
+                "Erreur",
+                f"Impossible d'envoyer le résumé : {e}"
+            )
     
     def _generate_report(self):
         """Génère un rapport complet"""

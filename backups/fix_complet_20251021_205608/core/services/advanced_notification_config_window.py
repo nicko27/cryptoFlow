@@ -1011,33 +1011,6 @@ class AdvancedNotificationConfigWindow(QDialog):
             profile = self.settings.get_coin_profile(symbol)
             editor.apply_to_profile(profile, hours)
     
-
-    def _save_to_file(self):
-        """Sauvegarde les paramètres dans config/notifications.yaml"""
-        import yaml
-        from pathlib import Path
-        
-        notif_config_path = Path("config/notifications.yaml")
-        notif_config_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Préparer les données à sauvegarder
-        data = {
-            'enabled': self.settings.enabled,
-            'kid_friendly_mode': self.settings.kid_friendly_mode,
-            'use_emojis_everywhere': self.settings.use_emojis_everywhere,
-            'explain_everything': self.settings.explain_everything,
-            'respect_quiet_hours': self.settings.respect_quiet_hours,
-            'quiet_start': self.settings.quiet_start,
-            'quiet_end': self.settings.quiet_end,
-            'default_scheduled_hours': self.settings.default_scheduled_hours
-        }
-        
-        # Sauvegarder dans le fichier
-        with open(notif_config_path, 'w', encoding='utf-8') as f:
-            yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
-        
-        print(f"✅ Configuration des notifications sauvegardée dans {notif_config_path}")
-
     def accept(self):
         """Valide la saisie avant de fermer la fenêtre"""
         try:
