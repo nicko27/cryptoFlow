@@ -27,6 +27,34 @@ def _load_configuration(path: str) -> Optional[BotConfiguration]:
         return None
 
 
+def run_gui_mode(config: BotConfiguration) -> None:
+    """
+    Lance l'application en mode GUI.
+    Les imports sont locaux pour éviter les erreurs lorsque des dépendances
+    optionnelles ne sont pas disponibles.
+    """
+    try:
+        from PyQt6.QtWidgets import QApplication
+    except ImportError as exc:
+        print(f"❌ PyQt6 est requis pour le mode GUI: {exc}")
+        sys.exit(1)
+
+    try:
+        from ui.main_window import CryptoBotGUI
+    except ImportError as exc:
+        print(f"❌ Impossible de charger l'interface graphique: {exc}")
+        sys.exit(1)
+
+    qt_app = QApplication.instance() or QApplication(sys.argv)
+    window = CryptoBotGUI()
+    window.show()
+
+    try:
+        qt_app.exec()
+    except Exception as exc:
+        print(f"❌ Erreur GUI: {exc}")
+        sys.exit(1)
+
 
 def run_daemon_mode(config: BotConfiguration) -> None:
     """Démarre le daemon en mode headless."""
@@ -164,8 +192,7 @@ def main() -> None:
     elif args.daemon:
         run_daemon_mode(config)
     else:
-        print('❌ Mode GUI supprimé. Utilisez --daemon ou --once')
-    sys.exit(1)
+        run_gui_mode(config)
 
 
 if __name__ == "__main__":

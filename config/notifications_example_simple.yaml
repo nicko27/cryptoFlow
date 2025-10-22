@@ -1,128 +1,1217 @@
-# Configuration des notifications
-# Activez/désactivez les blocs selon vos besoins
+# ============================================================
+# CONFIGURATION DES NOTIFICATIONS - CRYPTOFLOW v3.0
+# ============================================================
+# 📚 Ce fichier te permet de configurer TOUT ce que CryptoFlow
+#    va t'envoyer sur Telegram. Chaque option est expliquée !
+# 
+# 💡 Astuce : Si tu ne comprends pas une option, laisse-la
+#    comme elle est. Les valeurs par défaut sont bien !
+# 
+# Modifié le: 2025-10-22
+# ============================================================
 
+# ============================================================
+# 🌍 PARAMÈTRES GLOBAUX
+# ============================================================
+# Ces paramètres s'appliquent à TOUTES les cryptos
 notifications:
+  
+  # ✅ Activer ou désactiver TOUTES les notifications
+  # true = tu reçois des messages | false = plus rien
   enabled: true
+  
+  # 👶 Mode enfant : explique tout simplement
+  # true = langage facile à comprendre
+  # false = langage plus technique
   kid_friendly_mode: true
+  
+  # 😀 Utiliser des emojis partout
+  # true = plein d'emojis colorés 🎨
+  # false = juste du texte
   use_emojis_everywhere: true
+  
+  # 📖 Expliquer TOUT en détail
+  # true = tu apprends ce que chaque mot veut dire
+  # false = messages plus courts, moins d'explications
   explain_everything: true
-  respect_quiet_hours: true
+  
+  # 🚫 Éviter les mots compliqués
+  # true = on utilise des mots simples
+  # false = on peut utiliser des mots techniques
+  avoid_technical_terms: false
+  
+  # 😴 Mode silence (heures où tu dors)
+  # true = pas de messages pendant la nuit
+  # false = tu reçois les messages même la nuit
+  respect_quiet_hours: false
+  
+  # 🌙 Heure où commence le silence (23 = 23h00 du soir)
   quiet_start: 23
+  
+  # ☀️ Heure où finit le silence (7 = 7h00 du matin)
   quiet_end: 7
-  default_scheduled_hours: [9, 12, 18]
+  
+  # ⏰ Heures par défaut pour les nouvelles cryptos
+  # [9, 12, 18, 22] = matin, midi, soir, nuit
+  default_scheduled_hours: [9, 12, 18, 22]
+  
+  # 📏 Taille maximale d'un message Telegram (ne change pas ça)
+  max_message_length: 4096
+  
+  # 📝 Message en haut de chaque notification
+  # {symbol} = le nom de la crypto (BTC, ETH, etc.)
+  # {emoji} = l'emoji de la crypto (₿, ⟠, etc.)
+  global_header_template: "🔔 {emoji} CryptoFlow - {symbol}"
+  
+  # 📝 Message en bas de chaque notification
+  global_footer_template: "💡 CryptoFlow - Analyse automatique | Pas de conseil financier"
 
-# Configuration par crypto
+
+# ============================================================
+# 💰 CONFIGURATION PAR CRYPTO-MONNAIE
+# ============================================================
+# Ici, tu configures chaque crypto individuellement
 coins:
+  
+  # ========================================
+  # 💰 BITCOIN (BTC)
+  # ========================================
   BTC:
+    # ✅ Activer cette crypto (true) ou la désactiver (false)
     enabled: true
-    nickname: "Bitcoin"
+    
+    # 🏷️ Petit nom pour cette crypto (si tu veux)
+    # null = on garde juste "BTC"
+    nickname: "BTC"
+    
+    # 😀 Emoji qui représente cette crypto
     custom_emoji: "₿"
     
+    # 📊 Niveau de détail des messages
+    # "simple" = très court et simple
+    # "normal" = équilibré
+    # "detailed" = beaucoup de détails
+    detail_level: "detailed"
+    
+    # 👋 Message d'accueil au début (si tu veux)
+    # null = pas de message spécial
+    intro_message: null
+    
+    # 👋 Message d'au revoir à la fin (si tu veux)
+    # null = pas de message spécial
+    outro_message: null
+    
+    # ----------------------------------------
+    # 📅 NOTIFICATIONS PROGRAMMÉES
+    # ----------------------------------------
+    # C'est ici que tu décides QUAND et QUOI recevoir
     scheduled_notifications:
-      - name: "Notification principale"
+      
+      # === 📬 UNE SEULE NOTIFICATION POUR TOUT ===
+      - name: "Analyse complète quotidienne"
+        description: "Tout ce qu'il faut savoir, 4 fois par jour"
+        
+        # ✅ Activer cette notification
+        # true = tu la reçois | false = tu ne la reçois pas
         enabled: true
-        hours: [9, 12, 18]
+        
+        # ⏰ À QUELLES HEURES tu veux recevoir ce message
+        # [9, 12, 18, 22] = 9h du matin, midi, 6h du soir, 10h du soir
+        # Tu peux changer : [8, 14, 20] par exemple
+        hours: [9, 12, 18, 22]
+        
+        # 📆 QUELS JOURS tu veux recevoir ce message
+        # 0=Lundi, 1=Mardi, 2=Mercredi, 3=Jeudi, 4=Vendredi, 5=Samedi, 6=Dimanche
+        # [0,1,2,3,4,5,6] = tous les jours
+        # [0,1,2,3,4] = seulement du lundi au vendredi
         days_of_week: [0, 1, 2, 3, 4, 5, 6]
         
-        # Ordre d'affichage des blocs
+        # 🕐 Moment de la journée (détecté automatiquement)
+        # null = CryptoFlow devine tout seul selon l'heure
+        # Options : "morning" (matin), "noon" (midi), "evening" (soir), "night" (nuit)
+        time_slot: null
+        
+        # 📋 ORDRE D'AFFICHAGE DES INFORMATIONS
+        # C'est la liste de ce qui va s'afficher, dans l'ordre
+        # Tu peux réorganiser ou enlever des choses
+        blocks_order:
+          - header              # En-tête (bonjour !)
+          - price               # Le prix actuel
+          - chart               # Les graphiques
+          - prediction          # Ce que l'IA pense du futur
+          - opportunity         # Est-ce le bon moment d'acheter ?
+          - brokers             # Où acheter le moins cher
+          - fear_greed          # L'humeur des gens (peur ou envie)
+          - gain_loss           # Combien tu gagnes ou perds
+          - investment_suggestions  # Autres cryptos intéressantes
+          - glossary            # Dictionnaire des mots compliqués
+          - custom              # Tes propres messages
+          - footer              # Pied de page (au revoir !)
+        
+        # 👋 MESSAGE DU HAUT (en-tête)
+        # {symbol} sera remplacé par BTC, ETH, etc.
+        header_message: "🔔 CryptoFlow - Analyse {symbol}"
+        
+        # 👋 MESSAGE DU BAS (pied de page)
+        footer_message: "💡 CryptoFlow - Analyse automatique | Pas de conseil financier"
+        
+        # =====================================
+        # 🎨 CONFIGURATION DE CHAQUE BLOC
+        # =====================================
+        # Chaque bloc est une partie du message
+        # Tu peux activer (true) ou désactiver (false) chaque option
+        
+        # -------------------------------------
+        # 💰 BLOC PRIX
+        # -------------------------------------
+        # Ce bloc montre combien coûte la crypto
+        price_block:
+          
+          # ✅ Afficher ce bloc dans le message
+          enabled: true
+          
+          # 🏷️ Titre de cette section
+          title: "💰 Prix actuel"
+          
+          # 💶 Montrer le prix en euros
+          # true = tu vois "92,000€"
+          show_price_eur: true
+          
+          # 💵 Montrer le prix en dollars américains
+          # true = tu vois "$98,500"
+          show_price_usd: true
+          
+          # ₿ Montrer le prix en Bitcoin (pour les autres cryptos)
+          # Exemple : 1 ETH = 0.05 BTC
+          # true = utile pour comparer | false = pas besoin
+          show_price_btc: false
+          
+          # 📊 Montrer si le prix a changé depuis 1 heure
+          # true = tu vois "+1.5% depuis 1h"
+          show_variation_1h: false
+          
+          # 📊 Montrer si le prix a changé depuis 24 heures (1 jour)
+          # true = tu vois "+3.2% depuis hier"
+          show_variation_24h: true
+          
+          # 📊 Montrer si le prix a changé depuis 7 jours (1 semaine)
+          # true = tu vois "-5.8% depuis la semaine dernière"
+          show_variation_7d: true
+          
+          # 📊 Montrer si le prix a changé depuis 30 jours (1 mois)
+          # true = tu vois "+12.4% depuis le mois dernier"
+          show_variation_30d: false
+          
+          # 🔊 Montrer combien de gens achètent (le volume)
+          # Volume élevé = beaucoup d'achats et de ventes
+          # true = tu vois "Volume : 35 milliards €"
+          show_volume: true
+          
+          # 🏦 Montrer la valeur totale de toutes les pièces
+          # Capitalisation = prix × nombre de pièces
+          # true = tu vois "Cap : 1,800 milliards €"
+          show_market_cap: true
+          
+          # 🔢 Montrer combien de pièces existent maintenant
+          # Exemple : 19 millions de BTC en circulation
+          show_circulating_supply: false
+          
+          # 🔢 Montrer combien de pièces existent au total
+          # Différent de "en circulation" car certaines sont bloquées
+          show_total_supply: false
+          
+          # 🔢 Montrer le nombre maximum de pièces possible
+          # Exemple : Il n'y aura JAMAIS plus de 21 millions de BTC
+          show_max_supply: false
+          
+          # 🏆 Montrer le prix le plus haut de tous les temps (ATH)
+          # ATH = All-Time High = record absolu
+          # true = tu vois "Record : 69,000€"
+          show_ath: false
+          
+          # 📅 Montrer QUAND le prix était au plus haut
+          # true = tu vois "Record le 10 novembre 2021"
+          show_ath_date: false
+          
+          # 📉 Montrer le prix le plus bas de tous les temps (ATL)
+          # ATL = All-Time Low = pire moment
+          show_atl: false
+          
+          # 📅 Montrer QUAND le prix était au plus bas
+          show_atl_date: false
+          
+          # 👑 Montrer la "dominance" (seulement pour Bitcoin)
+          # Dominance = quelle part du marché total Bitcoin représente
+          # Exemple : "Bitcoin = 45% de tout le marché crypto"
+          show_dominance: false
+          
+          # 💬 Ajouter un petit commentaire pour t'aider à comprendre
+          # true = "Le prix monte, c'est bien si tu en as déjà !"
+          add_price_comment: true
+          
+          # 📚 Expliquer ce que "volume" veut dire
+          # true = "Le volume, c'est combien de gens achètent et vendent"
+          explain_volume: false
+          
+          # 📚 Expliquer ce que "capitalisation" veut dire
+          # true = "La cap, c'est la valeur de TOUTES les pièces ensemble"
+          explain_market_cap: false
+          
+          # 💬 Messages personnalisés selon ce qui se passe
+          # Ces messages s'affichent automatiquement
+          
+          # 📈 Message quand le prix monte un peu
+          message_prix_monte: "📈 Le prix augmente"
+          
+          # 📉 Message quand le prix baisse un peu
+          message_prix_baisse: "📉 Le prix diminue"
+          
+          # ➡️ Message quand le prix ne bouge presque pas
+          message_prix_stable: "➡️ Le prix est stable"
+          
+          # 🚀 Message quand le prix monte BEAUCOUP
+          message_hausse_forte: "🚀 Forte hausse !"
+          
+          # ⚠️ Message quand le prix baisse BEAUCOUP
+          message_baisse_forte: "⚠️ Forte baisse !"
+          
+          # 📊 À partir de combien on dit que c'est une "forte hausse"
+          # 10.0 = si le prix monte de plus de 10%
+          seuil_hausse_forte: 10.0
+          
+          # 📊 À partir de combien on dit que c'est une "forte baisse"
+          # -10.0 = si le prix baisse de plus de 10%
+          seuil_baisse_forte: -10.0
+        
+        # -------------------------------------
+        # 📊 BLOC GRAPHIQUES
+        # -------------------------------------
+        # Ce bloc montre l'évolution du prix avec des dessins
+        chart_block:
+          
+          # ✅ Afficher ce bloc dans le message
+          enabled: true
+          
+          # 🏷️ Titre de cette section
+          title: "📊 Évolution du prix"
+          
+          # ✨ Mini-graphiques en mode texte (très petits)
+          # true = tu vois des petites lignes : ▁▂▃▅▆▇█
+          show_sparklines: true
+          
+          # 🖼️ Envoyer une vraie image avec un beau graphique
+          # true = tu reçois une image PNG avec couleurs
+          # false = juste les mini-graphiques texte
+          send_full_chart: true
+          
+          # ⏰ Périodes à afficher (en heures)
+          # 1 = dernière heure
+          # 4 = dernières 4 heures
+          # 24 = dernier jour (24 heures)
+          # 168 = dernière semaine (7 jours × 24 heures)
+          # 720 = dernier mois (30 jours × 24 heures)
+          timeframes: [24, 168]
+          
+          # 📈 Afficher les moyennes mobiles sur le graphique
+          # Moyennes mobiles = lignes qui montrent la tendance générale
+          # Utile pour voir si ça monte ou descend globalement
+          show_moving_averages: false
+          
+          # 🎯 Afficher les niveaux de support et résistance
+          # Support = prix en dessous duquel c'est dur de descendre
+          # Résistance = prix au-dessus duquel c'est dur de monter
+          show_support_resistance: true
+          
+          # 📊 Afficher les barres de volume sous le graphique
+          # Volume = combien de gens achètent/vendent
+          # Barres vertes = beaucoup d'achats | Rouges = beaucoup de ventes
+          show_volume_bars: false
+          
+          # 📉 Afficher le RSI (indicateur technique)
+          # RSI = indique si c'est "suracheté" (trop cher) ou "survendu" (trop pas cher)
+          # RSI < 30 = peut-être bon moment pour acheter
+          # RSI > 70 = peut-être bon moment pour vendre
+          show_rsi: false
+          
+          # 📊 Afficher le MACD (indicateur technique)
+          # MACD = montre les changements de tendance
+          # Compliqué mais utile pour les experts
+          show_macd: false
+          
+          # 📊 Afficher les bandes de Bollinger
+          # Bandes = limites hautes et basses du prix "normal"
+          # Si le prix sort des bandes = quelque chose de spécial se passe
+          show_bollinger_bands: false
+          
+          # 🎨 Style du graphique
+          # "line" = ligne simple
+          # "candles" = bougies japonaises (pour experts)
+          # "area" = zone remplie sous la ligne
+          chart_style: "line"
+          
+          # 🌙 Mode sombre pour le graphique
+          # true = fond noir (plus joli)
+          # false = fond blanc
+          dark_mode: true
+          
+          # 📚 Noms faciles à comprendre pour les périodes
+          period_names:
+            1: "1 heure"
+            4: "4 heures"
+            24: "1 jour"
+            168: "1 semaine"
+            720: "1 mois"
+        
+        # -------------------------------------
+        # 🔮 BLOC PRÉDICTION
+        # -------------------------------------
+        # Ce bloc dit ce que l'intelligence artificielle pense du futur
+        prediction_block:
+          
+          # ✅ Afficher ce bloc dans le message
+          enabled: true
+          
+          # 🏷️ Titre de cette section
+          title: "🔮 Prédiction IA"
+          
+          # 📊 Montrer si l'IA pense que ça va monter ou descendre
+          # true = tu vois "HAUSSIER 📈" ou "BAISSIER 📉"
+          show_prediction_type: true
+          
+          # 🎯 Montrer à quel point l'IA est sûre d'elle
+          # Confiance = de 0% (pas du tout sûre) à 100% (très sûre)
+          # true = tu vois "Confiance : 75%"
+          show_confidence: true
+          
+          # 📖 Montrer POURQUOI l'IA pense ça
+          # true = tu vois une explication
+          show_reasoning: true
+          
+          # 💡 Ajouter une explication simple pour comprendre
+          # true = "L'IA utilise des maths compliquées pour deviner"
+          show_explanation: true
+          
+          # 📊 Montrer les indicateurs techniques utilisés
+          # Indicateurs = les outils mathématiques que l'IA utilise
+          show_technical_indicators: false
+          
+          # 📉 Montrer la valeur du RSI
+          # RSI = chiffre entre 0 et 100 pour savoir si c'est cher ou pas
+          show_rsi_value: false
+          
+          # 📊 Montrer la valeur du MACD
+          # MACD = autre outil mathématique compliqué
+          show_macd_value: false
+          
+          # 📊 Montrer les volumes d'achat et de vente
+          # Volume = combien de gens achètent vs vendent
+          show_volume_analysis: false
+          
+          # 🔢 Ne montrer que si l'IA est sûre à au moins X%
+          # Exemple : 50 = on montre seulement si confiance ≥ 50%
+          # 0 = on montre toujours, même si l'IA n'est pas sûre
+          min_confidence_to_show: 0
+          
+          # 💬 Messages selon ce que l'IA prédit
+          
+          # 📈 Si l'IA pense que ça va monter
+          message_haussier: "🚀 L'IA pense que le prix va monter"
+          
+          # 📉 Si l'IA pense que ça va descendre
+          message_baissier: "📉 L'IA pense que le prix va baisser"
+          
+          # ➡️ Si l'IA ne sait pas trop
+          message_neutre: "😐 L'IA ne sait pas trop ce qui va se passer"
+          
+          # 📚 Explication de ce qu'est une prédiction
+          explanation_text: "L'IA analyse plein de données pour essayer de deviner le futur. Mais attention, elle peut se tromper !"
+        
+        # -------------------------------------
+        # ⭐ BLOC OPPORTUNITÉ
+        # -------------------------------------
+        # Ce bloc dit si c'est un bon moment pour acheter (score sur 10)
+        opportunity_block:
+          
+          # ✅ Afficher ce bloc dans le message
+          enabled: true
+          
+          # 🏷️ Titre de cette section
+          title: "⭐ Score d'opportunité"
+          
+          # 🎯 Montrer le score (sur 10)
+          # true = tu vois "Score : 8/10"
+          show_score: true
+          
+          # 📊 Montrer les détails du calcul
+          # true = tu vois comment on calcule le score
+          show_score_details: true
+          
+          # ⚠️ Montrer les risques
+          # true = tu vois "Attention : prix très volatile"
+          show_risk_factors: true
+          
+          # 🎯 Montrer les bons moments pour acheter/vendre
+          # true = tu vois "Entre si le prix descend sous 90,000€"
+          show_entry_exit_points: true
+          
+          # 📚 Expliquer ce qu'est un score d'opportunité
+          # true = "Le score dit si c'est le bon moment d'acheter"
+          explain_opportunity: false
+          
+          # 💬 Messages selon le score
+          
+          # 🌟 Si le score est 9 ou 10 (excellent !)
+          message_excellent: "🌟 Excellente opportunité ! À surveiller de près."
+          
+          # 👍 Si le score est 7 ou 8 (bien)
+          message_bon: "👍 Bonne opportunité, à considérer."
+          
+          # ⚖️ Si le score est 5 ou 6 (moyen)
+          message_moyen: "⚖️ Opportunité moyenne, reste prudent."
+          
+          # ⚠️ Si le score est 4 ou moins (pas top)
+          message_faible: "⚠️ Opportunité faible, attends peut-être."
+        
+        # -------------------------------------
+        # 💱 BLOC BROKERS (Plateformes d'achat)
+        # -------------------------------------
+        # Ce bloc compare les prix sur différentes plateformes
+        brokers_block:
+          
+          # ✅ Afficher ce bloc dans le message
+          enabled: true
+          
+          # 🏷️ Titre de cette section
+          title: "💱 Où acheter le moins cher"
+          
+          # 🏆 Mettre en avant la plateforme la moins chère
+          # true = tu vois "✅ Meilleur prix : Binance"
+          show_best_price: true
+          highlight_best_price: true
+          
+          # 📊 Montrer TOUTES les plateformes
+          # true = tu vois Binance, Kraken, Coinbase, etc.
+          # false = seulement les 3 meilleures
+          show_all_brokers: false
+          
+          # 💰 Montrer les frais de transaction
+          # Frais = ce que la plateforme prend comme commission
+          # true = tu vois "Frais : 0.10%"
+          show_fees: true
+          show_fees_warning: true
+          
+          # 📊 Montrer les écarts de prix entre plateformes
+          # Écart = la différence de prix entre la plus chère et la moins chère
+          # true = tu vois "Écart : 2.5%"
+          show_spreads: true
+          
+          # 🔢 Nombre maximum de plateformes à afficher
+          # 3 = on montre les 3 meilleures
+          # 5 = on montre les 5 meilleures
+          # 10 = on montre jusqu'à 10 plateformes
+          max_brokers: 5
+          
+          # 📚 Petite explication pour comprendre
+          explanation: "Compare les prix sur différentes plateformes pour trouver la meilleure offre !"
+        
+        # -------------------------------------
+        # 😨 BLOC FEAR & GREED (Peur et Avidité)
+        # -------------------------------------
+        # Ce bloc montre l'humeur générale des gens sur le marché
+        fear_greed_block:
+          
+          # ✅ Afficher ce bloc dans le message
+          enabled: true
+          
+          # 🏷️ Titre de cette section
+          title: "😨😁 Humeur du marché"
+          
+          # 📊 Montrer le chiffre (de 0 à 100)
+          # 0 = peur extrême (tout le monde vend)
+          # 50 = neutre (calme)
+          # 100 = avidité extrême (tout le monde achète)
+          show_index: true
+          
+          # 💡 Expliquer ce que ça veut dire
+          # true = "Peur = bon moment pour acheter, Avidité = attention"
+          show_interpretation: true
+          explain_meaning: true
+          
+          # 📈 Comparer avec les jours précédents
+          # true = tu vois "Hier c'était 45, aujourd'hui 52"
+          show_historical_comparison: true
+          
+          # 📊 Montrer le graphique de l'évolution
+          # true = tu vois comment l'humeur a changé sur 7 jours
+          show_trend: false
+          
+          # 💬 Messages selon l'humeur du marché
+          
+          # 😱 Si tout le monde a peur (0-25)
+          message_extreme_fear: "😱 Peur extrême ! Les gens vendent beaucoup. Parfois c'est le moment d'acheter."
+          
+          # 😟 Si les gens ont un peu peur (26-45)
+          message_fear: "😟 Le marché a peur. Les prix baissent souvent."
+          
+          # 😐 Si c'est calme (46-54)
+          message_neutral: "😐 Le marché est calme, ni peur ni avidité."
+          
+          # 😊 Si les gens sont confiants (55-75)
+          message_greed: "😊 Le marché est optimiste. Les prix montent souvent."
+          
+          # 🤑 Si tout le monde veut acheter (76-100)
+          message_extreme_greed: "🤑 Avidité extrême ! Attention, les prix peuvent bientôt chuter."
+        
+        # -------------------------------------
+        # 💸 BLOC GAIN/PERTE
+        # -------------------------------------
+        # Ce bloc calcule combien tu gagnes ou perds avec ton investissement
+        gain_loss_block:
+          
+          # ✅ Afficher ce bloc dans le message
+          enabled: true
+          
+          # 🏷️ Titre de cette section
+          title: "💸 Ton gain ou ta perte"
+          
+          # 📊 Montrer le gain/perte en pourcentage
+          # true = tu vois "+15.3%" ou "-8.2%"
+          show_percentage: true
+          
+          # 💰 Montrer le gain/perte en euros
+          # true = tu vois "+1,530€" ou "-820€"
+          show_absolute_value: true
+          
+          # 🎯 Montrer à quel prix tu seras à zéro (ni gain ni perte)
+          # Prix d'équilibre = le prix où tu récupères juste ton argent
+          # true = tu vois "Tu seras à zéro si le prix atteint 85,000€"
+          show_break_even_price: true
+          
+          # 📅 Montrer depuis combien de temps tu as investi
+          # true = tu vois "Depuis 45 jours"
+          show_holding_period: false
+          
+          # 📈 Montrer l'évolution de ton investissement
+          # true = tu vois un petit graphique de ton gain/perte dans le temps
+          show_performance_chart: false
+          
+          # 💰 Utiliser un montant d'investissement différent (en euros)
+          # null = utilise le montant par défaut de la config
+          # 100 = calcule comme si tu avais investi 100€
+          # 1000 = calcule comme si tu avais investi 1000€
+          investment_amount_override: null
+          
+          # 📅 Date d'achat différente (format: YYYY-MM-DD)
+          # null = utilise la date par défaut
+          # "2024-01-15" = calcule comme si tu avais acheté le 15 janvier 2024
+          purchase_date_override: null
+          
+          # 💬 Messages selon si tu gagnes ou perds
+          
+          # 🎉 Si tu gagnes de l'argent
+          message_gain: "🎉 Tu gagnes de l'argent !"
+          
+          # 😢 Si tu perds de l'argent
+          message_perte: "😢 Tu perds de l'argent pour l'instant"
+          
+          # 💡 Si tu es à zéro (ni gain ni perte)
+          message_neutre: "💡 Tu es à l'équilibre, ni gain ni perte"
+          
+          # 📚 Petite explication
+          explanation: "Ton gain ou ta perte dépend du prix d'achat et du prix actuel"
+        
+        # -------------------------------------
+        # 💡 BLOC SUGGESTIONS D'INVESTISSEMENT
+        # -------------------------------------
+        # Ce bloc te propose d'autres cryptos intéressantes
+        investment_suggestions_block:
+          
+          # ✅ Afficher ce bloc dans le message
+          enabled: true
+          
+          # 🏷️ Titre de cette section
+          title: "💡 Autres cryptos intéressantes"
+          
+          # 🔢 Nombre de suggestions à afficher
+          # 1 = une seule crypto suggérée
+          # 3 = trois cryptos suggérées
+          # 5 = cinq cryptos suggérées
+          max_suggestions: 3
+          
+          # 📊 Score minimum pour suggérer une crypto
+          # 7 = on suggère seulement les cryptos avec score ≥ 7/10
+          # 5 = on suggère aussi les cryptos avec score moyen
+          min_opportunity_score: 7
+          
+          # 🚫 Ne pas suggérer la crypto actuelle
+          # true = si tu regardes BTC, on ne te suggère pas BTC
+          exclude_current: true
+          
+          # 📊 Préférer les cryptos stables (qui bougent peu)
+          # true = on suggère des cryptos calmes
+          # false = peu importe si ça bouge beaucoup
+          prefer_low_volatility: false
+          
+          # 📈 Préférer les cryptos qui montent en ce moment
+          # true = on suggère des cryptos qui ont la cote
+          prefer_trending: true
+          
+          # 💰 Préférer les cryptos "pas chères"
+          # true = on suggère des cryptos sous-évaluées
+          # false = peu importe le prix
+          prefer_undervalued: true
+          
+          # 📚 Message d'introduction
+          intro_message: "💡 Autres cryptos à surveiller :"
+          
+          # 💬 Messages pour les suggestions
+          
+          # ⭐ Pour une très bonne opportunité
+          message_forte: "⭐ Excellente opportunité détectée"
+          
+          # 👍 Pour une bonne opportunité
+          message_bonne: "👍 Bonne opportunité"
+          
+          # 💡 Pour une opportunité correcte
+          message_moyenne: "💡 Opportunité intéressante"
+        
+        # -------------------------------------
+        # 📚 BLOC GLOSSAIRE
+        # -------------------------------------
+        # Ce bloc explique les mots compliqués
+        glossary_block:
+          
+          # ✅ Afficher ce bloc dans le message
+          enabled: true
+          
+          # 🏷️ Titre de cette section
+          title: "📚 Petit dictionnaire"
+          
+          # 🤖 Détecter automatiquement les mots compliqués
+          # true = CryptoFlow trouve tout seul les mots à expliquer
+          # false = seulement les mots que TU as ajoutés ci-dessous
+          auto_detect_terms: true
+          
+          # 📖 Tes propres définitions
+          # Format : "MOT: Explication simple"
+          custom_terms:
+            RSI: "Indicateur de force relative - montre si une crypto est survendue (<30) ou surachetée (>70)"
+            FOMO: "Fear Of Missing Out - Peur de rater une opportunité"
+            HODL: "Hold On for Dear Life - Garder ses cryptos malgré la volatilité"
+            ATH: "All-Time High - Prix le plus haut jamais atteint"
+            ATL: "All-Time Low - Prix le plus bas jamais atteint"
+            DCA: "Dollar Cost Averaging - Acheter régulièrement pour lisser le prix"
+            Whale: "Baleine - Quelqu'un qui possède BEAUCOUP de crypto"
+            Bull: "Taureau - Marché qui monte (optimiste)"
+            Bear: "Ours - Marché qui baisse (pessimiste)"
+            DYOR: "Do Your Own Research - Fais tes propres recherches"
+            FUD: "Fear Uncertainty Doubt - Peur, incertitude et doute"
+          
+          # 📚 Message d'introduction
+          intro_message: "📖 Voici ce que les mots compliqués veulent dire :"
+        
+        # -------------------------------------
+        # 📝 BLOCS PERSONNALISÉS
+        # -------------------------------------
+        # Tes propres messages que tu veux ajouter
+        custom_blocks:
+          # Tu peux ajouter tes propres messages ici
+          # Exemple :
+          # - message: "🎮 N'oublie pas de jouer dehors aussi !"
+          #   position: "after_price"  # Où mettre ce message
+        
+        # =====================================
+        # 🎯 SEUILS D'ENVOI
+        # =====================================
+        # Envoyer le message SEULEMENT si certaines conditions sont remplies
+        
+        # 📊 N'envoyer que si le prix a changé d'au moins X%
+        # null = envoyer toujours
+        # 5.0 = envoyer seulement si ça a bougé de +5% ou -5%
+        send_only_if_change_above: null
+        
+        # ⭐ N'envoyer que si le score d'opportunité est au moins X/10
+        # null = envoyer toujours
+        # 7 = envoyer seulement si le score est ≥ 7/10
+        send_only_if_opportunity_above: null
+        
+        # =====================================
+        # 👶 MODES SPÉCIAUX
+        # =====================================
+        
+        # 👶 Mode enfant pour cette notification
+        # true = langage très simple
+        # false = langage normal
+        kid_friendly_mode: true
+        
+        # 😀 Utiliser plein d'emojis
+        # true = 🎉💰📈 partout !
+        # false = juste quelques emojis
+        use_emojis_everywhere: true
+        
+        # 📖 Tout expliquer en détail
+        # true = beaucoup d'explications
+        # false = plus concis
+        explain_everything: true
+        
+        # 🚫 Éviter les mots techniques
+        # true = on utilise des mots simples
+        # false = on peut utiliser des mots compliqués
+        avoid_technical_terms: true
+  
+  
+  # ========================================
+  # 💎 ETHEREUM (ETH)
+  # ========================================
+  ETH:
+    # ✅ Activer cette crypto
+    enabled: true
+    
+    # 🏷️ Surnom
+    nickname: "ETH"
+    
+    # 😀 Emoji
+    custom_emoji: "⟠"
+    
+    # 📊 Niveau de détail
+    detail_level: "detailed"
+    
+    # 👋 Messages d'accueil/au revoir
+    intro_message: null
+    outro_message: null
+    
+    # 📅 MÊMES NOTIFICATIONS QUE BTC
+    # (copie exacte de la configuration BTC ci-dessus)
+    scheduled_notifications:
+      - name: "Analyse complète quotidienne"
+        description: "Tout ce qu'il faut savoir, 4 fois par jour"
+        enabled: true
+        hours: [9, 12, 18, 22]
+        days_of_week: [0, 1, 2, 3, 4, 5, 6]
+        time_slot: null
+        
         blocks_order:
           - header
           - price
+          - chart
           - prediction
           - opportunity
-          - brokers      # ← ACTIVÉ
+          - brokers
+          - fear_greed
+          - gain_loss
+          - investment_suggestions
+          - glossary
+          - custom
           - footer
         
-        header_message: "🔔 {symbol} - Mise à jour"
-        footer_message: "ℹ️ Ceci n'est pas un conseil financier"
+        header_message: "🔔 CryptoFlow - Analyse {symbol}"
+        footer_message: "💡 CryptoFlow - Analyse automatique | Pas de conseil financier"
         
-        # Configuration de chaque bloc
+        # TOUS LES BLOCS (identiques à BTC)
         price_block:
           enabled: true
+          title: "💰 Prix actuel"
           show_price_eur: true
+          show_price_usd: true
+          show_price_btc: false
+          show_variation_1h: false
           show_variation_24h: true
-          show_variation_7d: false
+          show_variation_7d: true
+          show_variation_30d: false
           show_volume: true
-          show_market_cap: false
-          add_price_comment: false
+          show_market_cap: true
+          show_circulating_supply: false
+          show_total_supply: false
+          show_max_supply: false
+          show_ath: false
+          show_ath_date: false
+          show_atl: false
+          show_atl_date: false
+          show_dominance: false
+          add_price_comment: true
+          explain_volume: false
+          explain_market_cap: false
+          message_prix_monte: "📈 Le prix augmente"
+          message_prix_baisse: "📉 Le prix diminue"
+          message_prix_stable: "➡️ Le prix est stable"
+          message_hausse_forte: "🚀 Forte hausse !"
+          message_baisse_forte: "⚠️ Forte baisse !"
+          seuil_hausse_forte: 10.0
+          seuil_baisse_forte: -10.0
         
         chart_block:
-          enabled: false  # ← DÉSACTIVÉ
+          enabled: true
+          title: "📊 Évolution du prix"
+          show_sparklines: true
+          send_full_chart: true
+          timeframes: [24, 168]
+          show_moving_averages: false
+          show_support_resistance: true
+          show_volume_bars: false
+          show_rsi: false
+          show_macd: false
+          show_bollinger_bands: false
+          chart_style: "line"
+          dark_mode: true
+          period_names:
+            1: "1 heure"
+            4: "4 heures"
+            24: "1 jour"
+            168: "1 semaine"
+            720: "1 mois"
         
         prediction_block:
           enabled: true
+          title: "🔮 Prédiction IA"
           show_prediction_type: true
           show_confidence: true
-          min_confidence_to_show: 50
+          show_reasoning: true
+          show_explanation: true
+          show_technical_indicators: false
+          show_rsi_value: false
+          show_macd_value: false
+          show_volume_analysis: false
+          min_confidence_to_show: 0
+          message_haussier: "🚀 L'IA pense que le prix va monter"
+          message_baissier: "📉 L'IA pense que le prix va baisser"
+          message_neutre: "😐 L'IA ne sait pas trop ce qui va se passer"
+          explanation_text: "L'IA analyse plein de données pour essayer de deviner le futur. Mais attention, elle peut se tromper !"
         
         opportunity_block:
           enabled: true
+          title: "⭐ Score d'opportunité"
           show_score: true
-          show_recommendation: true
-          show_reasons: false
-          min_score_to_show: 0
+          show_score_details: true
+          show_risk_factors: true
+          show_entry_exit_points: true
+          explain_opportunity: false
+          message_excellent: "🌟 Excellente opportunité ! À surveiller de près."
+          message_bon: "👍 Bonne opportunité, à considérer."
+          message_moyen: "⚖️ Opportunité moyenne, reste prudent."
+          message_faible: "⚠️ Opportunité faible, attends peut-être."
         
         brokers_block:
-          enabled: true              # ← ACTIVÉ ICI
-          title: "💱 Prix sur les brokers"
+          enabled: true
+          title: "💱 Où acheter le moins cher"
           show_best_price: true
-          show_all_brokers: true
+          highlight_best_price: true
+          show_all_brokers: false
           show_fees: true
-          max_brokers_displayed: 5
-          explanation: "Comparaison des prix sur différentes plateformes"
+          show_fees_warning: true
+          show_spreads: true
+          max_brokers: 5
+          explanation: "Compare les prix sur différentes plateformes pour trouver la meilleure offre !"
         
         fear_greed_block:
-          enabled: false  # ← DÉSACTIVÉ
+          enabled: true
+          title: "😨😁 Humeur du marché"
+          show_index: true
+          show_interpretation: true
+          explain_meaning: true
+          show_historical_comparison: true
+          show_trend: false
+          message_extreme_fear: "😱 Peur extrême ! Les gens vendent beaucoup. Parfois c'est le moment d'acheter."
+          message_fear: "😟 Le marché a peur. Les prix baissent souvent."
+          message_neutral: "😐 Le marché est calme, ni peur ni avidité."
+          message_greed: "😊 Le marché est optimiste. Les prix montent souvent."
+          message_extreme_greed: "🤑 Avidité extrême ! Attention, les prix peuvent bientôt chuter."
         
         gain_loss_block:
-          enabled: false  # ← DÉSACTIVÉ
+          enabled: true
+          title: "💸 Ton gain ou ta perte"
+          show_percentage: true
+          show_absolute_value: true
+          show_break_even_price: true
+          show_holding_period: false
+          show_performance_chart: false
+          investment_amount_override: null
+          purchase_date_override: null
+          message_gain: "🎉 Tu gagnes de l'argent !"
+          message_perte: "😢 Tu perds de l'argent pour l'instant"
+          message_neutre: "💡 Tu es à l'équilibre, ni gain ni perte"
+          explanation: "Ton gain ou ta perte dépend du prix d'achat et du prix actuel"
         
         investment_suggestions_block:
-          enabled: false  # ← DÉSACTIVÉ
+          enabled: true
+          title: "💡 Autres cryptos intéressantes"
+          max_suggestions: 3
+          min_opportunity_score: 7
+          exclude_current: true
+          prefer_low_volatility: false
+          prefer_trending: true
+          prefer_undervalued: true
+          intro_message: "💡 Autres cryptos à surveiller :"
+          message_forte: "⭐ Excellente opportunité détectée"
+          message_bonne: "👍 Bonne opportunité"
+          message_moyenne: "💡 Opportunité intéressante"
         
         glossary_block:
-          enabled: false  # ← DÉSACTIVÉ
-  
-  ETH:
-    enabled: true
-    nickname: "Ethereum"
-    custom_emoji: "🦄"
-    
-    scheduled_notifications:
-      - name: "Notification ETH"
-        enabled: true
-        hours: [9, 18]
-        
-        blocks_order:
-          - header
-          - price
-          - brokers
-          - footer
-        
-        price_block:
           enabled: true
+          title: "📚 Petit dictionnaire"
+          auto_detect_terms: true
+          custom_terms:
+            RSI: "Indicateur de force relative - montre si une crypto est survendue (<30) ou surachetée (>70)"
+            FOMO: "Fear Of Missing Out - Peur de rater une opportunité"
+            HODL: "Hold On for Dear Life - Garder ses cryptos malgré la volatilité"
+            ATH: "All-Time High - Prix le plus haut jamais atteint"
+            ATL: "All-Time Low - Prix le plus bas jamais atteint"
+            DCA: "Dollar Cost Averaging - Acheter régulièrement pour lisser le prix"
+            Whale: "Baleine - Quelqu'un qui possède BEAUCOUP de crypto"
+            Bull: "Taureau - Marché qui monte (optimiste)"
+            Bear: "Ours - Marché qui baisse (pessimiste)"
+            DYOR: "Do Your Own Research - Fais tes propres recherches"
+            FUD: "Fear Uncertainty Doubt - Peur, incertitude et doute"
+          intro_message: "📖 Voici ce que les mots compliqués veulent dire :"
         
-        brokers_block:
-          enabled: true
+        custom_blocks: []
+        
+        send_only_if_change_above: null
+        send_only_if_opportunity_above: null
+        
+        kid_friendly_mode: true
+        use_emojis_everywhere: true
+        explain_everything: true
+        avoid_technical_terms: true
   
+  
+  # ========================================
+  # ⚡ SOLANA (SOL)
+  # ========================================
   SOL:
+    # ✅ Activer cette crypto
     enabled: true
-    nickname: "Solana"
+    
+    # 🏷️ Surnom
+    nickname: "SOL"
+    
+    # 😀 Emoji
     custom_emoji: "⚡"
     
+    # 📊 Niveau de détail
+    detail_level: "detailed"
+    
+    # 👋 Messages d'accueil/au revoir
+    intro_message: null
+    outro_message: null
+    
+    # 📅 MÊMES NOTIFICATIONS QUE BTC et ETH
+    # (copie exacte de la configuration ci-dessus)
     scheduled_notifications:
-      - name: "Notification SOL"
+      - name: "Analyse complète quotidienne"
+        description: "Tout ce qu'il faut savoir, 4 fois par jour"
         enabled: true
-        hours: [9, 18]
+        hours: [9, 12, 18, 22]
+        days_of_week: [0, 1, 2, 3, 4, 5, 6]
+        time_slot: null
         
         blocks_order:
           - header
           - price
+          - chart
+          - prediction
+          - opportunity
           - brokers
+          - fear_greed
+          - gain_loss
+          - investment_suggestions
+          - glossary
+          - custom
           - footer
         
+        header_message: "🔔 CryptoFlow - Analyse {symbol}"
+        footer_message: "💡 CryptoFlow - Analyse automatique | Pas de conseil financier"
+        
+        # TOUS LES BLOCS (identiques à BTC et ETH)
         price_block:
           enabled: true
+          title: "💰 Prix actuel"
+          show_price_eur: true
+          show_price_usd: true
+          show_price_btc: false
+          show_variation_1h: false
+          show_variation_24h: true
+          show_variation_7d: true
+          show_variation_30d: false
+          show_volume: true
+          show_market_cap: true
+          show_circulating_supply: false
+          show_total_supply: false
+          show_max_supply: false
+          show_ath: false
+          show_ath_date: false
+          show_atl: false
+          show_atl_date: false
+          show_dominance: false
+          add_price_comment: true
+          explain_volume: false
+          explain_market_cap: false
+          message_prix_monte: "📈 Le prix augmente"
+          message_prix_baisse: "📉 Le prix diminue"
+          message_prix_stable: "➡️ Le prix est stable"
+          message_hausse_forte: "🚀 Forte hausse !"
+          message_baisse_forte: "⚠️ Forte baisse !"
+          seuil_hausse_forte: 10.0
+          seuil_baisse_forte: -10.0
+        
+        chart_block:
+          enabled: true
+          title: "📊 Évolution du prix"
+          show_sparklines: true
+          send_full_chart: true
+          timeframes: [24, 168]
+          show_moving_averages: false
+          show_support_resistance: true
+          show_volume_bars: false
+          show_rsi: false
+          show_macd: false
+          show_bollinger_bands: false
+          chart_style: "line"
+          dark_mode: true
+          period_names:
+            1: "1 heure"
+            4: "4 heures"
+            24: "1 jour"
+            168: "1 semaine"
+            720: "1 mois"
+        
+        prediction_block:
+          enabled: true
+          title: "🔮 Prédiction IA"
+          show_prediction_type: true
+          show_confidence: true
+          show_reasoning: true
+          show_explanation: true
+          show_technical_indicators: false
+          show_rsi_value: false
+          show_macd_value: false
+          show_volume_analysis: false
+          min_confidence_to_show: 0
+          message_haussier: "🚀 L'IA pense que le prix va monter"
+          message_baissier: "📉 L'IA pense que le prix va baisser"
+          message_neutre: "😐 L'IA ne sait pas trop ce qui va se passer"
+          explanation_text: "L'IA analyse plein de données pour essayer de deviner le futur. Mais attention, elle peut se tromper !"
+        
+        opportunity_block:
+          enabled: true
+          title: "⭐ Score d'opportunité"
+          show_score: true
+          show_score_details: true
+          show_risk_factors: true
+          show_entry_exit_points: true
+          explain_opportunity: false
+          message_excellent: "🌟 Excellente opportunité ! À surveiller de près."
+          message_bon: "👍 Bonne opportunité, à considérer."
+          message_moyen: "⚖️ Opportunité moyenne, reste prudent."
+          message_faible: "⚠️ Opportunité faible, attends peut-être."
         
         brokers_block:
           enabled: true
+          title: "💱 Où acheter le moins cher"
+          show_best_price: true
+          highlight_best_price: true
+          show_all_brokers: false
+          show_fees: true
+          show_fees_warning: true
+          show_spreads: true
+          max_brokers: 5
+          explanation: "Compare les prix sur différentes plateformes pour trouver la meilleure offre !"
+        
+        fear_greed_block:
+          enabled: true
+          title: "😨😁 Humeur du marché"
+          show_index: true
+          show_interpretation: true
+          explain_meaning: true
+          show_historical_comparison: true
+          show_trend: false
+          message_extreme_fear: "😱 Peur extrême ! Les gens vendent beaucoup. Parfois c'est le moment d'acheter."
+          message_fear: "😟 Le marché a peur. Les prix baissent souvent."
+          message_neutral: "😐 Le marché est calme, ni peur ni avidité."
+          message_greed: "😊 Le marché est optimiste. Les prix montent souvent."
+          message_extreme_greed: "🤑 Avidité extrême ! Attention, les prix peuvent bientôt chuter."
+        
+        gain_loss_block:
+          enabled: true
+          title: "💸 Ton gain ou ta perte"
+          show_percentage: true
+          show_absolute_value: true
+          show_break_even_price: true
+          show_holding_period: false
+          show_performance_chart: false
+          investment_amount_override: null
+          purchase_date_override: null
+          message_gain: "🎉 Tu gagnes de l'argent !"
+          message_perte: "😢 Tu perds de l'argent pour l'instant"
+          message_neutre: "💡 Tu es à l'équilibre, ni gain ni perte"
+          explanation: "Ton gain ou ta perte dépend du prix d'achat et du prix actuel"
+        
+        investment_suggestions_block:
+          enabled: true
+          title: "💡 Autres cryptos intéressantes"
+          max_suggestions: 3
+          min_opportunity_score: 7
+          exclude_current: true
+          prefer_low_volatility: false
+          prefer_trending: true
+          prefer_undervalued: true
+          intro_message: "💡 Autres cryptos à surveiller :"
+          message_forte: "⭐ Excellente opportunité détectée"
+          message_bonne: "👍 Bonne opportunité"
+          message_moyenne: "💡 Opportunité intéressante"
+        
+        glossary_block:
+          enabled: true
+          title: "📚 Petit dictionnaire"
+          auto_detect_terms: true
+          custom_terms:
+            RSI: "Indicateur de force relative - montre si une crypto est survendue (<30) ou surachetée (>70)"
+            FOMO: "Fear Of Missing Out - Peur de rater une opportunité"
+            HODL: "Hold On for Dear Life - Garder ses cryptos malgré la volatilité"
+            ATH: "All-Time High - Prix le plus haut jamais atteint"
+            ATL: "All-Time Low - Prix le plus bas jamais atteint"
+            DCA: "Dollar Cost Averaging - Acheter régulièrement pour lisser le prix"
+            Whale: "Baleine - Quelqu'un qui possède BEAUCOUP de crypto"
+            Bull: "Taureau - Marché qui monte (optimiste)"
+            Bear: "Ours - Marché qui baisse (pessimiste)"
+            DYOR: "Do Your Own Research - Fais tes propres recherches"
+            FUD: "Fear Uncertainty Doubt - Peur, incertitude et doute"
+          intro_message: "📖 Voici ce que les mots compliqués veulent dire :"
+        
+        custom_blocks: []
+        
+        send_only_if_change_above: null
+        send_only_if_opportunity_above: null
+        
+        kid_friendly_mode: true
+        use_emojis_everywhere: true
+        explain_everything: true
+        avoid_technical_terms: true
+
+
+# ============================================================
+# 📚 NOTES ET AIDE
+# ============================================================
+# 
+# 🎯 RÉSUMÉ DE LA CONFIGURATION :
+# • 3 cryptos : BTC, ETH, SOL
+# • 4 notifications par jour : 9h, 12h, 18h, 22h
+# • Tous les jours de la semaine
+# • Tous les blocs activés avec TOUTES les options
+# 
+# 💡 POUR PERSONNALISER :
+# 1. Change "enabled: true" en "enabled: false" pour désactiver
+# 2. Modifie "hours: [9, 12, 18, 22]" pour d'autres heures
+# 3. Adapte les messages selon tes goûts
+# 
+# 🆘 BESOIN D'AIDE ?
+# • Chaque option a un commentaire qui explique
+# • Ne change que ce que tu comprends
+# • Les valeurs par défaut sont déjà bien configurées
+# 
+# 🚀 POUR AJOUTER UNE NOUVELLE CRYPTO :
+# • Copie tout le bloc "BTC:" (de BTC: jusqu'à avoid_technical_terms)
+# • Colle-le en bas de la section "coins:"
+# • Change "BTC:" par le nouveau symbole (ex: "XRP:")
+# • Change nickname, custom_emoji, et c'est tout !
+# 
+# ============================================================
