@@ -21,6 +21,7 @@ from core.services.chart_service import ChartService
 from api.enhanced_telegram_api import EnhancedTelegramAPI
 from core.services.dca_service import DCAService
 from core.services.notification_generator import NotificationGenerator
+from core.services.broker_service import BrokerService
 from core.services.summary_service import SummaryService
 from core.models.notification_config import GlobalNotificationSettings
 
@@ -139,9 +140,11 @@ class DaemonService:
         """Met à jour les paramètres de notification et régénère le générateur associé."""
         with self._state_lock:
             self.notification_settings = settings
+            self.broker_service = BrokerService(self.config)
             self.notification_generator = NotificationGenerator(
-                settings,
+                settings, 
                 self.config.crypto_symbols,
+                broker_service=self.broker_service
             )
 
     def update_configuration(self, config: BotConfiguration) -> None:
@@ -150,10 +153,8 @@ class DaemonService:
             self.config = config
             # Recréer les services si nécessaire
             self.alert_service = AlertService(config)
-            self.notification_generator = NotificationGenerator(
-                self.notification_settings,
-                config.crypto_symbols,
-            )
+            self.broker_service = BrokerService(config)
+            self.notification_generator = NotificationGenerator(self.notification_settings, config.crypto_symbols, broker_service=self.broker_service)
             self.logger.info("Configuration mise à jour")
 
     def _signal_handler(self, signum, frame):
@@ -489,7 +490,7 @@ class DaemonService:
             self.logger.error(f"❌ Erreur vérification alertes {symbol}: {exc}")
     
     def _send_startup_message(self):
-        """Envoie un message de démarrage selon la configuration notifications.yaml"""
+        """Envoie un message de démarrage selon notifications.yaml (FORCÉ)"""
         try:
             self.logger.info("📊 Génération du message de démarrage...")
             
@@ -499,84 +500,129 @@ class DaemonService:
                 f"📅 {datetime.now(timezone.utc).strftime('%d/%m/%Y %H:%M:%S')} UTC\n\n"
             )
             
-            # Collecter les données pour toutes les cryptos
+            # Collecter les données
             markets_data = {}
             predictions = {}
             opportunities = {}
             
             for symbol in self.config.crypto_symbols:
                 try:
-                    # Récupérer les données
                     market_data = self.market_service.get_market_data(symbol)
                     if market_data:
                         markets_data[symbol] = market_data
-                        
-                        # Prédiction
                         prediction = self.market_service.predict_price_movement(market_data)
                         if prediction:
                             predictions[symbol] = prediction
-                        
-                        # Opportunité
                         opportunity = self.market_service.calculate_opportunity_score(
                             market_data, prediction
                         )
                         if opportunity:
                             opportunities[symbol] = opportunity
                         
-                        self.logger.info(
-                            f"  ✓ {symbol}: {market_data.current_price.price_eur:.2f}€"
-                        )
+                        self.logger.info(f"  ✓ {symbol}: {market_data.current_price.price_eur:.2f}€")
                 
                 except Exception as e:
                     self.logger.error(f"Erreur récupération {symbol}: {e}")
             
             if not markets_data:
-                # Fallback si aucune donnée
                 self.telegram_api.send_message(
                     startup_header + "⚠️ Impossible de récupérer les données de marché."
                 )
                 return
             
-            # IMPORTANT: Utiliser NotificationGenerator pour respecter notifications.yaml
-            # au lieu de SummaryService qui génère toujours un résumé complet
-            
+            # FORCER NotificationGenerator même si pas l'heure programmée
             all_notifications = []
+            current_time = datetime.now(timezone.utc)
+            current_hour = current_time.hour
+            current_day = current_time.weekday()
             
             for symbol in markets_data.keys():
                 try:
-                    # Générer la notification selon la config dans notifications.yaml
-                    notification = self.notification_generator.generate_notification(
-                        symbol=symbol,
-                        market_data=markets_data[symbol],
-                        prediction=predictions.get(symbol),
-                        opportunity=opportunities.get(symbol),
-                        time_slot="startup",  # Slot spécial pour le démarrage
-                        is_scheduled=False     # Pas une notification programmée
+                    # Récupérer le profil
+                    profile = self.notification_settings.get_coin_profile(symbol)
+                    if not profile or not profile.enabled:
+                        continue
+                    
+                    # IMPORTANT: Utiliser la PREMIÈRE config disponible
+                    # même si ce n'est pas l'heure programmée
+                    config = None
+                    if profile.scheduled_notifications:
+                        config = profile.scheduled_notifications[0]
+                    elif profile.default_config:
+                        config = profile.default_config
+                    
+                    if not config:
+                        self.logger.warning(f"Aucune config pour {symbol}")
+                        continue
+                    
+                    # GÉNÉRER LA NOTIFICATION MANUELLEMENT
+                    # en utilisant les blocs configurés dans blocks_order
+                    message_parts = []
+                    
+                    # Header personnalisé
+                    emoji = profile.custom_emoji or "💎"
+                    header = f"🔔 <b>{emoji} {profile.nickname or symbol}</b>"
+                    message_parts.append(header)
+                    
+                    # Générer chaque bloc selon blocks_order
+                    # Note: NotificationGenerator et BrokerService déjà importés en haut
+                    
+                    # Créer un générateur temporaire pour utiliser ses méthodes de blocs
+                    temp_gen = NotificationGenerator(
+                        self.notification_settings, 
+                        self.config.crypto_symbols,
+                        broker_service=self.broker_service
                     )
                     
-                    if notification:
+                    for block_name in config.blocks_order:
+                        try:
+                            block_content = temp_gen._generate_block(
+                                block_name=block_name,
+                                config=config,
+                                symbol=symbol,
+                                market=markets_data[symbol],
+                                prediction=predictions.get(symbol),
+                                opportunity=opportunities.get(symbol),
+                                all_markets=markets_data,
+                                all_predictions=predictions,
+                                all_opportunities=opportunities,
+                            )
+                            
+                            if block_content:
+                                message_parts.append(block_content)
+                        
+                        except Exception as e:
+                            self.logger.error(f"Erreur bloc {block_name} pour {symbol}: {e}")
+                    
+                    # Footer
+                    footer = config.footer_message or "ℹ️ Ceci n'est pas un conseil financier"
+                    message_parts.append(footer)
+                    
+                    if message_parts:
+                        notification = "\n\n".join(message_parts)
                         all_notifications.append(notification)
                 
                 except Exception as e:
-                    self.logger.error(f"Erreur génération notification {symbol}: {e}")
+                    self.logger.error(f"Erreur notification {symbol}: {e}")
+                    import traceback
+                    self.logger.error(traceback.format_exc())
             
             if not all_notifications:
                 self.logger.warning("Aucune notification générée")
                 return
             
-            # Assembler le message final
+            # Assembler et envoyer
             full_message = startup_header + "\n\n".join(all_notifications)
             
-            # Envoyer sur Telegram
             success = self.telegram_api.send_message(full_message, parse_mode="HTML")
             
             if success:
-                self.logger.info("✅ Message de démarrage envoyé (config notifications.yaml respectée)")
+                self.logger.info("✅ Message de démarrage envoyé (notifications.yaml respecté)")
             else:
                 self.logger.error("❌ Échec envoi message de démarrage")
         
         except Exception as e:
-            self.logger.error(f"❌ Erreur envoi message démarrage: {e}")
+            self.logger.error(f"❌ Erreur message démarrage: {e}")
             import traceback
             self.logger.error(traceback.format_exc())
 

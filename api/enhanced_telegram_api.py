@@ -2,12 +2,16 @@
 Enhanced Telegram API - Avec retry logic et message queue
 """
 
+import logging
 import requests
 import time
+from pathlib import Path
 from typing import Optional, BinaryIO, List
 from queue import Queue, Empty
 from threading import Thread, Lock
 from core.models import Alert
+
+logger = logging.getLogger(__name__)
 
 
 class EnhancedTelegramAPI:
@@ -109,6 +113,28 @@ class EnhancedTelegramAPI:
                     time.sleep(self.retry_delay * (retry + 1))
         
         return False
+
+    def _log_failed_message(self, text: str, response: Optional[requests.Response], error: Optional[Exception] = None):
+        """Log le contenu d'un message qui a échoué pour faciliter le debug HTML."""
+        try:
+            Path("logs").mkdir(parents=True, exist_ok=True)
+            with open("logs/telegram_failed.log", "a", encoding="utf-8") as f:
+                f.write("\n" + "="*80 + "\n")
+                f.write(time.strftime("%Y-%m-%d %H:%M:%S") + "\n")
+                if error:
+                    f.write(f"Erreur: {error}\n")
+                if response is not None:
+                    f.write(f"Status: {response.status_code}\n")
+                    try:
+                        f.write(f"Response: {response.text}\n")
+                    except Exception:
+                        pass
+                f.write(f"Message length: {len(text)}\n")
+                f.write("Message preview:\n")
+                f.write(text)
+                f.write("\n" + "="*80 + "\n")
+        except Exception as log_error:
+            logger.error(f"Impossible d'enregistrer le message Telegram échoué: {log_error}")
     
     def send_message(self, text: str, parse_mode: str = "HTML", use_queue: bool = True) -> bool:
         """Envoie un message texte"""
@@ -128,6 +154,7 @@ class EnhancedTelegramAPI:
         if not self.bot_token or not self.chat_id:
             return False
         
+        response = None
         try:
             url = f"{self.base_url}/sendMessage"
             data = {
@@ -138,11 +165,17 @@ class EnhancedTelegramAPI:
             }
             
             response = self.session.post(url, json=data, timeout=self.timeout)
+            if response.status_code >= 400:
+                self._log_failed_message(text, response)
             response.raise_for_status()
             
-            return response.json().get("ok", False)
+            result = response.json()
+            if not result.get("ok", False):
+                self._log_failed_message(text, response)
+            return result.get("ok", False)
         
         except Exception as e:
+            self._log_failed_message(text, response, error=e)
             print(f"Erreur envoi message: {e}")
             return False
     

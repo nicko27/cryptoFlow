@@ -6,10 +6,18 @@
 ├── api
 │   ├── __init__.py
 │   ├── binance_api.py
-│   ├── binance_api.py.backup.20251019_214853
 │   ├── enhanced_telegram_api.py
 │   ├── revolut_api.py
 │   └── telegram_api.py
+├── backups
+│   ├── fix_daemon_syntax_20251021_222227
+│   │   └── daemon_service.py
+│   ├── implement_features_20251021_222001
+│   │   ├── daemon_service.py
+│   │   └── notification_generator.py
+│   └── patch_direct_20251021_222753
+│       ├── daemon_service.py
+│       └── notification_generator.py
 ├── brokers
 │   ├── __init__.py
 │   ├── base.py
@@ -19,12 +27,21 @@
 │   ├── __init__.py
 │   ├── config_manager.py
 │   ├── config.yaml
-│   ├── config.yaml.backup
-│   ├── config.yaml.example
+│   ├── notifications_example_simple.yaml
 │   ├── notifications.yaml
 │   └── setup_wizard.py
+├── constants
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── emojis.py
+│   └── messages.py
 ├── core
 │   ├── __init__.py
+│   ├── constants
+│   │   ├── __init__.py
+│   │   ├── emojis.py
+│   │   ├── emojis.py.backup
+│   │   └── messages.py
 │   ├── models
 │   │   ├── __init__.py
 │   │   └── notification_config.py
@@ -37,11 +54,9 @@
 │       ├── chart_service.py
 │       ├── database_service.py
 │       ├── dca_service.py
-│       ├── enhanced_notification_generator.py
 │       ├── investment_suggestion_service.py
-│       ├── market_service_backup_20251019_213833.py
 │       ├── market_service.py
-│       ├── market_service.py.backup
+│       ├── notification_generator.py
 │       ├── portfolio_service.py
 │       ├── report_service.py
 │       └── summary_service.py
@@ -54,6 +69,8 @@
 │   ├── __init__.py
 │   ├── models.py
 │   └── repository.py
+├── fix_daemon_syntax.py
+├── implement_features.py
 ├── logs
 │   └── crypto_bot.log
 ├── main.py
@@ -62,6 +79,7 @@
 │   └── ml_predictor.py
 ├── optimizations
 │   └── __init__.py
+├── patch_direct.py
 ├── reports
 ├── requirements.txt
 ├── strategies
@@ -72,14 +90,16 @@
 │   ├── __init__.py
 │   ├── advanced_charts.py
 │   ├── advanced_notification_config_window.py
+│   ├── crypto_manager_window.py
 │   ├── main_window.py
 │   ├── settings_window.py
-│   ├── settings_window.py.backup.20251019_214853
 │   └── unified_notification_dialog.py
 └── utils
     ├── __init__.py
     ├── chart_generator.py
     ├── exchange_rate_monitor.py
-    └── logger.py
+    ├── formatters.py
+    ├── logger.py
+    └── notification_config_validator.py
 
-18 directories, 65 files
+25 directories, 78 files

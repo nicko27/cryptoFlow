@@ -43,9 +43,17 @@ class NotificationMessages:
             "normal": "Opportunité moyenne",
             "kid_friendly": "Tu peux acheter, mais ce n'est pas le meilleur moment 🤔"
         },
+        "medium": {
+            "normal": "Opportunité correcte",
+            "kid_friendly": "Chance correcte, mais reste prudent 🤔"
+        },
         "poor": {
             "normal": "Opportunité faible",
             "kid_friendly": "Ce n'est pas le meilleur moment pour acheter 😕"
+        },
+        "low": {
+            "normal": "Opportunité très faible",
+            "kid_friendly": "Pas top en ce moment, mieux vaut attendre 😕"
         },
         "bad": {
             "normal": "Mauvaise opportunité",
@@ -74,6 +82,29 @@ class NotificationMessages:
         "default": "Ceci est une information, pas un conseil financier.",
         "kid_friendly": "N'investis jamais plus que ce que tu peux te permettre de perdre !",
         "detailed": "Les informations fournies ne constituent pas un conseil en investissement. Consultez un professionnel avant toute décision financière."
+    }
+
+    FEAR_GREED_MESSAGES = {
+        "extreme_fear": {
+            "normal": "Peur extrême : le marché vend massivement.",
+            "kid_friendly": "Tout le monde a très peur et vend beaucoup 😱"
+        },
+        "fear": {
+            "normal": "Peur sur le marché, prudence recommandée.",
+            "kid_friendly": "Les gens ont peur, les prix peuvent baisser 😟"
+        },
+        "neutral": {
+            "normal": "Sentiment neutre, le marché reste équilibré.",
+            "kid_friendly": "Personne n'est vraiment paniqué ni trop excité 😐"
+        },
+        "greed": {
+            "normal": "Avidité croissante : l'optimisme domine.",
+            "kid_friendly": "Beaucoup sont optimistes, les prix montent 😊"
+        },
+        "extreme_greed": {
+            "normal": "Avidité extrême : attention au retournement.",
+            "kid_friendly": "Tout le monde est euphorique, fais attention aux chutes 🤑"
+        }
     }
     
     # Glossaire par défaut
@@ -116,8 +147,32 @@ class NotificationMessages:
         elif score >= 6:
             return NotificationMessages.OPPORTUNITY_MESSAGES["good"][key]
         elif score >= 4:
-            return NotificationMessages.OPPORTUNITY_MESSAGES["neutral"][key]
+            return NotificationMessages.OPPORTUNITY_MESSAGES["medium"][key]
         elif score >= 2:
-            return NotificationMessages.OPPORTUNITY_MESSAGES["poor"][key]
+            return NotificationMessages.OPPORTUNITY_MESSAGES["low"][key]
         else:
             return NotificationMessages.OPPORTUNITY_MESSAGES["bad"][key]
+
+    @staticmethod
+    def get_fear_greed_message(index: float, kid_friendly: bool = False) -> str:
+        """Retourne un message adapté selon l'indice Fear & Greed"""
+        if index is None:
+            return ""
+        key = "kid_friendly" if kid_friendly else "normal"
+        try:
+            value = float(index)
+        except (TypeError, ValueError):
+            return ""
+
+        if value <= 20:
+            bucket = "extreme_fear"
+        elif value <= 40:
+            bucket = "fear"
+        elif value < 60:
+            bucket = "neutral"
+        elif value < 80:
+            bucket = "greed"
+        else:
+            bucket = "extreme_greed"
+
+        return NotificationMessages.FEAR_GREED_MESSAGES[bucket][key]

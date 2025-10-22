@@ -21,8 +21,24 @@ from core.services.chart_service import ChartService
 from api.enhanced_telegram_api import EnhancedTelegramAPI
 from core.services.dca_service import DCAService
 from core.services.notification_generator import NotificationGenerator
+from core.services.broker_service import BrokerService
 from core.services.summary_service import SummaryService
-from core.models.notification_config import GlobalNotificationSettings
+from core.models.notification_config import (
+    GlobalNotificationSettings,
+    CoinNotificationProfile,
+    ScheduledNotificationConfig,
+    PriceBlock,
+    PredictionBlock,
+    OpportunityBlock,
+    ChartBlock,
+    BrokersBlock,
+    FearGreedBlock,
+    GainLossBlock,
+    InvestmentSuggestionBlock,
+    GlossaryBlock,
+    CustomMessageBlock,
+)
+from utils.formatters import SafeHTMLFormatter
 
 
 class DaemonService:
@@ -98,9 +114,10 @@ class DaemonService:
     
     def _dict_to_notification_settings(self, data: dict) -> GlobalNotificationSettings:
         """
-        FIXED: Problème 8 - Méthode implémentée
-        Convertit un dictionnaire YAML en GlobalNotificationSettings
+        FIXED: Problème 8 - Méthode complétée
+        Convertit un dictionnaire YAML en GlobalNotificationSettings complet
         """
+
         def _normalize_hours(value):
             hours: List[int] = []
             if isinstance(value, (int, float)):
@@ -118,30 +135,176 @@ class DaemonService:
                         hours.append(int(item.strip()))
             return sorted({h for h in hours if 0 <= h <= 23})
 
-        hours = _normalize_hours(data.get('default_scheduled_hours', [9, 12, 18])) or [9, 12, 18]
-        quiet_start = int(data.get('quiet_start', 23) or 0)
-        quiet_end = int(data.get('quiet_end', 7) or 0)
+        def _normalize_days(value):
+            days: List[int] = []
+            if isinstance(value, (int, float)):
+                days.append(int(value))
+            elif isinstance(value, str):
+                for part in value.replace(";", ",").split(","):
+                    part = part.strip()
+                    if part.isdigit():
+                        days.append(int(part))
+            elif isinstance(value, list):
+                for item in value:
+                    if isinstance(item, (int, float)):
+                        days.append(int(item))
+                    elif isinstance(item, str) and item.strip().isdigit():
+                        days.append(int(item.strip()))
+            return sorted({d for d in days if 0 <= d <= 6})
+
+        def _apply_block_settings(block, overrides: Optional[Dict[str, Any]]):
+            if not overrides or not isinstance(overrides, dict):
+                return block
+            for key, value in overrides.items():
+                target_attr = key
+                if not hasattr(block, target_attr):
+                    alias_map = {
+                        "min_score": "min_opportunity_score",
+                        "max_items": "max_suggestions",
+                    }
+                    target_attr = alias_map.get(key)
+                if not target_attr or not hasattr(block, target_attr):
+                    continue
+                if isinstance(value, list):
+                    value = list(value)
+                elif isinstance(value, dict):
+                    value = dict(value)
+                setattr(block, target_attr, value)
+            return block
+
+        def _build_custom_blocks(blocks_data: Optional[List[Dict[str, Any]]]):
+            custom_blocks: List[CustomMessageBlock] = []
+            if not isinstance(blocks_data, list):
+                return custom_blocks
+            for block_data in blocks_data:
+                if not isinstance(block_data, dict):
+                    continue
+                custom_block = CustomMessageBlock()
+                for key, value in block_data.items():
+                    if hasattr(custom_block, key):
+                        if isinstance(value, list):
+                            value = list(value)
+                        elif isinstance(value, dict):
+                            value = dict(value)
+                        setattr(custom_block, key, value)
+                custom_blocks.append(custom_block)
+            return custom_blocks
+
+        def _build_notification_config(config_data: Optional[Dict[str, Any]], fallback_hours: List[int]) -> ScheduledNotificationConfig:
+            cfg = ScheduledNotificationConfig()
+            if not config_data:
+                cfg.hours = list(fallback_hours)
+                return cfg
+
+            if 'name' in config_data:
+                cfg.name = config_data['name']
+            if 'description' in config_data:
+                cfg.description = config_data['description']
+
+            cfg.enabled = config_data.get('enabled', cfg.enabled)
+            cfg.hours = _normalize_hours(config_data.get('hours', cfg.hours)) or list(fallback_hours)
+            cfg.days_of_week = _normalize_days(config_data.get('days_of_week', cfg.days_of_week))
+            if not cfg.days_of_week:
+                cfg.days_of_week = [0, 1, 2, 3, 4, 5, 6]
+
+            if 'blocks_order' in config_data and isinstance(config_data['blocks_order'], list):
+                cfg.blocks_order = list(config_data['blocks_order'])
+            if 'header_message' in config_data:
+                cfg.header_message = config_data['header_message']
+            if 'footer_message' in config_data:
+                cfg.footer_message = config_data['footer_message']
+
+            cfg.kid_friendly_mode = config_data.get('kid_friendly_mode', cfg.kid_friendly_mode)
+            cfg.use_emojis_everywhere = config_data.get('use_emojis_everywhere', cfg.use_emojis_everywhere)
+            cfg.explain_everything = config_data.get('explain_everything', cfg.explain_everything)
+            cfg.avoid_technical_terms = config_data.get('avoid_technical_terms', cfg.avoid_technical_terms)
+
+            cfg.send_only_if_change_above = config_data.get('send_only_if_change_above', cfg.send_only_if_change_above)
+            cfg.send_only_if_opportunity_above = config_data.get('send_only_if_opportunity_above', cfg.send_only_if_opportunity_above)
+
+            cfg.price_block = _apply_block_settings(cfg.price_block, config_data.get('price_block'))
+            cfg.prediction_block = _apply_block_settings(cfg.prediction_block, config_data.get('prediction_block'))
+            cfg.opportunity_block = _apply_block_settings(cfg.opportunity_block, config_data.get('opportunity_block'))
+            cfg.chart_block = _apply_block_settings(cfg.chart_block, config_data.get('chart_block'))
+            cfg.brokers_block = _apply_block_settings(cfg.brokers_block, config_data.get('brokers_block'))
+            cfg.fear_greed_block = _apply_block_settings(cfg.fear_greed_block, config_data.get('fear_greed_block'))
+            cfg.gain_loss_block = _apply_block_settings(cfg.gain_loss_block, config_data.get('gain_loss_block'))
+            cfg.investment_suggestions_block = _apply_block_settings(cfg.investment_suggestions_block, config_data.get('investment_suggestions_block'))
+            cfg.glossary_block = _apply_block_settings(cfg.glossary_block, config_data.get('glossary_block'))
+            cfg.custom_blocks = _build_custom_blocks(config_data.get('custom_blocks'))
+
+            return cfg
+
+        notif_data = data.get('notifications', data or {})
+
+        hours = _normalize_hours(notif_data.get('default_scheduled_hours', [9, 12, 18])) or [9, 12, 18]
+        quiet_start = int(notif_data.get('quiet_start', 23) or 0)
+        quiet_end = int(notif_data.get('quiet_end', 7) or 0)
         quiet_start = max(0, min(23, quiet_start))
         quiet_end = max(0, min(23, quiet_end))
 
-        return GlobalNotificationSettings(
-            enabled=data.get('enabled', True),
-            kid_friendly_mode=data.get('kid_friendly_mode', True),
-            use_emojis_everywhere=data.get('use_emojis_everywhere', True),
-            explain_everything=data.get('explain_everything', True),
-            respect_quiet_hours=data.get('respect_quiet_hours', True),
+        settings = GlobalNotificationSettings(
+            enabled=notif_data.get('enabled', True),
+            kid_friendly_mode=notif_data.get('kid_friendly_mode', True),
+            use_emojis_everywhere=notif_data.get('use_emojis_everywhere', True),
+            explain_everything=notif_data.get('explain_everything', True),
+            respect_quiet_hours=notif_data.get('respect_quiet_hours', True),
             quiet_start=quiet_start,
             quiet_end=quiet_end,
             default_scheduled_hours=hours
         )
 
+        coins_data = data.get('coins', {}) or {}
+        if isinstance(coins_data, dict):
+            settings.coin_profiles.clear()
+            for symbol, coin_cfg in coins_data.items():
+                if not isinstance(coin_cfg, dict):
+                    continue
+
+                profile = CoinNotificationProfile(
+                    symbol=symbol,
+                    enabled=coin_cfg.get('enabled', True)
+                )
+                profile.nickname = coin_cfg.get('nickname') or coin_cfg.get('name') or profile.nickname
+                profile.custom_emoji = coin_cfg.get('custom_emoji') or profile.custom_emoji
+                profile.intro_message = coin_cfg.get('intro_message') or profile.intro_message
+                profile.outro_message = coin_cfg.get('outro_message') or profile.outro_message
+                profile.detail_level = coin_cfg.get('detail_level', profile.detail_level)
+
+                scheduled_configs = coin_cfg.get('scheduled_notifications', [])
+                profile.scheduled_notifications = []
+                if isinstance(scheduled_configs, list) and scheduled_configs:
+                    for sched_cfg in scheduled_configs:
+                        if not isinstance(sched_cfg, dict):
+                            continue
+                        notification_config = _build_notification_config(sched_cfg, hours)
+                        profile.add_scheduled_notification(notification_config)
+                else:
+                    for hour in hours:
+                        default_config = ScheduledNotificationConfig(
+                            name=f"Notification {hour}h",
+                            hours=[hour],
+                            enabled=profile.enabled
+                        )
+                        profile.add_scheduled_notification(default_config)
+
+                default_config_data = coin_cfg.get('default_config')
+                if isinstance(default_config_data, dict):
+                    profile.default_config = _build_notification_config(default_config_data, hours)
+
+                settings.coin_profiles[symbol] = profile
+
+        return settings
+
     def update_notification_settings(self, settings: GlobalNotificationSettings) -> None:
         """Met à jour les paramètres de notification et régénère le générateur associé."""
         with self._state_lock:
             self.notification_settings = settings
+            self.broker_service = BrokerService(self.config)
             self.notification_generator = NotificationGenerator(
-                settings,
+                settings, 
                 self.config.crypto_symbols,
+                broker_service=self.broker_service
             )
 
     def update_configuration(self, config: BotConfiguration) -> None:
@@ -150,10 +313,8 @@ class DaemonService:
             self.config = config
             # Recréer les services si nécessaire
             self.alert_service = AlertService(config)
-            self.notification_generator = NotificationGenerator(
-                self.notification_settings,
-                config.crypto_symbols,
-            )
+            self.broker_service = BrokerService(config)
+            self.notification_generator = NotificationGenerator(self.notification_settings, config.crypto_symbols, broker_service=self.broker_service)
             self.logger.info("Configuration mise à jour")
 
     def _signal_handler(self, signum, frame):
@@ -564,10 +725,14 @@ class DaemonService:
                     message_parts.append(header)
                     
                     # Générer chaque bloc selon blocks_order
-                    from core.services.notification_generator import NotificationGenerator
+                    # Note: NotificationGenerator et BrokerService déjà importés en haut
                     
                     # Créer un générateur temporaire pour utiliser ses méthodes de blocs
-                    temp_gen = NotificationGenerator(self.notification_settings, self.config.crypto_symbols)
+                    temp_gen = NotificationGenerator(
+                        self.notification_settings, 
+                        self.config.crypto_symbols,
+                        broker_service=self.broker_service
+                    )
                     
                     for block_name in config.blocks_order:
                         try:
@@ -606,10 +771,33 @@ class DaemonService:
                 self.logger.warning("Aucune notification générée")
                 return
             
-            # Assembler et envoyer
+            # Assembler
             full_message = startup_header + "\n\n".join(all_notifications)
             
-            success = self.telegram_api.send_message(full_message, parse_mode="HTML")
+            max_len = getattr(self.notification_settings, "max_message_length", 4096)
+            max_len = min(max_len, 4000)  # marge pour la mise en forme
+            split_limit = max(500, max_len - 16)
+            chunks = self._split_html_message(full_message, split_limit)
+            formatter = SafeHTMLFormatter()
+            
+            success = True
+            total = len(chunks)
+            for idx, chunk in enumerate(chunks, start=1):
+                if total > 1:
+                    part_prefix = f"[{idx}/{total}]\n"
+                    available_len = max_len - len(part_prefix)
+                else:
+                    part_prefix = ""
+                    available_len = max_len
+                
+                if len(chunk) > available_len:
+                    chunk = formatter.truncate_safely(chunk, available_len)
+                
+                chunk_to_send = f"{part_prefix}{chunk}"
+                
+                if not self.telegram_api.send_message(chunk_to_send, parse_mode="HTML"):
+                    success = False
+                    break
             
             if success:
                 self.logger.info("✅ Message de démarrage envoyé (notifications.yaml respecté)")
@@ -620,6 +808,52 @@ class DaemonService:
             self.logger.error(f"❌ Erreur message démarrage: {e}")
             import traceback
             self.logger.error(traceback.format_exc())
+
+    def _split_html_message(self, message: str, max_length: int) -> List[str]:
+        """Découpe un message HTML en blocs respectant la limite Telegram."""
+        if len(message) <= max_length:
+            return [message]
+        
+        sections = message.split("\n\n")
+        chunks: List[str] = []
+        current: List[str] = []
+        current_len = 0
+        
+        for raw_section in sections:
+            section = raw_section.strip("\n")
+            if not section:
+                continue
+            
+            addition_len = len(section) if not current else len(section) + 2  # +2 pour le double saut de ligne
+            
+            if current and current_len + addition_len > max_length:
+                chunks.append("\n\n".join(current))
+                current = [section]
+                current_len = len(section)
+            else:
+                if current:
+                    current.append(section)
+                    current_len += addition_len
+                else:
+                    current = [section]
+                    current_len = len(section)
+        
+        if current:
+            chunks.append("\n\n".join(current))
+        
+        # Vérifier qu'aucun chunk ne dépasse la limite; en cas de dépassement, couper grossièrement
+        safe_chunks: List[str] = []
+        for chunk in chunks:
+            if len(chunk) <= max_length:
+                safe_chunks.append(chunk)
+            else:
+                start = 0
+                end = len(chunk)
+                while start < end:
+                    safe_chunks.append(chunk[start:start + max_length])
+                    start += max_length
+        
+        return safe_chunks or [message[:max_length]]
 
     def _save_stats(self):
         """Sauvegarde les statistiques"""

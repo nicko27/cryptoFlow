@@ -115,6 +115,13 @@ class NumberFormatter:
             formatted = f"{price:.{decimals}f}"
         
         return f"{formatted} {currency}"
+
+    @staticmethod
+    def format_currency(value: float, currency: str = "€", decimals: Optional[int] = None) -> str:
+        """
+        Alias explicite pour le formatage de devises
+        """
+        return NumberFormatter.format_price(value, currency=currency, decimals=decimals)
     
     @staticmethod
     def format_percentage(value: float, decimals: int = 1, show_sign: bool = True) -> str:
@@ -198,6 +205,22 @@ class SafeDataExtractor:
             return NumberFormatter.format_volume(market.current_price.volume_24h, short=True)
         except Exception:
             return default
+
+    @staticmethod
+    def safe_price(price_obj: Optional[Any], default: float = 0.0) -> float:
+        """Retourne un prix numérique sécurisé (en euros)"""
+        try:
+            if price_obj is None:
+                return default
+            if isinstance(price_obj, (int, float)):
+                return float(price_obj)
+            if hasattr(price_obj, "price_eur") and price_obj.price_eur is not None:
+                return float(price_obj.price_eur)
+            if hasattr(price_obj, "price") and price_obj.price is not None:
+                return float(price_obj.price)
+        except Exception:
+            return default
+        return default
     
     @staticmethod
     def get_prediction_type(prediction: Optional[Any], default: str = "Neutre") -> str:

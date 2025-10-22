@@ -32,15 +32,12 @@ class NotificationGenerator:
     Générateur de notifications avec tous les blocs configurables
     """
     
-    def __init__(self, settings: GlobalNotificationSettings, tracked_symbols: Optional[List[str]] = None, broker_service: Optional['BrokerService'] = None):
+    def __init__(self, settings: GlobalNotificationSettings, tracked_symbols: Optional[List[str]] = None):
         self.settings = settings
         self._tracked_symbols = {s.upper() for s in (tracked_symbols or [])}
         
-        # Termes détectés pour le glossaire
+        # Termes détectés pour le glossaire (FIXED: sera maintenant rempli)
         self.detected_terms = set()
-        
-        # 🆕 Service de courtiers
-        self.broker_service = broker_service
         
         # Helpers
         self.html = SafeHTMLFormatter()
@@ -235,7 +232,7 @@ class NotificationGenerator:
             return self.html.escape(footer_template)
         except Exception as e:
             logger.error(f"Erreur génération footer: {e}")
-            return self.html.italic(self.messages.DISCLAIMERS['default'])
+            return self.html.italic(self.messages.DISCLAIMERS['default'], escape=False)
     
     def _generate_block(
         self,
@@ -304,12 +301,8 @@ class NotificationGenerator:
         """
         try:
             lines = []
-            lines.append(self.html.bold(block.title))
+            lines.append(self.html.bold(block.title, escape=False))
             lines.append("")
-            
-            if getattr(block, "explanation", None):
-                lines.append(self.html.italic(block.explanation))
-                lines.append("")
             
             # Prix EUR
             if block.show_price_eur:
@@ -340,7 +333,7 @@ class NotificationGenerator:
                 change = market.current_price.change_24h or 0
                 comment = self.messages.get_price_message(change, kid_friendly=True)
                 lines.append("")
-                lines.append(self.html.italic(comment))
+                lines.append(self.html.italic(comment, escape=False))
             
             return "\n".join(lines)
         
@@ -352,76 +345,10 @@ class NotificationGenerator:
         """FIXED: Méthode manquante implémentée"""
         try:
             lines = []
-            lines.append(self.html.bold(block.title))
+            lines.append(self.html.bold(block.title, escape=False))
             lines.append("")
-
-            if not market or not market.price_history:
-                lines.append(self.html.escape(f"{self.emojis.CHART} Données historiques indisponibles pour le moment."))
-                return "\n".join(lines)
-
-            prices = []
-            timestamps = []
-            for entry in market.price_history:
-                if isinstance(entry, dict):
-                    price = entry.get("price_eur") or entry.get("price") or entry.get("close")
-                    ts = entry.get("timestamp") or entry.get("time") or entry.get("ts")
-                else:
-                    price = getattr(entry, "price_eur", None)
-                    ts = getattr(entry, "timestamp", None)
-                if price is None or ts is None:
-                    continue
-                price = float(price)
-                ts_val = ts if isinstance(ts, datetime) else datetime.fromtimestamp(float(ts), tz=timezone.utc)
-                prices.append(price)
-                timestamps.append(ts_val)
-
-            if len(prices) < 2:
-                lines.append(self.html.escape(f"{self.emojis.CHART} Historique insuffisant pour afficher un graphique."))
-                return "\n".join(lines)
-
-            sorted_points = sorted(zip(timestamps, prices), key=lambda p: p[0])
-            timestamps, prices = zip(*sorted_points)
-
-            latest_price = prices[-1]
-            first_price = prices[0]
-            change_pct = 0.0 if first_price == 0 else ((latest_price - first_price) / first_price) * 100
-
-            if block.show_sparklines:
-                sparkline = self._render_sparkline(list(prices))
-                lines.append(self.html.escape(f"{self.emojis.CHART} {sparkline}"))
-                lines.append(self.html.escape(
-                    f"   {self.numbers.format_price(first_price)} → {self.numbers.format_price(latest_price)} "
-                    f"({self.numbers.format_percentage(change_pct)})"
-                ))
-                lines.append("")
-
-            # Résumé par période configurée
-            current_price = self.extractor.safe_price(getattr(market, "current_price", None), default=latest_price)
-            timeframe_lines = []
-            for hours in getattr(block, "timeframes", []):
-                historical_price = self._get_historical_price(market, hours)
-                if not historical_price:
-                    continue
-                change = 0.0 if historical_price == 0 else ((current_price - historical_price) / historical_price) * 100
-                label = block.period_names.get(hours, f"{hours}h")
-                direction = self.emojis.get_change_emoji(change)
-                timeframe_lines.append(f"{direction} {label}: {self.numbers.format_percentage(change)}")
-
-            if timeframe_lines:
-                lines.append(self.html.escape("• ".join(timeframe_lines)))
-
-            if getattr(block, "show_support_resistance", False):
-                indicators = getattr(market, "technical_indicators", None)
-                support = getattr(indicators, "support", None) if indicators else None
-                resistance = getattr(indicators, "resistance", None) if indicators else None
-                support_line = []
-                if support:
-                    support_line.append(f"Support: {self.numbers.format_price(support)}")
-                if resistance:
-                    support_line.append(f"Résistance: {self.numbers.format_price(resistance)}")
-                if support_line:
-                    lines.append(self.html.escape(" | ".join(support_line)))
-
+            lines.append(f"{self.emojis.CHART} Un graphique détaillé sera envoyé dans le message suivant.")
+            
             return "\n".join(lines)
         except Exception as e:
             logger.error(f"Erreur génération bloc graphique: {e}")
@@ -439,7 +366,7 @@ class NotificationGenerator:
                 return None
             
             lines = []
-            lines.append(self.html.bold(block.title))
+            lines.append(self.html.bold(block.title, escape=False))
             lines.append("")
             
             # Type de prédiction
@@ -463,7 +390,7 @@ class NotificationGenerator:
                     message = self.messages.PREDICTION_MESSAGES['neutral']['kid_friendly']
                 
                 lines.append("")
-                lines.append(self.html.italic(message))
+                lines.append(self.html.italic(message, escape=False))
             
             return "\n".join(lines)
         
@@ -484,7 +411,7 @@ class NotificationGenerator:
                 return None
             
             lines = []
-            lines.append(self.html.bold(block.title))
+            lines.append(self.html.bold(block.title, escape=False))
             lines.append("")
             
             # Score
@@ -498,15 +425,14 @@ class NotificationGenerator:
             if block.show_recommendation:
                 recommendation = self.extractor.get_recommendation(opportunity)
                 rec_emoji = self._get_recommendation_emoji(recommendation)
-                readable = self.messages.get_opportunity_message(score, kid_friendly=False)
-                lines.append(f"{rec_emoji} Recommandation: {self.html.bold(recommendation, escape=True)} – {self.html.italic(readable)}")
+                lines.append(f"{rec_emoji} Recommandation: {self.html.bold(recommendation, escape=True)}")
             
             # Raisons
             if block.show_reasons and opportunity.reasons:
                 lines.append("")
-                lines.append(self.html.escape("Raisons:"))
+                lines.append("Raisons:")
                 for reason in opportunity.reasons[:3]:  # Max 3 raisons
-                    lines.append(self.html.escape(f"  • {reason}"))
+                    lines.append(f"  • {self.html.escape(reason)}")
             
             # Message personnalisé
             if kid_friendly:
@@ -520,7 +446,7 @@ class NotificationGenerator:
                     message = self.messages.OPPORTUNITY_MESSAGES['low']['kid_friendly']
                 
                 lines.append("")
-                lines.append(self.html.italic(message))
+                lines.append(self.html.italic(message, escape=False))
             
             return "\n".join(lines)
         
@@ -529,65 +455,18 @@ class NotificationGenerator:
             return None
     
     def _generate_brokers_block(self, symbol: str, market: MarketData, block: BrokersBlock) -> Optional[str]:
-        """Génère le bloc des courtiers"""
+        """FIXED: Méthode manquante implémentée"""
         try:
             lines = []
-            lines.append(self.html.bold(block.title))
+            lines.append(self.html.bold(block.title, escape=False))
             lines.append("")
+            lines.append(f"{self.emojis.BROKER} Cotations courtiers disponibles prochainement")
             
-            # Si pas de broker_service, afficher message
-            if not self.broker_service:
-                lines.append(self.html.escape(f"{self.emojis.BROKER} Cotations courtiers disponibles prochainement"))
-                return "\n".join(lines)
-            
-            # Récupérer les cotations
-            quotes = self.broker_service.get_quotes(symbol, market)
-            
-            if not quotes:
-                lines.append(self.html.escape(f"{self.emojis.BROKER} Aucune cotation disponible actuellement"))
-                return "\n".join(lines)
-            
-            # Trier par prix d'achat (le moins cher en premier)
-            if block.show_best_price:
-                quotes = sorted(quotes, key=lambda q: q.buy_price)
-            
-            # Limiter le nombre de courtiers affichés
-            max_to_show = getattr(block, 'max_brokers_displayed', 3)
-            quotes_to_show = quotes[:max_to_show] if not block.show_all_brokers else quotes
-            
-            # Afficher les cotations
-            for i, quote in enumerate(quotes_to_show):
-                lines.append(self.html.escape(f"{self.emojis.BROKER} {quote.broker}"))
-                
-                buy_price = self.numbers.format_currency(quote.buy_price, quote.currency)
-                sell_price = self.numbers.format_currency(quote.sell_price, quote.currency)
-                lines.append(self.html.escape(f"   Achat : {buy_price}"))
-                lines.append(self.html.escape(f"   Vente : {sell_price}"))
-                
-                if block.show_fees and hasattr(quote, 'fees') and quote.fees:
-                    lines.append(self.html.escape(f"   Frais estimés : {quote.fees}"))
-                
-                if hasattr(quote, 'notes') and quote.notes:
-                    lines.append(self.html.escape(f"   ℹ️ {quote.notes}"))
-                
-                if i == 0 and block.show_best_price and len(quotes_to_show) > 1:
-                    lines.append(self.html.escape("   ✅ Meilleur prix"))
-                
-                lines.append("")
-            
-            # Message si plus de courtiers disponibles
-            if len(quotes) > len(quotes_to_show):
-                remaining = len(quotes) - len(quotes_to_show)
-                lines.append(self.html.escape(f"💡 {remaining} autre(s) courtier(s) disponible(s)"))
-            
-            if lines and lines[-1] == "":
-                lines.pop()
             return "\n".join(lines)
-        
         except Exception as e:
             logger.error(f"Erreur génération bloc courtiers: {e}")
-            return f"{self.emojis.BROKER} Cotations courtiers disponibles prochainement"
-
+            return None
+    
     def _generate_fear_greed_block(self, market: MarketData, block: FearGreedBlock, kid_friendly: bool) -> Optional[str]:
         """FIXED: Méthode manquante implémentée"""
         try:
@@ -595,17 +474,17 @@ class NotificationGenerator:
                 return None
             
             lines = []
-            lines.append(self.html.bold(block.title))
+            lines.append(self.html.bold(block.title, escape=False))
             lines.append("")
             
             index = market.fear_greed_index
-            lines.append(self.html.escape(f"{self.emojis.SENTIMENT} Indice: {index}/100"))
+            lines.append(f"{self.emojis.SENTIMENT} Indice: {index}/100")
             self._mark_term_used('Fear & Greed')
             
             if block.show_interpretation:
                 message = self.messages.get_fear_greed_message(index, kid_friendly)
                 lines.append("")
-                lines.append(self.html.italic(message))
+                lines.append(self.html.italic(message, escape=False))
             
             return "\n".join(lines)
         
@@ -614,125 +493,20 @@ class NotificationGenerator:
             return None
     
     def _generate_gain_loss_block(self, market: MarketData, block: GainLossBlock) -> Optional[str]:
-        """Génère le bloc calcul de gains/pertes"""
+        """FIXED: Méthode manquante implémentée"""
         try:
             lines = []
-            lines.append(self.html.bold(block.title))
+            lines.append(self.html.bold(block.title, escape=False))
             lines.append("")
-            
-            # Vérifier si on a des données historiques
-            if not market or not hasattr(market, 'price_history') or not market.price_history:
-                lines.append(self.html.escape(f"{self.emojis.GAIN} Calcul de gains/pertes disponible prochainement"))
-                lines.append("")
-                lines.append(self.html.escape("💡 Les données historiques seront bientôt disponibles"))
-                return "\n".join(lines)
-            
-            # Montants d'investissement à simuler
-            amounts = [100, 500, 1000]
-            
-            # Périodes à analyser (en heures)
-            periods = {"24h": 24, "7j": 168, "30j": 720}
-            
-            current_price = self.extractor.safe_price(market.current_price)
-            
-            lines.append(self.html.escape(f"{self.emojis.GAIN} Si tu avais investi..."))
-            lines.append("")
-            
-            has_data = False
-            for amount in amounts:
-                lines.append(self.html.escape(f"💰 Investissement: {amount}€"))
-                
-                for period_name, hours in periods.items():
-                    # Trouver le prix historique
-                    historical_price = self._get_historical_price(market, hours)
-                    
-                    if not historical_price:
-                        continue
-                    
-                    has_data = True
-                    
-                    # Calculer combien de crypto on aurait acheté
-                    crypto_amount = amount / historical_price
-                    
-                    # Valeur actuelle
-                    current_value = crypto_amount * current_price
-                    
-                    # Gain/perte
-                    profit = current_value - amount
-                    profit_pct = ((current_value - amount) / amount) * 100
-                    
-                    # Emoji selon gain/perte
-                    emoji = "📈" if profit >= 0 else "📉"
-                    sign = "+" if profit >= 0 else ""
-                    
-                    lines.append(self.html.escape(f"  {emoji} Il y a {period_name}: {sign}{profit:.2f}€ ({sign}{profit_pct:.1f}%)"))
-                
-                if has_data:
-                    lines.append("")  # Ligne vide entre les montants
-            
-            if not has_data:
-                return f"{self.emojis.GAIN} Calcul de gains/pertes disponible prochainement"
+            lines.append(f"{self.emojis.GAIN} Calcul de gains/pertes disponible prochainement")
             
             return "\n".join(lines)
-        
         except Exception as e:
             logger.error(f"Erreur génération bloc gain/loss: {e}")
-            return f"{self.emojis.GAIN} Calcul de gains/pertes disponible prochainement"
-    
-    def _get_historical_price(self, market: MarketData, hours_ago: int) -> Optional[float]:
-        """Récupère le prix historique il y a X heures"""
-        try:
-            if not hasattr(market, 'price_history') or not market.price_history:
-                return None
-
-            target_time = datetime.now(timezone.utc).timestamp() - (hours_ago * 3600)
-            closest_price = None
-            min_diff = float('inf')
-
-            records: List[tuple] = []
-
-            history = market.price_history
-
-            if isinstance(history, dict):
-                for timestamp, value in history.items():
-                    price_value = value
-                    if isinstance(value, dict):
-                        price_value = value.get("price_eur") or value.get("price") or value.get("close")
-                    elif hasattr(value, "price_eur"):
-                        price_value = getattr(value, "price_eur")
-                    if price_value is None:
-                        continue
-                    ts_val = timestamp.timestamp() if isinstance(timestamp, datetime) else float(timestamp)
-                    records.append((ts_val, float(price_value)))
-            else:
-                for entry in history:
-                    ts = None
-                    price_value = None
-                    if isinstance(entry, dict):
-                        ts = entry.get("timestamp") or entry.get("time") or entry.get("ts")
-                        price_value = entry.get("price_eur") or entry.get("price") or entry.get("close")
-                    else:
-                        ts = getattr(entry, "timestamp", None)
-                        price_value = getattr(entry, "price_eur", None)
-                    if ts is None or price_value is None:
-                        continue
-                    ts_val = ts.timestamp() if isinstance(ts, datetime) else float(ts)
-                    records.append((ts_val, float(price_value)))
-
-            for ts_val, price in records:
-                diff = abs(ts_val - target_time)
-                if diff < min_diff:
-                    min_diff = diff
-                    closest_price = float(price)
-
-            return closest_price
-        
-        except Exception as e:
-            logger.error(f"Erreur récupération prix historique: {e}")
             return None
-        
+    
     def _generate_investment_suggestions_block(
-        self,
+        self, 
         symbol: str,
         all_markets: Dict[str, MarketData],
         all_predictions: Dict[str, Prediction],
@@ -740,86 +514,17 @@ class NotificationGenerator:
         block: InvestmentSuggestionBlock,
         kid_friendly: bool
     ) -> Optional[str]:
-        """Génère le bloc de suggestions d'investissement"""
+        """FIXED: Méthode manquante implémentée"""
         try:
             lines = []
-            lines.append(self.html.bold(block.title))
+            lines.append(self.html.bold(block.title, escape=False))
             lines.append("")
-
-            suggestions = []
-
-            for sym, market in all_markets.items():
-                if sym == symbol:
-                    continue  # Ne pas suggérer la crypto actuelle
-
-                opp = all_opportunities.get(sym)
-                pred = all_predictions.get(sym)
-
-                if not opp or not market:
-                    continue
-
-                min_required = getattr(block, "min_opportunity_score", 0)
-                if opp.score < min_required:
-                    continue
-
-                reasons = []
-                technicals = getattr(market, "technical_indicators", None)
-                market_rsi = getattr(technicals, "rsi", None)
-                if market_rsi is None:
-                    market_rsi = getattr(market, "rsi", None)
-                if market_rsi is not None and market_rsi < 35:
-                    reasons.append("RSI bas (survendu)")
-
-                if pred and getattr(pred, "confidence", 0) >= 0.65:
-                    direction = getattr(pred, "predicted_direction", None)
-                    if direction and direction.upper() == "UP":
-                        reasons.append("Prédiction haussière")
-
-                market_fear_greed = getattr(market, "fear_greed_index", None)
-                if market_fear_greed is not None and market_fear_greed < 40:
-                    reasons.append("Marché craintif")
-
-                if reasons:
-                    price = self.extractor.safe_price(getattr(market, "current_price", None))
-                    suggestions.append({
-                        "symbol": sym,
-                        "score": opp.score,
-                        "price": price,
-                        "reasons": reasons
-                    })
-
-            if not suggestions:
-                lines.append(f"{self.emojis.SUGGESTION} Aucune suggestion particulière pour le moment")
-                lines.append("")
-                lines.append("💡 Continue de surveiller le marché !")
-                return "\n".join(lines)
-
-            suggestions.sort(key=lambda x: x["score"], reverse=True)
-            max_suggestions = getattr(block, "max_suggestions", 3)
-            suggestions = suggestions[:max_suggestions]
-
-            lines.append(f"{self.emojis.SUGGESTION} Cryptos intéressantes en ce moment:")
-            lines.append("")
-
-            for sug in suggestions:
-                lines.append(f"💎 {sug['symbol']}")
-                lines.append(f"   💰 Prix: {self.numbers.format_currency(sug['price'], '€')}")
-                lines.append(f"   ⭐ Score: {sug['score']}/10")
-                lines.append("   Raisons:")
-                for reason in sug["reasons"]:
-                    lines.append(f"     • {reason}")
-                lines.append("")
-
-            if kid_friendly:
-                lines.append("💡 Rappel: Ne mets jamais tout ton argent sur une seule crypto !")
-            else:
-                lines.append("💡 Rappel: Diversifiez toujours votre portefeuille")
-
+            lines.append(f"{self.emojis.SUGGESTION} Suggestions d'investissement disponibles prochainement")
+            
             return "\n".join(lines)
-
         except Exception as e:
             logger.error(f"Erreur génération bloc suggestions: {e}")
-            return f"{self.emojis.SUGGESTION} Suggestions d'investissement disponibles prochainement"
+            return None
     
     def _generate_glossary_block(self, block: GlossaryBlock) -> Optional[str]:
         """
@@ -830,7 +535,7 @@ class NotificationGenerator:
                 return None
             
             lines = []
-            lines.append(self.html.bold(block.title))
+            lines.append(self.html.bold(block.title, escape=False))
             lines.append("")
             
             # Termes détectés automatiquement
@@ -877,26 +582,3 @@ class NotificationGenerator:
             'HOLD': self.emojis.HOLD,
         }
         return rec_map.get(recommendation.upper(), self.emojis.INFO)
-
-    def _render_sparkline(self, values: List[float]) -> str:
-        """Génère une miniature de graphique en ASCII"""
-        if not values:
-            return ""
-        min_val = min(values)
-        max_val = max(values)
-        if max_val == min_val:
-            return "━" * min(10, len(values))
-
-        blocks = "▁▂▃▄▅▆▇█"
-        span = max_val - min_val
-
-        step = max(1, len(values) // 12)
-        sampled = values[::step]
-        if sampled[-1] != values[-1]:
-            sampled.append(values[-1])
-
-        sparkline = ""
-        for val in sampled:
-            idx = int((val - min_val) / span * (len(blocks) - 1))
-            sparkline += blocks[idx]
-        return sparkline

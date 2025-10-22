@@ -60,6 +60,7 @@ class NotificationEmojis:
     SENTIMENT = "😊"
     FEAR = "😰"
     GREED = "🤑"
+    AI = "🤖"
     
     # Gains et pertes
     GAIN = "💰"
